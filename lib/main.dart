@@ -3,12 +3,8 @@ import 'dart:io';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/components/button/gf_icon_button.dart';
-import 'package:getwidget/components/search_bar/gf_search_bar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:redacted/redacted.dart';
 import 'package:sham_parts/api_util/onshapeDocument.dart';
-import 'package:sham_parts/colorTile.dart';
 import 'package:sham_parts/home.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -18,9 +14,6 @@ const double _buttonWidth = 200.0;
 const double _pagePadding = 16.0;
 const double _pageBreakpoint = 768.0;
 const double _heroImageHeight = 250.0;
-final materialColorsInGrid = allMaterialColors.take(20).toList();
-final materialColorsInSliverList = allMaterialColors.sublist(20, 25);
-final materialColorsInSpinner = allMaterialColors.sublist(30, 50);
 
 void main() {
   runApp(const MyApp());
@@ -147,7 +140,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     final pageIndexNotifier = ValueNotifier(0);
-
 
     SliverWoltModalSheetPage page2(
         BuildContext modalSheetContext, TextTheme textTheme) {

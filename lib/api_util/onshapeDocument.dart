@@ -36,11 +36,9 @@ class OnshapeDocument {
      dynamic json = jsonDecode(resp.body);
 
      List<OnshapeDocument> returns =  json.map<OnshapeDocument>((e) {
-  String workspace;
+        String workspace;
        return OnshapeDocument(e["id"], e["name"], e["thumbnail"], e["os_key"], e["default_workspace"]);
      }).toList();
-
-     print(returns);
 
      return returns;
   }
