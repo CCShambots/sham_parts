@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:http/http.dart' as http;
+import 'package:sham_parts/api_util/onshapeAssembly.dart';
 
 
 class OnshapeDocument {
@@ -52,33 +53,39 @@ class OnshapeSearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: EdgeInsets.only(top: 8.0),
-        child: Row(
-          children: [
-            GFImageOverlay(
-              height: 150,
-              width: 150,
-              borderRadius: const BorderRadius.all(Radius.circular(5)),
-              image: CachedNetworkImageProvider(
-                doc.thumbnail,
-                headers: {'Authorization': "Basic ${doc.onShapeKey}"},
-
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  Text(doc.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),),
-                  Text(doc.id, style: TextStyle(fontWeight: FontWeight.w200))
-                ],
-              )
-
+    return GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => AssemblySearchWindow(doc: doc)));
+        },
+        child:  Container(
+          child: Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Row(
+              children: [
+                GFImageOverlay(
+                  height: 150,
+                  width: 150,
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  image: CachedNetworkImageProvider(
+                    doc.thumbnail,
+                    headers: {'Authorization': "Basic ${doc.onShapeKey}"},
+    
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(doc.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),),
+                      Text(doc.id, style: TextStyle(fontWeight: FontWeight.w200))
+                    ],
+                  )
+    
+                )
+              ],
             )
-          ],
+          )
         )
-      )
     );
   }
 }

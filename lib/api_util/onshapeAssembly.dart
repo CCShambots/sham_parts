@@ -1,40 +1,76 @@
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/components/button/gf_button.dart';
-import 'package:getwidget/components/floating_widget/gf_floating_widget.dart';
-import 'package:getwidget/components/search_bar/gf_search_bar.dart';
+import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:http/http.dart' as http;
 import 'package:sham_parts/api_util/apiSession.dart';
+import 'package:sham_parts/api_util/onshapeDocument.dart';
+import 'package:toastification/toastification.dart';
+
 
 class OnshapeAssembly {
 
   String id;
   String name;
   String os_key;
+  String thumbnail;
+  OnshapeDocument doc;
 
   Widget searchWidget = Container();
 
   OnshapeAssembly(
-    this.id,
-    this.name,
-    this.os_key
+      this.id,
+      this.name,
+      this.os_key,
+      this.thumbnail,
+      this.doc
   ) {
     searchWidget = OnshapeAssemblyWidget(assembly: this);
   }
 
-  static Future<List<OnshapeAssembly>> queryAssemblies(String did, String wid) async {
+  static Future<List<OnshapeAssembly>> queryAssemblies(OnshapeDocument doc) async {
     http.Response resp =
-        await APISession.getWithParams("/onshape/assemblies", {'did': did, 'wid': wid});
+        await APISession.getWithParams("/onshape/assemblies", {'did': doc.id, 'wid': doc.workspace});
 
     dynamic json = jsonDecode(resp.body);
 
     return json.map<OnshapeAssembly>((e) {
-      String workspace;
-      return OnshapeAssembly(e["id"], e["name"], e["os_key"]);
+      return OnshapeAssembly(e["id"], e["name"], e["os_key"], e["thumbnail"], doc);
     }).toList();
+  }
 
+  Future<void> createProject(BuildContext context) async {
+    print("running create :)");
+    http.Response resp = await APISession.post("/project/create", jsonEncode({
+      "name": doc.name,
+      "doc_id": doc.id,
+      "main_assembly": id,
+      "default_workspace": doc.workspace
+    }));
+
+    print(resp);
+
+    if(context.mounted) {
+      if(resp.statusCode == 200) {
+        toastification.show(
+          context: context,
+          autoCloseDuration: const Duration(seconds: 10),
+          type: ToastificationType.success,
+          style: ToastificationStyle.flatColored,
+          title: const Text('Project Successfully Created! Indexing parts now...')
+        );
+      } else {
+        toastification.show(
+            context: context,
+            autoCloseDuration: const Duration(seconds: 10),
+            type: ToastificationType.error,
+            style: ToastificationStyle.flatColored,
+            title: Text("Project Failed to Create. Error Code ${resp.statusCode}: ${resp.body}")
+        );
+      }
+    }
   }
 
 }
@@ -47,27 +83,63 @@ class OnshapeAssemblyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
-        children: [
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.2)
+        ),
+        height: 400,
+        width: 300,
+        child:
           Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(assembly.name),
-              Text(assembly.id)
+              Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                  child: Text(
+                      assembly.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+              ),
+               GFImageOverlay(
+                  height: 250,
+                  width: 250,
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  image: CachedNetworkImageProvider(
+                    assembly.thumbnail,
+                    headers: {'Authorization': "Basic ${assembly.os_key}"},
+
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ElevatedButton(
+                      onPressed: () {
+                        assembly.createProject(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                      child: Text(
+                          "Select",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.inverseSurface,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24.0
+                          ),
+                      ),
+                  ),
+              )
             ],
-          ),
-          GFButton(
-              onPressed: () {},
-              icon: const Icon(Icons.arrow_forward),
           )
-        ],
-      ),
     );
   }
 }
 
 class AssemblySearchWindow extends StatefulWidget {
+  final OnshapeDocument doc;
 
-  const AssemblySearchWindow({super.key});
+  const AssemblySearchWindow({super.key, required this.doc});
 
   @override
   State<AssemblySearchWindow> createState() =>
@@ -78,41 +150,58 @@ class AssemblySearchState extends State<AssemblySearchWindow> {
   List<OnshapeAssembly> assemblies = [];
 
   @override
+  void initState() {
+    super.initState();
+
+    loadAssemblyData();
+  }
+
+  void loadAssemblyData() async {
+    List<OnshapeAssembly> assemblies = await OnshapeAssembly.queryAssemblies(widget.doc);
+
+    final check = RegExp(r'A-[0-9]{4}');
+
+    assemblies.sort((a, b) {
+      if(a.name.toLowerCase() == "full assembly") return -1;
+      if(b.name.toLowerCase() == "full assembly") return 1;
+      if(check.hasMatch(a.name)) return -1;
+      if(check.hasMatch(a.name)) return 1;
+
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+
+    setState(() {
+      this.assemblies = assemblies;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text("Select Main Assembly!"),
+        title: const Text("Select Main Assembly"),
       ),
-      body: GFFloatingWidget(
-          body: Column(children: assemblies.map((e) => e.searchWidget).toList()),
-          verticalPosition: MediaQuery.of(context).size.height* 0.2,
-          horizontalPosition: MediaQuery.of(context).size.width* 0.8,
-          child: GFSearchBar(
-            searchList: assemblies,
-            overlaySearchListItemBuilder: (item) {
-              return Container(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  item.name,
-                  style: const TextStyle(fontSize: 18),
-                ),
-              );
-            },
-            searchQueryBuilder: (String query, List<dynamic> list) {
-                return list
-                    .where((element) => element.name.toLowerCase().contains(query.toLowerCase()))
-                    .toList();
-            },
-
+      body:
+          Padding(
+            padding: EdgeInsets.only(top: 8, bottom: 8),
+            child: Center(
+              child:
+                  SingleChildScrollView(
+                    child: Wrap(
+                          spacing: 16.0,
+                          runSpacing: 16.0,
+                          children: assemblies.map((e) => e.searchWidget).toList()
+                      ),
+                  )
+              ,
+            )
           ),
-      )
-    ,
     );
   }
 
