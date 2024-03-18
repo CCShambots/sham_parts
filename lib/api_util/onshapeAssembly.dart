@@ -1,6 +1,5 @@
 
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
@@ -14,7 +13,6 @@ class OnshapeAssembly {
 
   String id;
   String name;
-  String os_key;
   String thumbnail;
   OnshapeDocument doc;
 
@@ -23,7 +21,6 @@ class OnshapeAssembly {
   OnshapeAssembly(
       this.id,
       this.name,
-      this.os_key,
       this.thumbnail,
       this.doc
   ) {
@@ -37,7 +34,7 @@ class OnshapeAssembly {
     dynamic json = jsonDecode(resp.body);
 
     return json.map<OnshapeAssembly>((e) {
-      return OnshapeAssembly(e["id"], e["name"], e["os_key"], e["thumbnail"], doc);
+      return OnshapeAssembly(e["id"], e["name"], e["thumbnail"], doc);
     }).toList();
   }
 
@@ -105,11 +102,7 @@ class OnshapeAssemblyWidget extends StatelessWidget {
                   height: 250,
                   width: 250,
                   borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  image: CachedNetworkImageProvider(
-                    assembly.thumbnail,
-                    headers: {'Authorization': "Basic ${assembly.os_key}"},
-
-                  ),
+                  image: APISession.getOnshapeImage(assembly.thumbnail),
                 ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -188,20 +181,19 @@ class AssemblySearchState extends State<AssemblySearchWindow> {
         title: const Text("Select Main Assembly"),
       ),
       body:
-          Padding(
-            padding: EdgeInsets.only(top: 8, bottom: 8),
-            child: Center(
-              child:
-                  SingleChildScrollView(
-                    child: Wrap(
-                          spacing: 16.0,
-                          runSpacing: 16.0,
-                          children: assemblies.map((e) => e.searchWidget).toList()
-                      ),
-                  )
-              ,
-            )
-          ),
+          SingleChildScrollView(
+            child: Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 8),
+                child: Center(
+                  child: Wrap(
+                              spacing: 16.0,
+                              runSpacing: 16.0,
+                              children: assemblies.map((e) => e.searchWidget).toList()
+                          ),
+                )
+              ),
+
+          )
     );
   }
 

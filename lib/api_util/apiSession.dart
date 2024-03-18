@@ -1,11 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:sham_parts/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class APISession {
   static Map<String, String> headers = {
     'Content-Type': 'application/json; charset=UTF-8',
   };
-  // static bool cookieExists = false;
+
+  static String osKey = "";
 
   static Future<http.Response> get(String url) async {
     http.Response response = await http.get(Uri.parse(APIConstants().baseUrl+url), headers: headers);
@@ -36,13 +39,24 @@ class APISession {
     return response;
   }
 
-  //TODO: If I ever do auth again I'll need to do this
-  static void updateCookie() async{
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String cookieVal = prefs.getString(PrefsConstants.jwtPref) ?? "";
-    // if(cookieVal != "") {
-    //   headers['cookie'] = cookieVal;
-    //   cookieExists = true;
-    // }
+  static void updateOnshapeKey() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String key = prefs.getString("key") ?? "";
+    if(key != "") {
+      osKey = key;
+    } else {
+      key = (await get("/onshape/key")).body;
+
+      osKey = key;
+
+      prefs.setString(APIConstants().onshapeKey, key);
+    }
+  }
+
+  static CachedNetworkImageProvider getOnshapeImage(String thumbnailUrl) {
+    return CachedNetworkImageProvider(
+      thumbnailUrl,
+      headers: {'Authorization': "Basic $osKey"}
+    );
   }
 }

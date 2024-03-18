@@ -4,9 +4,14 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:sham_parts/api_util/onshapeDocument.dart';
+import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+
+import 'api_util/project.dart';
 
 const double _bottomPaddingForButton = 150.0;
 const double _buttonHeight = 56.0;
@@ -16,6 +21,9 @@ const double _pageBreakpoint = 768.0;
 const double _heroImageHeight = 250.0;
 
 void main() {
+
+  APISession.updateOnshapeKey();
+
   runApp(const MyApp());
 }
 
@@ -65,10 +73,15 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   bool searching = false;
   List<OnshapeDocument> docs = [];
 
+  final TextEditingController activeProjectController = TextEditingController();
+  Project project = Project.blank();
+  List<String> projectKeys = [];
+
   @override
   void initState() {
 
     initVersion();
+    initProjects();
 
     setState(() {
       selectedIndex = pageViewController.initialPage;
@@ -83,6 +96,38 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     setState(() {
       version = info.version;
+    });
+  }
+  
+  void initProjects() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
+
+    List<String> projectList = await Project.loadProjects();
+
+    if(projectList.length == 0) {
+      projectList = ["Project doesn't exist"];
+    }
+
+    setState(() {
+      projectKeys = projectList;
+    });
+
+    if(projectKey == "") {
+      //Make the user select project
+      //TODO: Select project dialog
+    } else {
+      loadProject(projectKey);
+    }
+  }
+
+  void loadProject(String key) async {
+
+    Project activeProject = await Project.loadProject(key);
+
+    setState(() {
+      project = activeProject;
     });
   }
 
@@ -326,19 +371,20 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('ShamParts v$version', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    DropdownMenu<String>(
+                      label: const Text('Active Project'),
+                      controller: activeProjectController,
+                      initialSelection: project.name,
+                      dropdownMenuEntries: List.generate(
+                        projectKeys.length,
+                            (index) => DropdownMenuEntry(
+                          value: projectKeys[index],
+                          label: projectKeys[index],
                         ),
                       ),
-                      child: const Text('Switch Project'),
                     ),
                   ]
-
                 )
-
             ),
             ListTile(
               leading: const Icon(Icons.home),

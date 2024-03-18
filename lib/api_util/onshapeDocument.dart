@@ -15,7 +15,6 @@ class OnshapeDocument {
   String id;
   String name;
   String thumbnail;
-  String onShapeKey;
   String workspace;
 
   Widget searchWidget = Container();
@@ -24,7 +23,6 @@ class OnshapeDocument {
       this.id,
       this.name,
       this.thumbnail,
-      this.onShapeKey,
       this.workspace
       ) {
     searchWidget = OnshapeSearchWidget(doc: this);
@@ -37,8 +35,7 @@ class OnshapeDocument {
      dynamic json = jsonDecode(resp.body);
 
      List<OnshapeDocument> returns =  json.map<OnshapeDocument>((e) {
-        String workspace;
-       return OnshapeDocument(e["id"], e["name"], e["thumbnail"], e["os_key"], e["default_workspace"]);
+       return OnshapeDocument(e["id"], e["name"], e["thumbnail"], e["default_workspace"]);
      }).toList();
 
      return returns;
@@ -67,11 +64,7 @@ class OnshapeSearchWidget extends StatelessWidget {
                   height: 150,
                   width: 150,
                   borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  image: CachedNetworkImageProvider(
-                    doc.thumbnail,
-                    headers: {'Authorization': "Basic ${doc.onShapeKey}"},
-    
-                  ),
+                  image: APISession.getOnshapeImage(doc.thumbnail),
                 ),
                 Expanded(
                   child: Column(
