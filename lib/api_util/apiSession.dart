@@ -41,10 +41,11 @@ class APISession {
 
   static void updateOnshapeKey() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String key = prefs.getString("key") ?? "";
-    if(key != "") {
+    String key = prefs.getString(APIConstants().onshapeKey) ?? "";
+    if(key.isNotEmpty) {
       osKey = key;
     } else {
+      var res = await get("/onshape/key");
       key = (await get("/onshape/key")).body;
 
       osKey = key;

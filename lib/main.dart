@@ -8,6 +8,7 @@ import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:sham_parts/api_util/onshapeDocument.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
+import 'package:sham_parts/partsDisplay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -73,20 +74,31 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   bool searching = false;
   List<OnshapeDocument> docs = [];
 
-  final TextEditingController activeProjectController = TextEditingController();
   Project project = Project.blank();
   List<String> projectKeys = [];
+  final TextEditingController activeProjectController = TextEditingController();
+
+  static List<Widget> widgetOptions = <Widget>[];
 
   @override
   void initState() {
 
     initVersion();
-    initProjects();
+    reloadProjectList();
+
+    regenWidgetOptions();
 
     setState(() {
       selectedIndex = pageViewController.initialPage;
     });
 
+  }
+
+  void regenWidgetOptions() {
+    widgetOptions = [
+      Home(),
+      PartsDisplay(project: project)
+    ];
   }
 
   void initVersion() async {
@@ -99,15 +111,15 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     });
   }
   
-  void initProjects() async {
+  void reloadProjectList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
     String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
 
     List<String> projectList = await Project.loadProjects();
 
-    if(projectList.length == 0) {
-      projectList = ["Project doesn't exist"];
+    if(projectList.isEmpty) {
+      projectList = ["NO PROJECT"];
     }
 
     setState(() {
@@ -124,11 +136,19 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
   void loadProject(String key) async {
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString(APIConstants().currentProject, key);
+
     Project activeProject = await Project.loadProject(key);
+
+    print("Loaded Project");
 
     setState(() {
       project = activeProject;
     });
+
+    regenWidgetOptions();
   }
 
   void onItemTapped(int index) {
@@ -140,10 +160,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     pageViewController.dispose();
     super.dispose();
   }
-
-  static List<Widget> widgetOptions = <Widget>[
-    Home(),
-  ];
 
   void queryDocuments(BuildContext context, page) async {
 
@@ -356,6 +372,9 @@ class BottomNavigationBarState extends State<BottomNavigation> {
         animationDuration: const Duration(milliseconds: 250),
         onTap: onItemTapped,
       ) : null,
+      onDrawerChanged: (isOpened) {
+        reloadProjectList();
+      },
       drawer: !isMobile ? Drawer(
         child: ListView(
           // Important: Remove any padding from the ListView.
@@ -372,17 +391,21 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                   children: [
                     Text('ShamParts v$version', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                     DropdownMenu<String>(
-                      label: const Text('Active Project'),
-                      controller: activeProjectController,
-                      initialSelection: project.name,
-                      dropdownMenuEntries: List.generate(
-                        projectKeys.length,
-                            (index) => DropdownMenuEntry(
-                          value: projectKeys[index],
-                          label: projectKeys[index],
-                        ),
-                      ),
-                    ),
+                        label: const Text('Active Project'),
+                        controller: activeProjectController,
+                        initialSelection: project.name,
+                        onSelected: (val) {
+                          print(val);
+                          loadProject(val ?? "");
+                        },
+                        dropdownMenuEntries: List.generate(
+                            projectKeys.length,
+                                (index) => DropdownMenuEntry(
+                              value: projectKeys[index],
+                              label: projectKeys[index],
+                          ),
+                        )
+                    )
                   ]
                 )
             ),

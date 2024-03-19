@@ -32,15 +32,15 @@ class Project {
   }
 
   static Future<Project> loadProject(String key) async {
-    var response = await APISession.get("/project/key");
+    var response = await APISession.get("/project/$key");
 
     var json = jsonDecode(response.body);
 
     return Project(
-        name: json.name,
-        default_workspace: json.default_workspace,
-        mainAssembly: Assembly.fromJson(json.main_assembly),
-        individualParts: json.individual_parts.map((e) => Part.fromJson(e))
+        name: json["name"],
+        default_workspace: json["default_workspace"],
+        mainAssembly: Assembly.fromJson(json["main_assembly"]),
+        individualParts: json["individual_parts"].map<Part>((e) => Part.fromJson(e)).toList()
     );
   }
   

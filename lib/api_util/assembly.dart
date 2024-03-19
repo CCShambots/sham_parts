@@ -14,9 +14,9 @@ class Assembly {
 
   static Assembly fromJson(json) {
     return Assembly(
-        name: json.name,
-        onshape_id: json.onshape_id,
-        parts: json.parts.map((e) => Part.fromJson(e))
+        name: json["name"],
+        onshape_id: json["onshape_id"],
+        parts: json["parts"].map<Part>((e) => Part.fromJson(e)).toList()
     );
   }
 }
