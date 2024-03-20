@@ -29,12 +29,16 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ShamParts',
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
@@ -62,6 +66,7 @@ class BottomNavigation extends StatefulWidget {
 class BottomNavigationBarState extends State<BottomNavigation> {
 
   final pageViewController = PageController(initialPage: 0);
+  final int currentPage = 0;
 
   final isMobile = Platform.isAndroid || Platform.isIOS;
 
@@ -84,7 +89,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   void initState() {
 
     initVersion();
-    reloadProjectList();
+    reloadProjectList(true);
 
     regenWidgetOptions();
 
@@ -111,7 +116,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     });
   }
   
-  void reloadProjectList() async {
+  void reloadProjectList(bool shouldLoadProject) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
     String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
@@ -126,10 +131,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       projectKeys = projectList;
     });
 
-    if(projectKey == "") {
+    if(projectKey == "" && projectKeys.isNotEmpty) {
       //Make the user select project
       //TODO: Select project dialog
-    } else {
+    } else if(shouldLoadProject) {
       loadProject(projectKey);
     }
   }
@@ -170,7 +175,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     String currentQuery = documentSearchController.value.text;
 
-    List<OnshapeDocument> newDocs = await OnshapeDocument.queryDocuments(currentQuery);
+    List<OnshapeDocument> newDocs = await OnshapeDocument.queryDocuments(currentQuery, () { reloadProjectList(false);});
 
     setState(() {
       docs = newDocs;
@@ -349,6 +354,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       body: PageView(
         controller: pageViewController,
         children: widgetOptions,
+        physics: isMobile ? null : const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           setState(() {
             selectedIndex = index;
@@ -373,7 +379,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
         onTap: onItemTapped,
       ) : null,
       onDrawerChanged: (isOpened) {
-        reloadProjectList();
+        reloadProjectList(true);
       },
       drawer: !isMobile ? Drawer(
         child: ListView(

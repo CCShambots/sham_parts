@@ -6,6 +6,8 @@ import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:http/http.dart' as http;
 import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:sham_parts/api_util/onshapeDocument.dart';
+import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/main.dart';
 import 'package:toastification/toastification.dart';
 
 
@@ -22,24 +24,24 @@ class OnshapeAssembly {
       this.id,
       this.name,
       this.thumbnail,
-      this.doc
+      this.doc,
+      reloadProjectList
   ) {
-    searchWidget = OnshapeAssemblyWidget(assembly: this);
+    searchWidget = OnshapeAssemblyWidget(assembly: this, reloadProjectList: reloadProjectList,);
   }
 
-  static Future<List<OnshapeAssembly>> queryAssemblies(OnshapeDocument doc) async {
+  static Future<List<OnshapeAssembly>> queryAssemblies(OnshapeDocument doc, reloadProjectList) async {
     http.Response resp =
         await APISession.getWithParams("/onshape/assemblies", {'did': doc.id, 'wid': doc.workspace});
 
     dynamic json = jsonDecode(resp.body);
 
     return json.map<OnshapeAssembly>((e) {
-      return OnshapeAssembly(e["id"], e["name"], e["thumbnail"], doc);
+      return OnshapeAssembly(e["id"], e["name"], e["thumbnail"], doc, reloadProjectList);
     }).toList();
   }
 
-  Future<void> createProject(BuildContext context) async {
-    print("running create :)");
+  Future<void> createProject(BuildContext context, reloadProjectList) async {
     http.Response resp = await APISession.post("/project/create", jsonEncode({
       "name": doc.name,
       "doc_id": doc.id,
@@ -47,35 +49,24 @@ class OnshapeAssembly {
       "default_workspace": doc.workspace
     }));
 
-    print(resp);
-
     if(context.mounted) {
       if(resp.statusCode == 200) {
-        toastification.show(
-          context: context,
-          autoCloseDuration: const Duration(seconds: 10),
-          type: ToastificationType.success,
-          style: ToastificationStyle.flatColored,
-          title: const Text('Project Successfully Created! Indexing parts now...')
-        );
+        APIConstants.showSuccessToast('Project Successfully Created!', context);
       } else {
-        toastification.show(
-            context: context,
-            autoCloseDuration: const Duration(seconds: 10),
-            type: ToastificationType.error,
-            style: ToastificationStyle.flatColored,
-            title: Text("Project Failed to Create. Error Code ${resp.statusCode}: ${resp.body}")
-        );
+        APIConstants.showSuccessToast('Project Failed to Create. Error ${resp.statusCode}: ${resp.body}', context);
       }
     }
+
+    reloadProjectList();
   }
 
 }
 
 class OnshapeAssemblyWidget extends StatelessWidget {
   OnshapeAssembly assembly;
+  var reloadProjectList;
 
-  OnshapeAssemblyWidget({super.key, required this.assembly});
+  OnshapeAssemblyWidget({super.key, required this.assembly, required this.reloadProjectList});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +99,7 @@ class OnshapeAssemblyWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: ElevatedButton(
                       onPressed: () {
-                        assembly.createProject(context);
+                        assembly.createProject(context, reloadProjectList);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -131,8 +122,9 @@ class OnshapeAssemblyWidget extends StatelessWidget {
 
 class AssemblySearchWindow extends StatefulWidget {
   final OnshapeDocument doc;
+  final reloadProjectList;
 
-  const AssemblySearchWindow({super.key, required this.doc});
+  const AssemblySearchWindow({super.key, required this.doc, required this.reloadProjectList});
 
   @override
   State<AssemblySearchWindow> createState() =>
@@ -150,7 +142,7 @@ class AssemblySearchState extends State<AssemblySearchWindow> {
   }
 
   void loadAssemblyData() async {
-    List<OnshapeAssembly> assemblies = await OnshapeAssembly.queryAssemblies(widget.doc);
+    List<OnshapeAssembly> assemblies = await OnshapeAssembly.queryAssemblies(widget.doc, widget.reloadProjectList);
 
     final check = RegExp(r'A-[0-9]{4}');
 

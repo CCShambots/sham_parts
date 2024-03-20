@@ -23,19 +23,20 @@ class OnshapeDocument {
       this.id,
       this.name,
       this.thumbnail,
-      this.workspace
+      this.workspace,
+      reloadProjectList
       ) {
-    searchWidget = OnshapeSearchWidget(doc: this);
+    searchWidget = OnshapeSearchWidget(doc: this, reloadProjectList: reloadProjectList,);
   }
   
-  static Future<List<OnshapeDocument>> queryDocuments(String query) async{
+  static Future<List<OnshapeDocument>> queryDocuments(String query, reloadProjectList) async{
      http.Response resp =
      await APISession.getWithParams("/onshape/documents", {'query': query});
 
      dynamic json = jsonDecode(resp.body);
 
      List<OnshapeDocument> returns =  json.map<OnshapeDocument>((e) {
-       return OnshapeDocument(e["id"], e["name"], e["thumbnail"], e["default_workspace"]);
+       return OnshapeDocument(e["id"], e["name"], e["thumbnail"], e["default_workspace"], reloadProjectList);
      }).toList();
 
      return returns;
@@ -45,15 +46,16 @@ class OnshapeDocument {
 class OnshapeSearchWidget extends StatelessWidget {
 
   final OnshapeDocument doc;
+  final reloadProjectList;
 
-  const OnshapeSearchWidget({super.key, required this.doc});
+  const OnshapeSearchWidget({super.key, required this.doc, required this.reloadProjectList});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => AssemblySearchWindow(doc: doc)));
+              .push(MaterialPageRoute(builder: (context) => AssemblySearchWindow(doc: doc, reloadProjectList: reloadProjectList,)));
         },
         child:  Container(
           child: Padding(
