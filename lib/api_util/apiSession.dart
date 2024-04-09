@@ -20,7 +20,7 @@ class APISession {
     var paramsList = queryParams.entries.toList();
 
     for(int i = 0; i<queryParams.length; i++) {
-      concatQueryParams+= paramsList[i].key + "=" + paramsList[i].value;
+      concatQueryParams+= "${paramsList[i].key}=${paramsList[i].value}";
 
       if(i != queryParams.length-1) concatQueryParams+="&";
     }
@@ -45,7 +45,6 @@ class APISession {
     if(key.isNotEmpty) {
       osKey = key;
     } else {
-      var res = await get("/onshape/key");
       key = (await get("/onshape/key")).body;
 
       osKey = key;

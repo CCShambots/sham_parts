@@ -1,8 +1,5 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/components/floating_widget/gf_floating_widget.dart';
-import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:sham_parts/api_util/part.dart';
 import 'package:sham_parts/api_util/project.dart';
@@ -83,7 +80,7 @@ class PartsDisplayState extends State<PartsDisplay> {
                 width: 400,
                 progressBarColor: GFColors.SUCCESS,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 5),
+                  padding: const EdgeInsets.only(right: 5),
                   child: Text('$partsWithLoadedImages/${widget.project.parts.length}', textAlign: TextAlign.end,
                     style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),

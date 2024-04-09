@@ -1,7 +1,6 @@
 
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:redacted/redacted.dart';
@@ -120,7 +119,7 @@ class PartListDisplay extends StatefulWidget {
 
   final Part part;
 
-  PartListDisplay({super.key, required this.part});
+  const PartListDisplay({super.key, required this.part});
 
   @override
   State<StatefulWidget> createState () => PartListDisplayState();

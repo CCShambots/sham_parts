@@ -101,7 +101,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
   void regenWidgetOptions() {
     widgetOptions = [
-      Home(),
+      const Home(),
       PartsDisplay(project: project)
     ];
   }
@@ -157,7 +157,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   }
 
   void onItemTapped(int index) {
-    pageViewController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
+    pageViewController.animateToPage(index, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
   }
 
   @override
@@ -336,7 +336,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
         title: const Text("ShamParts"),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: IconButton(
                 icon: const Icon(Icons.add,),
                 tooltip: "Create New Project",
@@ -353,13 +353,13 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       ),
       body: PageView(
         controller: pageViewController,
-        children: widgetOptions,
         physics: isMobile ? null : const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           setState(() {
             selectedIndex = index;
           });
         },
+        children: widgetOptions,
       ),
       bottomNavigationBar: isMobile ? CurvedNavigationBar(
         items: const <CurvedNavigationBarItem>[
@@ -404,6 +404,9 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                           print(val);
                           loadProject(val ?? "");
                         },
+                        menuStyle: const MenuStyle(
+                          minimumSize: MaterialStatePropertyAll(Size.fromWidth(200))
+                        ),
                         dropdownMenuEntries: List.generate(
                             projectKeys.length,
                                 (index) => DropdownMenuEntry(
@@ -429,6 +432,17 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                 onItemTapped(1);
               },
             ),
+            Container(
+                child: const Align(
+                    alignment: FractionalOffset.bottomCenter,
+                    child: Column(
+                      children: <Widget>[
+                        Divider(),
+                        ListTile(
+                            leading: Icon(Icons.account_circle),
+                            title: Text('Account')),
+                      ],
+                    ))),
           ],
         ),
       ) : null,

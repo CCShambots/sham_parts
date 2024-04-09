@@ -1,14 +1,11 @@
 
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:http/http.dart' as http;
 import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:sham_parts/api_util/onshapeDocument.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/main.dart';
-import 'package:toastification/toastification.dart';
 
 
 class OnshapeAssembly {

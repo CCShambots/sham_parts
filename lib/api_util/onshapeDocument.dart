@@ -1,10 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:http/http.dart' as http;
@@ -59,7 +56,7 @@ class OnshapeSearchWidget extends StatelessWidget {
         },
         child:  Container(
           child: Padding(
-            padding: EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 8.0),
             child: Row(
               children: [
                 GFImageOverlay(
@@ -71,8 +68,8 @@ class OnshapeSearchWidget extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      Text(doc.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),),
-                      Text(doc.id, style: TextStyle(fontWeight: FontWeight.w200))
+                      Text(doc.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),),
+                      Text(doc.id, style: const TextStyle(fontWeight: FontWeight.w200))
                     ],
                   )
     
