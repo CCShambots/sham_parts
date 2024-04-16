@@ -7,8 +7,9 @@ class APIConstants {
   String baseUrl = "http://localhost:3000";
   String onshapeKey = "onshape_key";
   String currentProject = "current_project";
+  String userToken = "";
 
-  static void showSuccessToast(String message, BuildContext? context, {int seconds = 3}) {
+  static void showSuccessToast(String message, BuildContext? context, {int seconds = 5}) {
     if(context != null) {
         toastification.show(
             context: context,
@@ -20,9 +21,7 @@ class APIConstants {
     }
   }
 
-  static void showErrorToast(String message, BuildContext? context, {int seconds = 3}) {
-    BuildContext? context = MyApp.navigatorKey.currentState?.context;
-
+  static void showErrorToast(String message, BuildContext? context, {int seconds = 5}) {
     if(context != null) {
       toastification.show(
           context: context,
@@ -33,6 +32,16 @@ class APIConstants {
       );
     }
   }
+}
 
+class StyleConstants {
+  static TextStyle titleStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 48,
+  );
 
+  static TextStyle subtitleStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 36,
+  );
 }

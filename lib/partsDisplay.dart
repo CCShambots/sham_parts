@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:sham_parts/api_util/part.dart';
 import 'package:sham_parts/api_util/project.dart';
+import 'package:sham_parts/constants.dart';
 
 class PartsDisplay extends StatefulWidget{
   Project project;
@@ -31,7 +32,7 @@ class PartsDisplayState extends State<PartsDisplay> {
     });
   }
 
-  void loadPhotos() async {
+  void loadPhotos(BuildContext context) async {
     setState(() {
       loadingImages = true;
       partsWithLoadedImages = currentParts.where((element) => element.thumbnail != "unloaded").length;
@@ -41,9 +42,9 @@ class PartsDisplayState extends State<PartsDisplay> {
       if(part.thumbnail == "unloaded") {
         part.loadThumbnail().then((value) => {
           if(value) {
-            setState(() {
-              partsWithLoadedImages++;
-            })
+            APIConstants.showSuccessToast("Loaded Image for ${part.number}", context)
+          } else {
+            APIConstants.showErrorToast("Failed to Load Image for ${part.number}", context)
           }
         });
       }
@@ -53,51 +54,30 @@ class PartsDisplayState extends State<PartsDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var numColumns = width > 1200 ? 2 : 1;
+
     if(!mounted) return const SizedBox.shrink();
 
     return Scaffold(
-      body: GFFloatingWidget(
-        showBlurness: loadingImages,
-        body: Container(
+      body: Container(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height, // or any other desired height
             ),
             child: GridView.count(
-              crossAxisCount: 2,
+              crossAxisCount: numColumns,
               childAspectRatio: 5,
               children: widget.project.parts.map((e) => e.partListDisplay).toList(),
             )
-        ),
-        verticalPosition: MediaQuery.of(context).size.height* 0.5,
-        child: loadingImages ? SizedBox(
-          height: 200,
-          child:Column(
-            children: [
-              GFProgressBar(
-                percentage: partsWithLoadedImages/widget.project.parts.length,
-                type: GFProgressType.circular,
-                radius: 200,
-                width: 400,
-                progressBarColor: GFColors.SUCCESS,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 5),
-                  child: Text('$partsWithLoadedImages/${widget.project.parts.length}', textAlign: TextAlign.end,
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          )
           ,
-        ) : Container(),
-      ),
-          floatingActionButton: widget.project.parts.where((element) => element.thumbnail == "unloaded").isNotEmpty ?
-          FloatingActionButton(
-              onPressed: loadPhotos,
-              tooltip: "Load Photos",
-              child: const Icon(Icons.photo, color: Colors.white, size: 28),
-          )
-          : null,
+        ),
+        floatingActionButton: widget.project.parts.where((element) => element.thumbnail == "unloaded").isNotEmpty ?
+        FloatingActionButton(
+            onPressed: () {loadPhotos(context);},
+            tooltip: "Load Photos",
+            child: const Icon(Icons.photo, color: Colors.white, size: 28),
+        )
+        : null,
     );
   }
 

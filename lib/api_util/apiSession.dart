@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class APISession {
   static Map<String, String> headers = {
     'Content-Type': 'application/json; charset=UTF-8',
+    'token': ""
   };
 
   static String osKey = "";
@@ -34,14 +35,30 @@ class APISession {
     return response;
   }
 
+  static Future<http.Response> postWithParams(String url, Map<String, String> queryParams) async {
+    String concatQueryParams = "?";
+    var paramsList = queryParams.entries.toList();
+
+    for(int i = 0; i<queryParams.length; i++) {
+      concatQueryParams+= "${paramsList[i].key}=${paramsList[i].value}";
+
+      if(i != queryParams.length-1) concatQueryParams+="&";
+    }
+
+    http.Response response = await http.post(Uri.parse(APIConstants().baseUrl+url+concatQueryParams), headers: headers);
+    return response;
+  }
+
+
   static Future<http.Response> patch(String url, dynamic data) async {
     http.Response response = await http.patch(Uri.parse(APIConstants().baseUrl+url), body: data, headers: headers);
     return response;
   }
 
-  static void updateOnshapeKey() async{
+  static void updateKeys() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String key = prefs.getString(APIConstants().onshapeKey) ?? "";
+
     if(key.isNotEmpty) {
       osKey = key;
     } else {
@@ -50,6 +67,16 @@ class APISession {
       osKey = key;
 
       prefs.setString(APIConstants().onshapeKey, key);
+    }
+
+
+    String token = prefs.getString(APIConstants().userToken) ?? "";
+    if(token.isNotEmpty) {
+      headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': token
+      };
+
     }
   }
 

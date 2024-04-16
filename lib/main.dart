@@ -4,6 +4,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sham_parts/account-pages/accountPage.dart';
 import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:sham_parts/api_util/onshapeDocument.dart';
 import 'package:sham_parts/constants.dart';
@@ -23,7 +24,7 @@ const double _heroImageHeight = 250.0;
 
 void main() {
 
-  APISession.updateOnshapeKey();
+  APISession.updateKeys();
 
   runApp(const MyApp());
 }
@@ -102,7 +103,8 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   void regenWidgetOptions() {
     widgetOptions = [
       const Home(),
-      PartsDisplay(project: project)
+      PartsDisplay(project: project),
+      AccountPage(user: null)
     ];
   }
 
@@ -433,14 +435,18 @@ class BottomNavigationBarState extends State<BottomNavigation> {
               },
             ),
             Container(
-                child: const Align(
+                child: Align(
                     alignment: FractionalOffset.bottomCenter,
                     child: Column(
                       children: <Widget>[
-                        Divider(),
+                        const Divider(),
                         ListTile(
-                            leading: Icon(Icons.account_circle),
-                            title: Text('Account')),
+                            leading: const Icon(Icons.account_circle),
+                            title: const Text('Account'),
+                            onTap: () {
+                                onItemTapped(2);
+                            },
+                        ),
                       ],
                     ))),
           ],

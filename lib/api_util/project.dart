@@ -95,6 +95,11 @@ class Project {
   }
   
   static Future<List<String>> loadProjects() async {
-    return List<String>.from(jsonDecode((await APISession.get("/project/list")).body));
+    try {
+      return List<String>.from(jsonDecode((await APISession.get("/project/list")).body));
+
+    } catch (e) {
+      return [""];
+    }
   }
 }

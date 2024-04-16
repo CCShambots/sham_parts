@@ -132,9 +132,15 @@ class PartListDisplayState extends State<PartListDisplay> {
 
   final isMobile = Platform.isAndroid || Platform.isIOS;
 
+  RegExp regex = RegExp(r'\d{1,4}-\d{4}-');
+  
 
   @override
   Widget build(BuildContext context) {
+
+    final parseOut = widget.part.number.replaceAll(regex, "");
+
+
     return SizedBox(
       child: Container(
         decoration: BoxDecoration(
@@ -157,9 +163,8 @@ class PartListDisplayState extends State<PartListDisplay> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(widget.part.number, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+                    Text(parseOut, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
                     Text(widget.part.material),
-                    Text("${widget.part.id}")
                   ],
                 ),
             ),
@@ -192,34 +197,34 @@ class PartListDisplayState extends State<PartListDisplay> {
               ],
             ),
 
-            !isMobile ? Row(
-              children: [
-                Tooltip(
-                  message: "Report Break",
-                  child: IconButton(
-                        onPressed: () {
-                          widget.part.reportBreak(context);
-                          setState(() {
-
-                          });
-                        },
-                        icon: const Icon(Icons.broken_image, color: Colors.red, size: 48,)
-                    )
-                ),
-                Tooltip(
-                    message: "Request Additional",
-                    child: IconButton(
-                        onPressed: () async {
-                          await widget.part.requestPart(context);
-                          setState(() {
-
-                          });
-                        },
-                        icon: const Icon(Icons.shopping_cart, color: Colors.green, size: 48,)
-                    )
-                )
-              ],
-            ) : Container()
+            // !isMobile ? Row(
+            //   children: [
+            //     Tooltip(
+            //       message: "Report Break",
+            //       child: IconButton(
+            //             onPressed: () {
+            //               widget.part.reportBreak(context);
+            //               setState(() {
+            //
+            //               });
+            //             },
+            //             icon: const Icon(Icons.broken_image, color: Colors.red, size: 48,)
+            //         )
+            //     ),
+            //     Tooltip(
+            //         message: "Request Additional",
+            //         child: IconButton(
+            //             onPressed: () async {
+            //               await widget.part.requestPart(context);
+            //               setState(() {
+            //
+            //               });
+            //             },
+            //             icon: const Icon(Icons.shopping_cart, color: Colors.green, size: 48,)
+            //         )
+            //     )
+            //   ],
+            // ) : Container()
           ],
         ),
       ),
