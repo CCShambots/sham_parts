@@ -55,6 +55,21 @@ class APISession {
     return response;
   }
 
+  static Future<http.Response> patchWithParams(String url, Map<String, String> queryParams) async {
+    String concatQueryParams = "?";
+    var paramsList = queryParams.entries.toList();
+
+    for(int i = 0; i<queryParams.length; i++) {
+      concatQueryParams+= "${paramsList[i].key}=${paramsList[i].value}";
+
+      if(i != queryParams.length-1) concatQueryParams+="&";
+    }
+
+    http.Response response = await http.patch(Uri.parse(APIConstants().baseUrl+url+concatQueryParams), headers: headers);
+    return response;
+  }
+
+
   static void updateKeys() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String key = prefs.getString(APIConstants().onshapeKey) ?? "";

@@ -24,6 +24,29 @@ class User {
       roles: json["roles"].cast<String>()
     );
   }
+
+  String rolesListToString() {
+    String rolesString = "";
+
+    for(int i = 0; i<roles.length; i++) {
+      rolesString += roles[i];
+      if(i != roles.length-1) rolesString += ",";
+    }
+
+    return rolesString;
+  }
+
+  Future<User> changeName(String newName, BuildContext context) async {
+    var result = await APISession.patchWithParams("/user/changeName", {'token': token, 'name': newName});
+
+    if(result.statusCode == 200) {
+      APIConstants.showSuccessToast("Changed user name to: $newName", context);
+    } else {
+      APIConstants.showErrorToast("Failed to change name: ${result.body}", context);
+    }
+
+    return this;
+  }
   
   static Future<User?> getFromToken(String token) async {
     var result = await APISession.getWithParams("/user/fromToken", {"token": token});
@@ -32,6 +55,42 @@ class User {
       return fromJson(jsonDecode(result.body));
     } else {
       return null;
+    }
+  }
+
+  static Future<List<String>> getRoles() async {
+    var result = await APISession.get("/user/roles");
+
+    return jsonDecode(result.body).cast<String>();
+  }
+
+  Future<bool> setRoles(List<String> newRoles, BuildContext context) async {
+    var result = await APISession.patchWithParams("/user/setRoles", {'email': email, 'roles': rolesListToString()});
+
+    if(result.statusCode == 200) {
+
+    } else {
+      APIConstants.showErrorToast("Failed to update roles: ${result.body}", context);
+    }
+
+    return result.statusCode == 200;
+  }
+
+  static Future<List<User>> getAllUsers() async {
+    var result = await APISession.get("/user/users");
+
+    print(result.body);
+
+    if(result.statusCode == 200) {
+      var jsonDecoded = jsonDecode(result.body);
+      print(jsonDecoded);
+      List<User> users = jsonDecoded.map<User>((e) => fromJson(e)).toList();
+
+      print(users);
+
+      return users;
+    } else {
+      return [];
     }
   }
 

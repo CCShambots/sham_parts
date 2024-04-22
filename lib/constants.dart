@@ -42,6 +42,6 @@ class StyleConstants {
 
   static TextStyle subtitleStyle = const TextStyle(
     fontWeight: FontWeight.bold,
-    fontSize: 36,
+    fontSize: 24,
   );
 }
