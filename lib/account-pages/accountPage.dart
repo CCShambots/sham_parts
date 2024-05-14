@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sham_parts/account-pages/adminPanel.dart';
 import 'package:sham_parts/account-pages/signIn.dart';
@@ -24,7 +23,7 @@ class AccountPageState extends State<AccountPage> {
 
   @override
   void initState() {
-    user = widget.user ?? null;
+    user = widget.user;
 
     changingName = false;
 
@@ -123,14 +122,19 @@ class AccountPageState extends State<AccountPage> {
                       ),
                 Text(
                   user!.email,
-                  style: StyleConstants.subtitleStyle,
+                  style: StyleConstants.h3Style,
                 ),
                 Text(
                   "Roles: ${user?.rolesListToString()}",
                   style: StyleConstants.subtitleStyle,
                 ),
                 user?.roles.contains("admin") ?? false ?
-                    AdminPanel() : Container()
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => AdminPanel(user: widget.user,)));
+                    }, child: Text("Open Admin Panel", style: StyleConstants.subtitleStyle,)) 
+                    : Container()
               ],
             ),
           ))

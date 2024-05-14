@@ -36,6 +36,30 @@ class User {
     return rolesString;
   }
 
+  Future<User> removeRole(String role, BuildContext context) async {
+    var result = await APISession.patchWithParams("/user/removeRole", {'email': email, 'role': role});
+
+    if(result.statusCode == 200) {
+      APIConstants.showSuccessToast("Removed role: $role", context);
+    } else {
+      APIConstants.showErrorToast("Failed to remove role: ${result.body}", context);
+    }
+
+    return this;
+  }
+
+  Future<User> addRole(String role, BuildContext context) async {
+    var result = await APISession.patchWithParams("/user/addRole", {'email': email, 'role': role});
+
+    if(result.statusCode == 200) {
+      APIConstants.showSuccessToast("Added role: $role", context);
+    } else {
+      APIConstants.showErrorToast("Failed to add role: ${result.body}", context);
+    }
+
+    return this;
+  }
+
   Future<User> changeName(String newName, BuildContext context) async {
     var result = await APISession.patchWithParams("/user/changeName", {'token': token, 'name': newName});
 

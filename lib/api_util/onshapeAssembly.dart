@@ -50,7 +50,7 @@ class OnshapeAssembly {
       if(resp.statusCode == 200) {
         APIConstants.showSuccessToast('Project Successfully Created!', context);
       } else {
-        APIConstants.showSuccessToast('Project Failed to Create. Error ${resp.statusCode}: ${resp.body}', context);
+        APIConstants.showErrorToast('Project Failed to Create. Error ${resp.statusCode}: ${resp.body}', context);
       }
     }
 

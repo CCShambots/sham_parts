@@ -1,11 +1,7 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sham_parts/api_util/user.dart';
 import 'package:sham_parts/constants.dart';
-
-
 
 class SignInWidget extends StatefulWidget {
 
@@ -63,12 +59,12 @@ class SignInState extends State<SignInWidget> {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
             Text("Sign In to ShamParts", style: StyleConstants.titleStyle,),
-            Container(
+            SizedBox(
               width: 500,
               child:
                 TextField(
@@ -79,7 +75,7 @@ class SignInState extends State<SignInWidget> {
                   ),
                 ),
             ),
-            creatingAccount ? Container(
+            creatingAccount ? SizedBox(
                 width: 500,
                 child:
                 TextField(
@@ -97,7 +93,7 @@ class SignInState extends State<SignInWidget> {
                   controller: passwordController,
                   obscureText: !passwordVisible,
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       hintText: 'Password',
                     suffixIcon: IconButton(
                         onPressed: () {
@@ -120,7 +116,7 @@ class SignInState extends State<SignInWidget> {
                   controller: dupePasswordController,
                   obscureText: !passwordVisible,
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       hintText: 'Repeat Password',
                       suffixIcon: IconButton(
                           onPressed: () {
@@ -136,7 +132,7 @@ class SignInState extends State<SignInWidget> {
                   ),
                 ),
               ) : Container(),
-              !verifying ? Container(
+              !verifying ? SizedBox(
                 width: 500,
                 height: 50,
                 child: ElevatedButton(
@@ -154,7 +150,7 @@ class SignInState extends State<SignInWidget> {
                   },
                 ),
               ) : Container(),
-              verifying ? Container(
+              verifying ? SizedBox(
                 width: 500,
                 height: 50,
                 child: ElevatedButton(

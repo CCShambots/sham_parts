@@ -63,7 +63,7 @@ class Project {
         default_workspace: json["default_workspace"],
         assembly_name: json["assembly_name"],
         assembly_onshape_id: json["assembly_onshape_id"] ,
-        parts: json["parts"].map<Part>((e) => Part.fromJson(e)).toList(),
+        parts: json["parts"]?.map<Part>((e) => Part.fromJson(e)).toList() ?? [],
         individualParts: json["individual_parts"].map<Part>((e) => Part.fromJson(e)).toList()
     );
 

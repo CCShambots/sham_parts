@@ -1,6 +1,5 @@
 
-import 'package:flutter/widgets.dart';
-import 'package:sham_parts/main.dart';
+import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
 class APIConstants {
@@ -10,27 +9,32 @@ class APIConstants {
   String userToken = "";
 
   static void showSuccessToast(String message, BuildContext? context, {int seconds = 5}) {
-    if(context != null) {
-        toastification.show(
-            context: context,
-            autoCloseDuration: Duration(seconds: seconds),
-            type: ToastificationType.success,
-            style: ToastificationStyle.flatColored,
-            title: Text(message)
-        );
-    }
+    try {
+      if(context != null) {
+          toastification.show(
+              context: context,
+              autoCloseDuration: Duration(seconds: seconds),
+              type: ToastificationType.success,
+              style: ToastificationStyle.flatColored,
+              title: Text(message)
+          );
+      }
+    } catch (e) {}
   }
 
   static void showErrorToast(String message, BuildContext? context, {int seconds = 5}) {
-    if(context != null) {
-      toastification.show(
-          context: context,
-          autoCloseDuration: Duration(seconds: seconds),
-          type: ToastificationType.error,
-          style: ToastificationStyle.flatColored,
-          title: Text(message)
-      );
-    }
+    try {
+      if(context != null) {
+        toastification.show(
+            context: context,
+            autoCloseDuration: Duration(seconds: seconds),
+            type: ToastificationType.error,
+            style: ToastificationStyle.flatColored,
+            title: Text(message)
+        );
+      }
+
+    } catch (e) {}
   }
 }
 
@@ -44,4 +48,20 @@ class StyleConstants {
     fontWeight: FontWeight.bold,
     fontSize: 24,
   );
+
+  static TextStyle h3Style = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 18
+  );
+
+  static BoxDecoration shadedDecoration(BuildContext context) {
+      return BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.2)
+      );
+  }
+
+  static EdgeInsets margin = const EdgeInsets.all(8);
+  static EdgeInsets padding = const EdgeInsets.fromLTRB(16, 8, 16, 8);
+
 }

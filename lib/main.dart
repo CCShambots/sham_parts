@@ -23,10 +23,9 @@ const double _pageBreakpoint = 768.0;
 const double _heroImageHeight = 250.0;
 
 void main() {
+  runApp(const MyApp());
 
   APISession.updateKeys();
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -372,6 +371,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
           CurvedNavigationBarItem(
               child: Icon(Icons.list),
               label: 'Parts'
+          ),
+          CurvedNavigationBarItem(
+              child: Icon(Icons.account_circle),
+              label: 'Account'
           )
         ],
         index: selectedIndex,
