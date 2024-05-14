@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:redacted/redacted.dart';
 import 'dart:math';
@@ -33,7 +35,8 @@ class Part {
       required this.onshapeElementID,
       required this.quantityNeeded,
       required this.quantityInStock,
-      required this.quantityRequested, required this.logEntries}) {
+      required this.quantityRequested,
+      required this.logEntries}) {
     partListDisplay = PartListDisplay(part: this);
   }
 
@@ -47,7 +50,9 @@ class Part {
       quantityInStock: json["quantityInStock"],
       quantityRequested: json["quantityRequested"],
       onshapeElementID: json["onshape_element_id"],
-      logEntries: json["logEntries"].map<LogEntry>((e) => LogEntry.fromJson(e)).toList(),
+      logEntries: json["logEntries"]
+          .map<LogEntry>((e) => LogEntry.fromJson(e))
+          .toList(),
     );
   }
 
@@ -271,6 +276,10 @@ class _PartPageState extends State<PartPage> {
                       Text(widget.part.material,
                           style: StyleConstants.subtitleStyle),
                       Text(
+                        "Part #: ${widget.part.id}",
+                        style: StyleConstants.subtitleStyle,
+                      ),
+                      Text(
                         "On Bot: ${min<int>(widget.part.quantityInStock, widget.part.quantityNeeded)} / ${widget.part.quantityNeeded}",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -295,8 +304,8 @@ class _PartPageState extends State<PartPage> {
                 ),
               ],
             ),
+
             Row(
-              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Tooltip(
@@ -337,11 +346,20 @@ class _PartPageState extends State<PartPage> {
                         ))),
               ],
             ),
-
             Text("Part Log", style: StyleConstants.titleStyle),
-            ListView(
-              children: widget.part.logEntries.map((e) => LogEntryWidget(logEntry: e)).toList(),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: StyleConstants.shadedDecoration(context),
+                child: Column(
+                  children: widget.part.logEntries
+                      .map((e) => LogEntryWidget(logEntry: e))
+                      .toList(),
+                ),
+              ),
             )
+
           ],
         ));
   }
