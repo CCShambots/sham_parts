@@ -4,9 +4,9 @@ import 'package:sham_parts/api_util/project.dart';
 import 'package:sham_parts/constants.dart';
 
 class PartsDisplay extends StatefulWidget {
-  Project project;
+  final Project project;
 
-  PartsDisplay({super.key, required this.project});
+  const PartsDisplay({super.key, required this.project});
 
   @override
   State<PartsDisplay> createState() => PartsDisplayState();

@@ -406,7 +406,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                         controller: activeProjectController,
                         initialSelection: project.name,
                         onSelected: (val) {
-                          print(val);
                           loadProject(val ?? "");
                         },
                         menuStyle: const MenuStyle(

@@ -42,11 +42,11 @@ class LogEntry {
 class LogEntryWidget extends StatelessWidget {
   final LogEntry logEntry;
 
-  const LogEntryWidget({required this.logEntry});
+  const LogEntryWidget({super.key, required this.logEntry});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 45,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

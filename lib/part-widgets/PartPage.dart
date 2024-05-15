@@ -68,7 +68,7 @@ class _PartPageState extends State<PartPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               //This row centers the whole shabang
-              Row(),
+              const Row(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -195,7 +195,7 @@ class _PartPageState extends State<PartPage> {
                                 }
                               },
                               items: [
-                                DropdownMenuItem<User>(
+                                const DropdownMenuItem<User>(
                                   value: null,
                                   child: Text("None"),
                                 ),
