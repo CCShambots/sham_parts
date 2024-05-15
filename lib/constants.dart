@@ -6,7 +6,7 @@ class APIConstants {
   String baseUrl = "http://localhost:3000";
   String onshapeKey = "onshape_key";
   String currentProject = "current_project";
-  String userToken = "";
+  String userToken = "token";
 
   static void showSuccessToast(String message, BuildContext? context, {int seconds = 5}) {
     try {

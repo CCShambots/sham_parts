@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sham_parts/account-pages/adminPanel.dart';
 import 'package:sham_parts/account-pages/signIn.dart';
+import 'package:sham_parts/api_util/apiSession.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,21 +45,13 @@ class AccountPageState extends State<AccountPage> {
   }
 
   void loadUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    User? newUser = await User.getUserFromPrefs();
 
-    String token = prefs.getString(APIConstants().userToken) ?? "";
-
-    if (token.isNotEmpty) {
-      User? newUser = await User.getFromToken(token);
-
-      newUser?.token = token;
-
-      if (newUser != null) {
-        setState(() {
-          user = newUser;
-          nameController.text = user?.name ?? "";
-        });
-      }
+    if (newUser != null) {
+      setState(() {
+        user = newUser;
+        nameController.text = user?.name ?? "";
+      });
     }
   }
 
@@ -67,7 +60,7 @@ class AccountPageState extends State<AccountPage> {
     return user != null
         ? Scaffold(
             body: Center(
-              child: Column(
+            child: Column(
               children: [
                 !changingName
                     ? Row(
@@ -128,13 +121,34 @@ class AccountPageState extends State<AccountPage> {
                   "Roles: ${user?.rolesListToString()}",
                   style: StyleConstants.subtitleStyle,
                 ),
-                user?.roles.contains("admin") ?? false ?
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => AdminPanel(user: widget.user,)));
-                    }, child: Text("Open Admin Panel", style: StyleConstants.subtitleStyle,)) 
-                    : Container()
+                user?.roles.contains("admin") ?? false
+                    ? TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AdminPanel(
+                                    user: widget.user,
+                                  )));
+                        },
+                        child: Text(
+                          "Open Admin Panel",
+                          style: StyleConstants.subtitleStyle,
+                        ))
+                    : Container(),
+                ElevatedButton(
+                  onPressed: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.remove(APIConstants().userToken);
+
+                    setState(() {
+                      user = null;
+                    });
+                  },
+                  child: Text(
+                    "Logout",
+                    style: StyleConstants.subtitleStyle,
+                  ),
+                )
               ],
             ),
           ))
@@ -147,6 +161,8 @@ class AccountPageState extends State<AccountPage> {
               setState(() {
                 user = newUser;
               });
+
+              APISession.updateKeys();
             } else {
               APIConstants.showErrorToast("Missing Account Token!", context);
             }

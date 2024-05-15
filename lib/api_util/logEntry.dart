@@ -53,6 +53,7 @@ class LogEntryWidget extends StatelessWidget {
         children: [
           Text(logEntry.type, style: StyleConstants.h3Style),
           Text("QTY:${logEntry.quantity.toString()}", style: StyleConstants.h3Style),
+          Text(logEntry.message, style: StyleConstants.h3Style),
           Text(logEntry.readableDate, style: StyleConstants.h3Style),
           Text(logEntry.author, style: StyleConstants.h3Style),
         ],

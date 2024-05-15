@@ -69,6 +69,10 @@ class APISession {
     return response;
   }
 
+  static Future<http.Response> delete(String url) async {
+    http.Response response = await http.delete(Uri.parse(APIConstants().baseUrl+url), headers: headers);
+    return response;
+  }
 
   static void updateKeys() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
