@@ -1,5 +1,5 @@
 
-import 'package:sham_parts/api_util/part.dart';
+import 'package:sham_parts/api-util/part.dart';
 
 class Assembly {
   String name;

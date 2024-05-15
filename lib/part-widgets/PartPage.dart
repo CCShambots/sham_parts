@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
-import 'package:sham_parts/api_util/apiSession.dart';
-import 'package:sham_parts/api_util/logEntry.dart';
-import 'package:sham_parts/api_util/part.dart';
-import 'package:sham_parts/api_util/user.dart';
+import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/part.dart';
+import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 
 class PartPage extends StatefulWidget {
@@ -22,7 +22,7 @@ class _PartPageState extends State<PartPage> {
   final isMobile = Platform.isAndroid || Platform.isIOS;
 
   int userIndex = 0;
-  late List<User> users;
+  late List<User> users = [];
 
   bool editingDimensions = false;
 
@@ -30,16 +30,26 @@ class _PartPageState extends State<PartPage> {
   TextEditingController d2Controller = TextEditingController();
   TextEditingController d3Controller = TextEditingController();
 
+  List<String> partTypes = [];
+
   @override
   void initState() {
     super.initState();
     loadUsers();
-
+    loadPartTypes();
 
     setState(() {
       d1Controller.text = widget.part.dimension1;
       d2Controller.text = widget.part.dimension2;
       d3Controller.text = widget.part.dimension3;
+    });
+  }
+
+  void loadPartTypes() async {
+    List<String> types = await Part.getPartTypes();
+
+    setState(() {
+      partTypes = types;
     });
   }
 
@@ -113,7 +123,8 @@ class _PartPageState extends State<PartPage> {
                             editingDimensions
                                 ? Row(
                                     children: [
-                                      Text("Dimensions: ", style: StyleConstants.subtitleStyle),
+                                      Text("Dimensions: ",
+                                          style: StyleConstants.subtitleStyle),
                                       SizedBox(
                                         width: 75,
                                         height: 45,
@@ -123,7 +134,8 @@ class _PartPageState extends State<PartPage> {
                                               hintText: 'D1'),
                                         ),
                                       ),
-                                      Text("\" x ", style: StyleConstants.subtitleStyle),
+                                      Text("\" x ",
+                                          style: StyleConstants.subtitleStyle),
                                       SizedBox(
                                         width: 75,
                                         height: 45,
@@ -133,7 +145,8 @@ class _PartPageState extends State<PartPage> {
                                               hintText: 'D2'),
                                         ),
                                       ),
-                                      Text("\" x ", style: StyleConstants.subtitleStyle),
+                                      Text("\" x ",
+                                          style: StyleConstants.subtitleStyle),
                                       SizedBox(
                                         width: 75,
                                         height: 45,
@@ -143,7 +156,8 @@ class _PartPageState extends State<PartPage> {
                                               hintText: 'D3'),
                                         ),
                                       ),
-                                      Text("\"", style: StyleConstants.subtitleStyle),
+                                      Text("\"",
+                                          style: StyleConstants.subtitleStyle),
                                     ],
                                   )
                                 : Text(
@@ -152,9 +166,12 @@ class _PartPageState extends State<PartPage> {
                                   ),
                             IconButton(
                                 onPressed: () async {
-
-                                  if(editingDimensions) {
-                                    await widget.part.setDimensions(context, d1Controller.text, d2Controller.text, d3Controller.text);
+                                  if (editingDimensions) {
+                                    await widget.part.setDimensions(
+                                        context,
+                                        d1Controller.text,
+                                        d2Controller.text,
+                                        d3Controller.text);
                                   }
 
                                   setState(() {
@@ -166,53 +183,74 @@ class _PartPageState extends State<PartPage> {
                                     : const Icon(Icons.edit)),
                           ],
                         ),
+                        DropdownButton<String>(
+                          value: widget.part.partType,
+                          onChanged: (newValue) async {
+                            await widget.part.setPartType(context, newValue!);
+                            setState(() {});
+                          },
+                          items: partTypes
+                              .map<DropdownMenuItem<String>>((String type) {
+                            return DropdownMenuItem<String>(
+                              value: type,
+                              child: Text(type),
+                            );
+                          }).toList(),
+                          hint: const Text("Select Part Type"),
+                        ),
                         const SizedBox(
                           height: 24,
                         ),
-                        Row(
-                          children: [
-                            Text(
-                              "Assign${widget.part.asigneeName != "" ? "ed" : ""} to: ",
-                              style: StyleConstants.subtitleStyle,
-                            ),
-                            DropdownButton<User>(
-                              value: userIndex != -1 ? users[userIndex] : null,
-                              onChanged: (newValue) async {
-                                if (newValue != null) {
-                                  await widget.part
-                                      .assignUser(context, newValue);
+                        users.isEmpty
+                            ? const CircularProgressIndicator()
+                            : Row(
+                                children: [
+                                  Text(
+                                    "Assign${widget.part.asigneeName != "" ? "ed" : ""} to: ",
+                                    style: StyleConstants.subtitleStyle,
+                                  ),
+                                  DropdownButton<User>(
+                                    value: userIndex != -1
+                                        ? users[userIndex]
+                                        : null,
+                                    onChanged: (newValue) async {
+                                      if (newValue != null) {
+                                        await widget.part
+                                            .assignUser(context, newValue);
 
-                                  setState(() {
-                                    userIndex = users.indexWhere((element) =>
-                                        element.email == newValue.email);
-                                  });
-                                } else {
-                                  //This means the user selected "None"
-                                  await widget.part.unassignUser(context);
-                                  setState(() {
-                                    userIndex = -1;
-                                  });
-                                }
-                              },
-                              items: [
-                                const DropdownMenuItem<User>(
-                                  value: null,
-                                  child: Text("None"),
-                                ),
-                                ...users
-                                    .map<DropdownMenuItem<User>>((User user) {
-                                  return DropdownMenuItem<User>(
-                                    value: user,
-                                    child: Text(user.name),
-                                  );
-                                }),
-                              ],
-                              hint: userIndex != -1
-                                  ? Text(users[userIndex].name)
-                                  : const Text("None"),
-                            ),
-                          ],
-                        )
+                                        setState(() {
+                                          userIndex = users.indexWhere(
+                                              (element) =>
+                                                  element.email ==
+                                                  newValue.email);
+                                        });
+                                      } else {
+                                        //This means the user selected "None"
+                                        await widget.part.unassignUser(context);
+                                        setState(() {
+                                          userIndex = -1;
+                                        });
+                                      }
+                                    },
+                                    items: [
+                                      const DropdownMenuItem<User>(
+                                        value: null,
+                                        child: Text("None"),
+                                      ),
+                                      ...users.map<DropdownMenuItem<User>>(
+                                          (User user) {
+                                        return DropdownMenuItem<User>(
+                                          value: user,
+                                          child: Text(user.name),
+                                        );
+                                      }),
+                                    ],
+                                    hint: userIndex != -1
+                                        ? Text(users[userIndex].name)
+                                        : const Text("None"),
+                                  ),
+                                ],
+                              )
                       ],
                     ),
                   ),

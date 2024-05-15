@@ -5,15 +5,15 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sham_parts/account-pages/accountPage.dart';
-import 'package:sham_parts/api_util/apiSession.dart';
-import 'package:sham_parts/api_util/onshapeDocument.dart';
+import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/onshapeDocument.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
 import 'package:sham_parts/partsDisplay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
-import 'api_util/project.dart';
+import 'api-util/project.dart';
 
 const double _bottomPaddingForButton = 150.0;
 const double _buttonHeight = 56.0;

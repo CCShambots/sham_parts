@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
-import 'package:sham_parts/api_util/apiSession.dart';
-import 'package:sham_parts/api_util/part.dart';
+import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/PartPage.dart';
 

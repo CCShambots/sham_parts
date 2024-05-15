@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sham_parts/api_util/part.dart';
-import 'package:sham_parts/api_util/project.dart';
+import 'package:sham_parts/api-util/part.dart';
+import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/constants.dart';
 
 class PartsDisplay extends StatefulWidget {

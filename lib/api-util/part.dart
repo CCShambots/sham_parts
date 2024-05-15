@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:sham_parts/api_util/apiSession.dart';
-import 'package:sham_parts/api_util/logEntry.dart';
-import 'package:sham_parts/api_util/user.dart';
+import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/main.dart';
 import 'package:sham_parts/part-widgets/PartListDisplay.dart';
@@ -23,6 +23,8 @@ class Part {
   String dimension1;
   String dimension2;
   String dimension3;
+
+  String partType;
 
   String asigneeName;
 
@@ -43,7 +45,7 @@ class Part {
       required this.asigneeName,
       required this.dimension1,
       required this.dimension2,
-      required this.dimension3}) {
+      required this.dimension3, required this.partType}) {
     partListDisplay = PartListDisplay(part: this);
   }
 
@@ -61,10 +63,35 @@ class Part {
       dimension2: json["dimension2"],
       dimension3: json["dimension3"],
       asigneeName: json["asigneeName"] ?? "",
+      partType: json["partType"],
       logEntries: json["logEntries"]
           .map<LogEntry>((e) => LogEntry.fromJson(e))
           .toList(),
     );
+  }
+
+  static Future<List<String>> getPartTypes() async {
+    var response = await APISession.get("/part/types");
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body).cast<String>();
+    } else {
+      return [];
+    }
+  }
+
+  Future<void> setPartType(BuildContext context, String newType) async {
+    var response = await APISession.patch("/part/$id/setPartType", jsonEncode({"partType": newType}));
+
+    if (response.statusCode == 200) {
+      APIConstants.showSuccessToast("Set Part Type for $number", context);
+
+      partType = newType;
+    } else {
+      APIConstants.showErrorToast(
+        "Failed to Set Part Type for $number: Code ${response.statusCode} - ${response.body}",
+        context);
+    }
   }
 
   Future<void> setDimensions(BuildContext context, String d1, String d2, String d3) async {

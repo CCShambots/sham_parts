@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sham_parts/account-pages/adminPanel.dart';
 import 'package:sham_parts/account-pages/signIn.dart';
-import 'package:sham_parts/api_util/apiSession.dart';
+import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api_util/user.dart';
+import '../api-util/user.dart';
 
 class AccountPage extends StatefulWidget {
   User? user;

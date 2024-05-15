@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sham_parts/constants.dart';
 
-import '../api_util/user.dart';
+import '../api-util/user.dart';
 
 class AdminPanel extends StatefulWidget {
   final User? user;

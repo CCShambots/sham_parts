@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
-import 'package:sham_parts/api_util/apiSession.dart';
+import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:http/http.dart' as http;
-import 'package:sham_parts/api_util/onshapeAssembly.dart';
+import 'package:sham_parts/api-util/onshapeAssembly.dart';
 
 
 class OnshapeDocument {
