@@ -6,6 +6,7 @@ import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
+  int id;
   String name;
   String email;
   String token;
@@ -14,7 +15,8 @@ class User {
   List<String> roles;
 
   User(
-      {required this.name,
+      {required this.id,
+      required this.name,
       required this.email,
       required this.verified,
       required this.roles,
@@ -22,6 +24,7 @@ class User {
 
   static User fromJson(json) {
     return User(
+        id: json["id"],
         name: json["name"],
         email: json["email"],
         verified: json["verified"],

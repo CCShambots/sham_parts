@@ -9,7 +9,7 @@ import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/onshapeDocument.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
-import 'package:sham_parts/part-widgets/partsDisplay.dart';
+import 'package:sham_parts/part-widgets/PartsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -29,8 +29,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   const MyApp({super.key});
 
@@ -46,25 +46,22 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Theme.of(context).colorScheme.background,
       ),
       darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
-          brightness: Brightness.dark
-      ),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.blue, brightness: Brightness.dark),
+          brightness: Brightness.dark),
       home: const BottomNavigation(),
     );
   }
 }
 
 class BottomNavigation extends StatefulWidget {
-
   const BottomNavigation({super.key});
 
   @override
-  State<BottomNavigation> createState() =>
-      BottomNavigationBarState();
+  State<BottomNavigation> createState() => BottomNavigationBarState();
 }
 
 class BottomNavigationBarState extends State<BottomNavigation> {
-
   final pageViewController = PageController(initialPage: 0);
   final int currentPage = 0;
 
@@ -87,7 +84,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
   @override
   void initState() {
-
     initVersion();
     reloadProjectList(true);
 
@@ -96,13 +92,12 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     setState(() {
       selectedIndex = pageViewController.initialPage;
     });
-
   }
 
   void regenWidgetOptions() {
     widgetOptions = [
       const Home(),
-      PartsDisplay(project: project),
+      PartsPage(project: project),
       AccountPage(user: null)
     ];
   }
@@ -116,15 +111,15 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       version = info.version;
     });
   }
-  
+
   void reloadProjectList(bool shouldLoadProject) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
     String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
 
     List<String> projectList = await Project.loadProjects();
 
-    if(projectList.isEmpty) {
+    if (projectList.isEmpty) {
       projectList = ["NO PROJECT"];
     }
 
@@ -132,16 +127,15 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       projectKeys = projectList;
     });
 
-    if(projectKey == "" && projectKeys.isNotEmpty) {
+    if (projectKey == "" && projectKeys.isNotEmpty) {
       //Make the user select project
       //TODO: Select project dialog
-    } else if(shouldLoadProject) {
+    } else if (shouldLoadProject) {
       loadProject(projectKey);
     }
   }
 
   void loadProject(String key) async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString(APIConstants().currentProject, key);
@@ -158,7 +152,8 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   }
 
   void onItemTapped(int index) {
-    pageViewController.animateToPage(index, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+    pageViewController.animateToPage(index,
+        duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
   }
 
   @override
@@ -168,7 +163,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   }
 
   void queryDocuments(BuildContext context, page) async {
-
     setState(() {
       searching = true;
       docs = [];
@@ -176,7 +170,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     String currentQuery = documentSearchController.value.text;
 
-    List<OnshapeDocument> newDocs = await OnshapeDocument.queryDocuments(currentQuery, () { reloadProjectList(false);});
+    List<OnshapeDocument> newDocs =
+        await OnshapeDocument.queryDocuments(currentQuery, () {
+      reloadProjectList(false);
+    });
 
     setState(() {
       docs = newDocs;
@@ -227,14 +224,20 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () =>
-                  pageIndexNotifier.value = pageIndexNotifier.value + 1,
+                      pageIndexNotifier.value = pageIndexNotifier.value + 1,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.inversePrimary,
                   ),
                   child: SizedBox(
                     height: _buttonHeight,
                     width: double.infinity,
-                    child: Center(child: Text('Create', style: TextStyle(color: Theme.of(context).colorScheme.inverseSurface),)),
+                    child: Center(
+                        child: Text(
+                      'Create',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.inverseSurface),
+                    )),
                   ),
                 ),
               ],
@@ -254,12 +257,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                 _pagePadding,
                 _bottomPaddingForButton,
               ),
-              child: Column(children: docs.map((e) {
+              child: Column(
+                  children: docs.map((e) {
                 return e.searchWidget;
-              }).toList())
-          )
-
-      );
+              }).toList())));
     }
 
     SliverWoltModalSheetPage page1(
@@ -280,19 +281,23 @@ class BottomNavigationBarState extends State<BottomNavigation> {
               ),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: ()
-                {
-                  queryDocuments(context, page2);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                ),
-                child: SizedBox(
-                  height: _buttonHeight,
-                  width: double.infinity,
-                  child: Center(child: Text('Search', style: TextStyle(color: Theme.of(context).colorScheme.inverseSurface),)),
-                )
-              ),
+                  onPressed: () {
+                    queryDocuments(context, page2);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                  child: SizedBox(
+                    height: _buttonHeight,
+                    width: double.infinity,
+                    child: Center(
+                        child: Text(
+                      'Search',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.inverseSurface),
+                    )),
+                  )),
             ],
           ),
         ),
@@ -316,15 +321,14 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                   children: [
                     Expanded(
                         child: TextField(
-                          controller: documentSearchController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Search"
-                          ),
-                          textInputAction: TextInputAction.search,
-                          onSubmitted: (val) {queryDocuments(context, page2);},
-                      )
-                    )
+                      controller: documentSearchController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: "Search"),
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (val) {
+                        queryDocuments(context, page2);
+                      },
+                    ))
                   ],
                 ),
               ],
@@ -337,20 +341,18 @@ class BottomNavigationBarState extends State<BottomNavigation> {
         title: const Text("ShamParts"),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: IconButton(
-                icon: const Icon(Icons.add,),
+              padding: const EdgeInsets.only(right: 16),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.add,
+                ),
                 tooltip: "Create New Project",
                 onPressed: () {
                   showWoltModal(pageIndexNotifier, page1);
                 },
-              )
-          )
+              ))
         ],
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: PageView(
         controller: pageViewController,
@@ -362,100 +364,98 @@ class BottomNavigationBarState extends State<BottomNavigation> {
         },
         children: widgetOptions,
       ),
-      bottomNavigationBar: isMobile ? CurvedNavigationBar(
-        items: const <CurvedNavigationBarItem>[
-          CurvedNavigationBarItem(
-            child: Icon(Icons.home),
-            label: 'Home',
-          ),
-          CurvedNavigationBarItem(
-              child: Icon(Icons.list),
-              label: 'Parts'
-          ),
-          CurvedNavigationBarItem(
-              child: Icon(Icons.account_circle),
-              label: 'Account'
-          )
-        ],
-        index: selectedIndex,
-        backgroundColor: Theme.of(context).colorScheme.background,
-        color: Theme.of(context).colorScheme.inversePrimary,
-        animationDuration: const Duration(milliseconds: 250),
-        onTap: onItemTapped,
-      ) : null,
+      bottomNavigationBar: isMobile
+          ? CurvedNavigationBar(
+              items: const <CurvedNavigationBarItem>[
+                CurvedNavigationBarItem(
+                  child: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                CurvedNavigationBarItem(
+                    child: Icon(Icons.list), label: 'Parts'),
+                CurvedNavigationBarItem(
+                    child: Icon(Icons.account_circle), label: 'Account')
+              ],
+              index: selectedIndex,
+              backgroundColor: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.inversePrimary,
+              animationDuration: const Duration(milliseconds: 250),
+              onTap: onItemTapped,
+            )
+          : null,
       onDrawerChanged: (isOpened) {
         reloadProjectList(true);
       },
-      drawer: !isMobile ? Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.inversePrimary
+      drawer: !isMobile
+          ? Drawer(
+              child: ListView(
+                // Important: Remove any padding from the ListView.
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.inversePrimary),
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'ShamParts v$version',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            DropdownMenu<String>(
+                                label: const Text('Active Project'),
+                                controller: activeProjectController,
+                                initialSelection: project.name,
+                                onSelected: (val) {
+                                  loadProject(val ?? "");
+                                },
+                                menuStyle: const MenuStyle(
+                                    minimumSize: MaterialStatePropertyAll(
+                                        Size.fromWidth(200))),
+                                dropdownMenuEntries: List.generate(
+                                  projectKeys.length,
+                                  (index) => DropdownMenuEntry(
+                                    value: projectKeys[index],
+                                    label: projectKeys[index],
+                                  ),
+                                ))
+                          ])),
+                  ListTile(
+                    leading: const Icon(Icons.home),
+                    title: const Text('Home'),
+                    onTap: () {
+                      onItemTapped(0);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.list),
+                    title: const Text('Parts'),
+                    onTap: () {
+                      onItemTapped(1);
+                    },
+                  ),
+                  Container(
+                      child: Align(
+                          alignment: FractionalOffset.bottomCenter,
+                          child: Column(
+                            children: <Widget>[
+                              const Divider(),
+                              ListTile(
+                                leading: const Icon(Icons.account_circle),
+                                title: const Text('Account'),
+                                onTap: () {
+                                  onItemTapped(2);
+                                },
+                              ),
+                            ],
+                          ))),
+                ],
               ),
-              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('ShamParts v$version', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                    DropdownMenu<String>(
-                        label: const Text('Active Project'),
-                        controller: activeProjectController,
-                        initialSelection: project.name,
-                        onSelected: (val) {
-                          loadProject(val ?? "");
-                        },
-                        menuStyle: const MenuStyle(
-                          minimumSize: MaterialStatePropertyAll(Size.fromWidth(200))
-                        ),
-                        dropdownMenuEntries: List.generate(
-                            projectKeys.length,
-                                (index) => DropdownMenuEntry(
-                              value: projectKeys[index],
-                              label: projectKeys[index],
-                          ),
-                        )
-                    )
-                  ]
-                )
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                onItemTapped(0);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.list),
-              title: const Text('Parts'),
-              onTap: () {
-                onItemTapped(1);
-              },
-            ),
-            Container(
-                child: Align(
-                    alignment: FractionalOffset.bottomCenter,
-                    child: Column(
-                      children: <Widget>[
-                        const Divider(),
-                        ListTile(
-                            leading: const Icon(Icons.account_circle),
-                            title: const Text('Account'),
-                            onTap: () {
-                                onItemTapped(2);
-                            },
-                        ),
-                      ],
-                    ))),
-          ],
-        ),
-      ) : null,
+            )
+          : null,
     );
   }
-
-
 }

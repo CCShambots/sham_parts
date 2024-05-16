@@ -31,10 +31,14 @@ class SignInState extends State<SignInWidget> {
     verifying = false;
   }
 
-  void authenticate() async {
+  void authenticate(BuildContext context) async {
     User? user = await User.authenticate(emailController.text, passwordController.text, context);
 
-    widget.setUser(user);
+    if(user != null) {
+      widget.setUser(user);
+    } else {
+      APIConstants.showErrorToast("Invalid email or password!", context);
+    }
   }
 
   void createUser() async {
@@ -143,7 +147,7 @@ class SignInState extends State<SignInWidget> {
                     style: TextStyle(color: Theme.of(context).colorScheme.inverseSurface),),
                   onPressed: () {
                     if(!creatingAccount) {
-                      authenticate();
+                      authenticate(context);
                     } else {
                       createUser();
                     }
@@ -163,7 +167,7 @@ class SignInState extends State<SignInWidget> {
                     setState(() {
                       verifying = false;
                     });
-                    authenticate();
+                    authenticate(context);
                   },
                 ),
               ) : Container(),

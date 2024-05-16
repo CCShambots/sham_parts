@@ -27,6 +27,7 @@ class Part {
   String partType;
 
   String asigneeName;
+  int asigneeId;
 
   List<LogEntry> logEntries;
 
@@ -45,7 +46,9 @@ class Part {
       required this.asigneeName,
       required this.dimension1,
       required this.dimension2,
-      required this.dimension3, required this.partType}) {
+      required this.dimension3,
+      required this.partType,
+      required this.asigneeId}) {
     partListDisplay = PartListDisplay(part: this);
   }
 
@@ -63,6 +66,7 @@ class Part {
       dimension2: json["dimension2"],
       dimension3: json["dimension3"],
       asigneeName: json["asigneeName"] ?? "",
+      asigneeId: json["asigneeId"] ?? -1,
       partType: json["partType"],
       logEntries: json["logEntries"]
           .map<LogEntry>((e) => LogEntry.fromJson(e))
@@ -81,7 +85,8 @@ class Part {
   }
 
   Future<void> setPartType(BuildContext context, String newType) async {
-    var response = await APISession.patch("/part/$id/setPartType", jsonEncode({"partType": newType}));
+    var response = await APISession.patch(
+        "/part/$id/setPartType", jsonEncode({"partType": newType}));
 
     if (response.statusCode == 200) {
       APIConstants.showSuccessToast("Set Part Type for $number", context);
@@ -89,13 +94,15 @@ class Part {
       partType = newType;
     } else {
       APIConstants.showErrorToast(
-        "Failed to Set Part Type for $number: Code ${response.statusCode} - ${response.body}",
-        context);
+          "Failed to Set Part Type for $number: Code ${response.statusCode} - ${response.body}",
+          context);
     }
   }
 
-  Future<void> setDimensions(BuildContext context, String d1, String d2, String d3) async {
-    var response = await APISession.patch("/part/$id/setDimensions", jsonEncode({"d1": d1, "d2": d2, "d3": d3}));
+  Future<void> setDimensions(
+      BuildContext context, String d1, String d2, String d3) async {
+    var response = await APISession.patch(
+        "/part/$id/setDimensions", jsonEncode({"d1": d1, "d2": d2, "d3": d3}));
 
     if (context.mounted) {
       if (response.statusCode == 200) {
