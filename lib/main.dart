@@ -9,7 +9,7 @@ import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/onshapeDocument.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
-import 'package:sham_parts/partsDisplay.dart';
+import 'package:sham_parts/part-widgets/partsDisplay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 

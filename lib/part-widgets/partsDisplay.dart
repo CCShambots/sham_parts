@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/expandable-fab/ExpandableFab.dart';
 
 class PartsDisplay extends StatefulWidget {
   final Project project;
@@ -68,19 +69,35 @@ class PartsDisplayState extends State<PartsDisplay> {
     if (!mounted) return const SizedBox.shrink();
 
     return Scaffold(
-        body: ListView(
-          children: widget.project.parts.map((e) => e.partListDisplay).toList(),
-        ),
-        floatingActionButton: widget.project.parts
-                .where((element) => element.thumbnail == "unloaded")
-                .isNotEmpty
-            ? FloatingActionButton(
-                onPressed: () {
-                  loadPhotos(context);
-                },
-                tooltip: "Load Photos",
-                child: const Icon(Icons.photo, color: Colors.white, size: 28),
-              )
-            : null);
+      body: ListView(
+        children: widget.project.parts.map((e) => e.partListDisplay).toList(),
+      ),
+      floatingActionButton: ExpandableFab(
+        distance: 112,
+        children: [
+          ActionButton(
+            onPressed: () => {
+              loadPhotos(context),
+            },
+            icon: const Icon(Icons.photo),
+            message: "Load Photos",
+          ),
+          ActionButton(
+            onPressed: () => {
+              // _showAction(context, 1)
+            },
+            icon: const Icon(Icons.merge),
+            message: "Merge Duplicates",
+          ),
+          ActionButton(
+            onPressed: () => {
+              // _showAction(context, 2)
+              },
+            icon: const Icon(Icons.videocam),
+            message: "test",
+          ),
+        ],
+      ),
+    );
   }
 }
