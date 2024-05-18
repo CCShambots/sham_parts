@@ -96,6 +96,11 @@ class SignInState extends State<SignInWidget> {
                 TextField(
                   controller: passwordController,
                   obscureText: !passwordVisible,
+                  onSubmitted: (value) => {
+                    if(!creatingAccount) {
+                      authenticate(context)
+                    }
+                  },
                   decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       hintText: 'Password',

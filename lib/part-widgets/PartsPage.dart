@@ -63,18 +63,24 @@ class PartsPageState extends State<PartsPage> {
 
   void loadPartTypes() async {
     List<String> types = await Part.getPartTypes();
+    if(mounted) {
+        setState(() {
+          partTypes = types;
+        });
 
-    setState(() {
-      partTypes = types;
-    });
+    }
   }
 
   void loadUsers() async {
     List<User> result = await User.getAllUsers();
 
-    setState(() {
-      users = result;
-    });
+    if(mounted) {
+      setState(() {
+        users = result;
+      });
+
+    }
+
   }
 
   void loadPhotos(BuildContext context) async {

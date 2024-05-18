@@ -7,6 +7,12 @@ import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum RoleType {
+  admin,
+  write,
+  read,
+}
+
 class Project {
   String name;
   String default_workspace;
@@ -17,13 +23,20 @@ class Project {
 
   List<Part> individualParts;
 
+  List<String> readRoles;
+  List<String> writeRoles;
+  List<String> adminRoles;
+
   Project(
       {required this.name,
       required this.default_workspace,
       required this.assembly_name,
       required this.assembly_onshape_id,
       required this.parts,
-      required this.individualParts});
+      required this.individualParts,
+      required this.adminRoles,
+      required this.readRoles,
+      required this.writeRoles});
 
   static blank() {
     return Project(
@@ -31,8 +44,75 @@ class Project {
         default_workspace: "",
         assembly_name: "",
         assembly_onshape_id: "",
+        readRoles: [],
+        writeRoles: [],
+        adminRoles: [],
         parts: [],
         individualParts: []);
+  }
+
+  List<String> getListFromType(RoleType type) {
+    switch (type) {
+      case RoleType.admin:
+        return adminRoles;
+      case RoleType.write:
+        return writeRoles;
+      case RoleType.read:
+        return readRoles;
+      default:
+        return [];
+    }
+  }
+
+  static String roleTypeToString(RoleType type) {
+      switch (type) {
+        case RoleType.read:
+          return "Read Roles";
+        case RoleType.write:
+          return "Write Roles";
+        case RoleType.admin:
+          return "Admin Roles";
+        default:
+          return "";
+      }
+    }
+  
+  Future<void> addRole(String role, RoleType type, BuildContext context) async {
+    var response = await APISession.patch("/project/$name/addRole", jsonEncode({"role": role, "type" :type.name}));
+
+    if(response.statusCode == 200) {
+      if (type == RoleType.admin) {
+        adminRoles.add(role);
+      } else if (type == RoleType.write) {
+        writeRoles.add(role);
+      } else if (type == RoleType.read) {
+        readRoles.add(role);
+      }
+      if(context.mounted) {
+        APIConstants.showSuccessToast('Role added successfully.', context);
+      }
+    } else {
+      if(context.mounted) {
+        APIConstants.showErrorToast('Failed to add role. Status code: ${response.statusCode}, Error message: ${response.body}', context);
+      }
+    }
+  }
+
+  Future<void> removeRole(String role, RoleType type, BuildContext context) async {
+    var response = await APISession.patch("/project/$name/removeRole", jsonEncode({"role": role, "type": type.name}));
+
+    if (response.statusCode == 200) {
+      if (type == RoleType.admin) {
+        adminRoles.remove(role);
+      } else if (type == RoleType.write) {
+        writeRoles.remove(role);
+      } else if (type == RoleType.read) {
+        readRoles.remove(role);
+      }
+      APIConstants.showSuccessToast('Role removed successfully.', context);
+    } else {
+      APIConstants.showErrorToast('Failed to remove role. Status code: ${response.statusCode}, Error message: ${response.body}', context);
+    }
   }
 
   List<String> getMaterials() {
@@ -49,7 +129,7 @@ class Project {
 
           doneSomething = true;
           break;
-        } else if(material.contains(existingMaterial)) {
+        } else if (material.contains(existingMaterial)) {
           doneSomething = true;
           break;
         }
@@ -58,9 +138,8 @@ class Project {
       if (!doneSomething) {
         materials.add(material);
       }
-    
-      materials.sort();
 
+      materials.sort();
     }
     return materials;
   }
@@ -91,6 +170,9 @@ class Project {
         default_workspace: json["default_workspace"],
         assembly_name: json["assembly_name"],
         assembly_onshape_id: json["assembly_onshape_id"],
+        readRoles: json["read_roles"]?.cast<String>() ?? [],
+        writeRoles: json["write_roles"]?.cast<String>() ?? [],
+        adminRoles: json["admin_roles"]?.cast<String>() ?? [],
         parts: json["parts"]?.map<Part>((e) => Part.fromJson(e)).toList() ?? [],
         individualParts: json["individual_parts"]
             .map<Part>((e) => Part.fromJson(e))

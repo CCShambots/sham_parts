@@ -98,7 +98,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     widgetOptions = [
       const Home(),
       PartsPage(project: project),
-      AccountPage(user: null)
+      AccountPage(user: null, project: project,)
     ];
   }
 
