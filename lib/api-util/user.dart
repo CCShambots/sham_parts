@@ -21,6 +21,10 @@ class User {
       required this.verified,
       required this.roles,
       required this.token});
+  
+  static User blank() {
+    return User(id: -1, name: "", email: "", verified: false, roles: [], token: "");
+  }
 
   static User fromJson(json) {
     return User(

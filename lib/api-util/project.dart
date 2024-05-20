@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/constants.dart';
@@ -49,6 +50,19 @@ class Project {
         adminRoles: [],
         parts: [],
         individualParts: []);
+  }
+
+  
+  List<LogEntry> getLogEntries() {
+    List<LogEntry> entries = [];
+
+    for (var part in parts) {
+      entries.addAll(part.logEntries);
+    }
+
+    entries.sort((a, b) => b.date.compareTo(a.date));
+
+    return entries;
   }
 
   List<String> getListFromType(RoleType type) {

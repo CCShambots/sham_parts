@@ -1,4 +1,4 @@
-
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -7,8 +7,8 @@ import '../constants.dart';
 class LogEntry {
   final int id;
   late final String type;
-  final DateTime date;
-  late final String readableDate;
+  DateTime date;
+  late String readableDate;
   final int quantity;
   final String message;
   final String author;
@@ -37,6 +37,118 @@ class LogEntry {
       author: json['author'],
     );
   }
+
+  static List<FlSpot> generateSpots(List<LogEntry> entries, String type) {
+    DateTime startTime = DateTime.now().subtract(const Duration(days: 7)).toUtc();
+    DateTime endTime = DateTime.now().toUtc();
+
+    var filteredEntries = filterLogEntriesByType(entries, type);
+    var filterByDate = filterLogEntriesByTime(filteredEntries, startTime, endTime);
+    var separatedLogs = separateLogsByDay(filterByDate);
+    var concatenatedLogs = separatedLogs.map((day) => concatenateLogEntries(day)).toList();
+
+    //Make sure there is a datapoint for each day
+    var filledOutLogs = fillOutLogs(concatenatedLogs,  startTime, endTime);
+
+    return filledOutLogs.map((entry) => entry.getSpot(endTime)).toList();
+  }
+
+  void adjustDay(DateTime newDate) {
+    date = newDate;
+    DateFormat formatter = DateFormat('MM-dd-yy');
+    readableDate = formatter.format(date.toLocal());
+  }
+
+  static List<LogEntry> fillOutLogs(List<LogEntry> entries, DateTime startDate, DateTime endTime) {
+    //Make sure there is a log entry for each day
+    List<LogEntry> filledOutLogs = [];
+    DateTime currentDate = startDate;
+    while (currentDate.isBefore(endTime) || currentDate.isAtSameMomentAs(endTime)) {
+      bool found = false;
+      for (var entry in entries) {
+        if (entry.date.day == currentDate.day &&
+            entry.date.month == currentDate.month &&
+            entry.date.year == currentDate.year) {
+          entry.adjustDay(currentDate);
+          filledOutLogs.add(entry);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        filledOutLogs.add(LogEntry(
+          id: -1,
+          type: "None",
+          author: "system",
+          date: currentDate,
+          quantity: 0,
+          message: "",
+        ));
+      }
+      currentDate = currentDate.add(const Duration(days: 1));
+    }
+    return filledOutLogs;
+  }
+
+  static List<LogEntry> filterLogEntriesByTime(
+      List<LogEntry> entries, DateTime start, DateTime end) {
+    return entries
+        .where((entry) => entry.date.isAfter(start) && entry.date.isBefore(end))
+        .toList();
+  }
+
+  static List<LogEntry> filterLogEntriesByType(
+      List<LogEntry> entries, String type) {
+    return entries.where((entry) => entry.type == type).toList();
+  }
+
+  static List<List<LogEntry>> separateLogsByDay(List<LogEntry> logEntries) {
+
+    List<List<LogEntry>> separatedLogs = [];
+
+    for (var entry in logEntries) {
+      bool found = false;
+      for (var day in separatedLogs) {
+        if (day[0].date.day == entry.date.day &&
+            day[0].date.month == entry.date.month &&
+            day[0].date.year == entry.date.year) {
+          day.add(entry);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        separatedLogs.add([entry]);
+      }
+    }
+
+    return separatedLogs;
+  }
+
+
+  static LogEntry concatenateLogEntries(List<LogEntry> entries) {
+    String message = "";
+    int quantity = 0;
+    for (var entry in entries) {
+      message += entry.message + " ";
+      quantity += entry.quantity;
+    }
+
+    return LogEntry(
+        id: -1,
+        type: "Concatenated",
+        author: "system",
+        date: entries[0].date,
+        quantity: quantity,
+        message: message,
+    );
+  }
+
+  FlSpot getSpot(DateTime startDate) {
+    return FlSpot(
+        date.difference(startDate).inDays.toDouble(), quantity.toDouble());
+  }
 }
 
 class LogEntryWidget extends StatelessWidget {
@@ -52,7 +164,8 @@ class LogEntryWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(logEntry.type, style: StyleConstants.h3Style),
-          Text("QTY:${logEntry.quantity.toString()}", style: StyleConstants.h3Style),
+          Text("QTY:${logEntry.quantity.toString()}",
+              style: StyleConstants.h3Style),
           Text(logEntry.message, style: StyleConstants.h3Style),
           Text(logEntry.readableDate, style: StyleConstants.h3Style),
           Text(logEntry.author, style: StyleConstants.h3Style),

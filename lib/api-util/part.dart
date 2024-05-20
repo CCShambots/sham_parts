@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -73,6 +74,37 @@ class Part {
           .toList(),
     );
   }
+
+  static double getTotalNumberOfPartsInStock(List<Part> parts) {
+    double total = 0;
+
+    for (Part part in parts) {
+      total += min<int>(part.quantityInStock, part.quantityNeeded);
+    }
+
+    return total;
+  }
+
+  static double getTotalNumberOfPartsRequested(List<Part> parts) {
+    double total = 0;
+
+    for (Part part in parts) {
+      total += part.quantityRequested;
+    }
+
+    return total;
+  }
+
+  static double getTotalNumberOfPartsNeeded(List<Part> parts) {
+    double total = 0;
+
+    for (Part part in parts) {
+      total += part.quantityNeeded;
+    }
+
+    return total;
+  }
+
 
   static Future<List<String>> getPartTypes() async {
     var response = await APISession.get("/part/types");

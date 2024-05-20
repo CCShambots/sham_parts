@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sham_parts/account-pages/accountPage.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/onshapeDocument.dart';
+import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
 import 'package:sham_parts/part-widgets/PartsPage.dart';
@@ -82,6 +83,8 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
   static List<Widget> widgetOptions = <Widget>[];
 
+  late User user = User.blank();
+
   @override
   void initState() {
     initVersion();
@@ -89,16 +92,28 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     regenWidgetOptions();
 
+    loadUser();
+
     setState(() {
       selectedIndex = pageViewController.initialPage;
     });
   }
 
+  void loadUser() async {
+    User? newUser = await User.getUserFromPrefs();
+
+    if (newUser != null) {
+      setState(() {
+        user = newUser;
+      });
+    }
+  }
+
   void regenWidgetOptions() {
     widgetOptions = [
-      const Home(),
+      Home(user: user, project: project,),
       PartsPage(project: project),
-      AccountPage(user: null, project: project,)
+      AccountPage(user: user, project: project,)
     ];
   }
 

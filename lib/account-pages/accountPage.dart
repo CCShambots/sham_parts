@@ -137,7 +137,7 @@ class AccountPageState extends State<AccountPage> {
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => AdminPanel(
-                                  user: widget.user,
+                                  user: user,
                                 )));
                       },
                       child: Text(

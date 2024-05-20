@@ -43,11 +43,11 @@ class AdminPanelState extends State<AdminPanel> {
 
       this.roles = roles;
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.user?.name);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Admin Panel"),
@@ -57,6 +57,15 @@ class AdminPanelState extends State<AdminPanel> {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: "Reload users",
+            onPressed: () {
+              loadUsers();
+            },
+          )
+        ],
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
@@ -124,8 +133,14 @@ class UserAdminViewState extends State<UserAdminView> {
                   ),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 8)),
-                Text(widget.user.name, style: StyleConstants.subtitleStyle),
-                widget.you ? const Text("(you)") : Container()
+                Tooltip(
+                    message: "Email: ${widget.user.email}",
+                    child: Text(widget.user.name,
+                        style: StyleConstants.subtitleStyle)),
+                const SizedBox(width: 8),
+                widget.you
+                    ? Text("(you)", style: StyleConstants.h3Style)
+                    : Container(),
               ],
             ),
 
