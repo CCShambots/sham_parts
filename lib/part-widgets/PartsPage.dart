@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:getwidget/components/floating_widget/gf_floating_widget.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/expandable-fab/ExpandableFab.dart';
-import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+import 'package:sham_parts/part-widgets/MergeDisplay.dart';
 
 class PartsPage extends StatefulWidget {
   final Project project;
@@ -34,7 +33,7 @@ class PartsPageState extends State<PartsPage> {
   List<PartPredicate> partFilters = [];
 
   bool userFilterEnabled = false;
-  int userIdToFilter = -1;
+  int userIdToFilter = 0;
 
   bool partTypeFilterEnabled = false;
   String partTypeToFilter = "";
@@ -44,6 +43,14 @@ class PartsPageState extends State<PartsPage> {
 
   bool nameFilterEnabled = false;
   String nameToFilter = "";
+
+  bool combineFilterEnabled = false;
+
+  bool filterForFinished = false;
+
+  bool filterForMissing = false;
+
+  bool filterForRequested = false;
 
   @override
   void initState() {
@@ -63,24 +70,21 @@ class PartsPageState extends State<PartsPage> {
 
   void loadPartTypes() async {
     List<String> types = await Part.getPartTypes();
-    if(mounted) {
-        setState(() {
-          partTypes = types;
-        });
-
+    if (mounted) {
+      setState(() {
+        partTypes = types;
+      });
     }
   }
 
   void loadUsers() async {
     List<User> result = await User.getAllUsers();
 
-    if(mounted) {
+    if (mounted) {
       setState(() {
         users = result;
       });
-
     }
-
   }
 
   void loadPhotos(BuildContext context) async {
@@ -121,6 +125,7 @@ class PartsPageState extends State<PartsPage> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
+            
             insetPadding: EdgeInsets.all(24),
             actions: [
               TextButton(
@@ -160,7 +165,7 @@ class PartsPageState extends State<PartsPage> {
                         if (newValue != null) {
                           setState(() {
                             userFilterEnabled = true;
-                            userIdToFilter = newValue!.id;
+                            userIdToFilter = newValue.id;
                           });
                         }
                       },
@@ -278,12 +283,112 @@ class PartsPageState extends State<PartsPage> {
                     ),
                   ],
                 ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: combineFilterEnabled,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            combineFilterEnabled = value;
+                          });
+                        }
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Merged Parts"),
+                    ),
+                    Container()
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: filterForFinished,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            filterForFinished = value;
+
+                            if(value) {
+                              filterForMissing = false;
+                            }
+                          });
+
+
+                        }
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Have All Required"),
+                    ),
+                    Container()
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: filterForMissing,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            filterForMissing = value;
+
+                            if(value) {
+                              filterForFinished = false;
+                            }
+                          });
+
+                        }
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Missing Some"),
+                    ),
+                    Container()
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: filterForRequested,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            filterForRequested = value;   
+                          });
+
+                        }
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Some Requested"),
+                    ),
+                    Container()
+                  ],
+                ),
               ],
             ),
           );
         });
       },
-    );
+    ).then((e) {
+      setState(() {
+        
+      });
+    });
   }
 
   @override
@@ -303,10 +408,21 @@ class PartsPageState extends State<PartsPage> {
               .toLowerCase()
               .contains(nameToFilter.replaceAll(' ', '').toLowerCase());
 
+      bool combineFilter = !combineFilterEnabled || part.numCombines > 0;
+
+      bool finishedFilter = !filterForFinished || part.quantityInStock >= part.quantityNeeded;
+      bool missingFilter = !filterForMissing || part.quantityInStock < part.quantityNeeded;
+      bool requestedFilter = !filterForRequested || part.quantityRequested > 0;
+
       return passUserFilter &&
           passPartTypeFilter &&
           passMaterialFilter &&
-          passNameFilter;
+          passNameFilter &&
+          combineFilter &&
+          finishedFilter &&
+          missingFilter &&
+          requestedFilter
+          ;
     }).toList();
 
     return Scaffold(
@@ -325,7 +441,8 @@ class PartsPageState extends State<PartsPage> {
           ),
           ActionButton(
             onPressed: () => {
-              // _showAction(context, 1)
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => MergePage(project: widget.project))),
             },
             icon: const Icon(Icons.merge),
             message: "Merge Duplicates",

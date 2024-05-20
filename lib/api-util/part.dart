@@ -16,7 +16,13 @@ class Part {
   String number;
   String thumbnail;
   String material;
+
   String onshapeElementID;
+  String onshapeDocumentID;
+  String onshapeWVMID;
+  String onshapeWVMType;
+  String onshapePartID;
+
   int quantityNeeded;
   int quantityInStock;
   int quantityRequested;
@@ -32,6 +38,8 @@ class Part {
 
   List<LogEntry> logEntries;
 
+  int numCombines;
+
   late Widget partListDisplay;
 
   Part(
@@ -40,6 +48,10 @@ class Part {
       required this.thumbnail,
       required this.material,
       required this.onshapeElementID,
+      required this.onshapeDocumentID,
+      required this.onshapeWVMID,
+      required this.onshapeWVMType,
+      required this.onshapePartID,
       required this.quantityNeeded,
       required this.quantityInStock,
       required this.quantityRequested,
@@ -48,6 +60,7 @@ class Part {
       required this.dimension1,
       required this.dimension2,
       required this.dimension3,
+      required this.numCombines,
       required this.partType,
       required this.asigneeId}) {
     partListDisplay = PartListDisplay(part: this);
@@ -63,12 +76,17 @@ class Part {
       quantityInStock: json["quantityInStock"],
       quantityRequested: json["quantityRequested"],
       onshapeElementID: json["onshape_element_id"],
+      onshapeDocumentID: json["onshape_document_id"],
+      onshapeWVMID: json["onshape_wvm_id"],
+      onshapeWVMType: json["onshape_wvm_type"],
+      onshapePartID: json["onshape_part_id"],
       dimension1: json["dimension1"],
       dimension2: json["dimension2"],
       dimension3: json["dimension3"],
       asigneeName: json["asigneeName"] ?? "",
       asigneeId: json["asigneeId"] ?? -1,
       partType: json["partType"],
+      numCombines: json["part_combines"].length,
       logEntries: json["logEntries"]
           .map<LogEntry>((e) => LogEntry.fromJson(e))
           .toList(),
@@ -115,6 +133,23 @@ class Part {
       return [];
     }
   }
+
+  Future<void> merge(BuildContext context, List<Part> parts) async {
+    var response = await APISession.post("/part/$id/merge", jsonEncode({
+      "parts": parts.where((e) => e.id != id).map((e) => e.id).toList()
+    }));
+
+    if(context.mounted) {
+      if (response.statusCode == 200) {
+        APIConstants.showSuccessToast("Merged Parts", context);
+      } else {
+        APIConstants.showErrorToast(
+            "Failed to Merge Parts: Code ${response.statusCode} - ${response.body}",
+            context);
+      }
+    }
+  }
+
 
   Future<void> setPartType(BuildContext context, String newType) async {
     var response = await APISession.patch(
@@ -217,19 +252,21 @@ class Part {
     }
   }
 
-  Future<void> fulfillRequest(BuildContext context) async {
-    var response = await APISession.get("/part/$id/fulfill");
+  Future<void> fulfillRequest(BuildContext context, {int quantity = 1}) async {
+    var response = await APISession.get("/part/$id/fulfill?quantity=$quantity");
 
     if (context.mounted) {
       if (response.statusCode == 200) {
         APIConstants.showSuccessToast(
-            "Fulfilled Request for $number", MyApp.navigatorKey.currentContext);
+            "Fulfilled Request for $number", context);
 
-        quantityInStock++;
+        quantityInStock += quantity;
+        quantityRequested -= quantity;
+        quantityRequested = max<int>(quantityRequested, 0);
       } else {
         APIConstants.showErrorToast(
             "Failed to Fulfill Request for $number: Code ${response.statusCode} - ${response.body}",
-            MyApp.navigatorKey.currentContext);
+            context);
       }
     }
   }

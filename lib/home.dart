@@ -108,7 +108,7 @@ class HomeState extends State<Home> {
                             leftTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                     showTitles: true,
-                                    interval: 1,
+                                    interval: 2,
                                     reservedSize: 32)),
                             rightTitles: AxisTitles(
                                 sideTitles: SideTitles(

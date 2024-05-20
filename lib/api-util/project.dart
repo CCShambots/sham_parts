@@ -52,6 +52,23 @@ class Project {
         individualParts: []);
   }
 
+  List<List<Part>> duplicatePartNames() {
+    List<List<Part>> duplicates = [];
+
+    for (var part in parts) {
+      List<Part> matchingParts = parts
+        .where((element) =>
+          element.number == part.number && element != part)
+        .toList();
+
+      if (matchingParts.isNotEmpty && !duplicates.any((list) => list.contains(part))) {
+      matchingParts.add(part);
+      duplicates.add(matchingParts);
+      }
+    }
+
+    return duplicates;
+  }
   
   List<LogEntry> getLogEntries() {
     List<LogEntry> entries = [];

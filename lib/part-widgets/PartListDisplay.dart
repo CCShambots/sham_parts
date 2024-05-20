@@ -67,19 +67,22 @@ class PartListDisplayState extends State<PartListDisplay> {
                   color: Colors.blue,
                   size: 48,
                 )),
-            SizedBox(
-              width: 250,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    parseOut,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                  Text(widget.part.material),
-                ],
+            Tooltip(
+              message: widget.part.number,
+              child: SizedBox(
+                width: 250,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      parseOut,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 24),
+                    ),
+                    Text(widget.part.material),
+                  ],
+                ),
               ),
             ),
             Column(

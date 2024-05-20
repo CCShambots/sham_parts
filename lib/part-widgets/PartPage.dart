@@ -57,7 +57,7 @@ class _PartPageState extends State<PartPage> {
     List<User> result = await User.getAllUsers();
 
     int selected = result
-        .indexWhere((element) => element.email == widget.part.asigneeName);
+        .indexWhere((element) => element.name == widget.part.asigneeName);
 
     setState(() {
       users = result;
@@ -183,20 +183,29 @@ class _PartPageState extends State<PartPage> {
                                     : const Icon(Icons.edit)),
                           ],
                         ),
-                        DropdownButton<String>(
-                          value: widget.part.partType,
-                          onChanged: (newValue) async {
-                            await widget.part.setPartType(context, newValue!);
-                            setState(() {});
-                          },
-                          items: partTypes
-                              .map<DropdownMenuItem<String>>((String type) {
-                            return DropdownMenuItem<String>(
-                              value: type,
-                              child: Text(type),
-                            );
-                          }).toList(),
-                          hint: const Text("Select Part Type"),
+                        widget.part.numCombines > 0 ? Text("Combined with ${widget.part.numCombines} other parts", style: StyleConstants.subtitleStyle) : const SizedBox(),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("Part Type", style: StyleConstants.subtitleStyle),
+                            ),
+                            DropdownButton<String>(
+                              value: widget.part.partType,
+                              onChanged: (newValue) async {
+                                await widget.part.setPartType(context, newValue!);
+                                setState(() {});
+                              },
+                              items: partTypes
+                                  .map<DropdownMenuItem<String>>((String type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              hint: const Text("Select Part Type"),
+                            ),
+                          ],
                         ),
                         const SizedBox(
                           height: 24,
@@ -285,7 +294,7 @@ class _PartPageState extends State<PartPage> {
                             size: 48,
                           ))),
                   Tooltip(
-                      message: "Fulfill Request",
+                      message: "Fulfill 1 Part",
                       child: IconButton(
                           onPressed: () async {
                             await widget.part.fulfillRequest(context);
@@ -293,6 +302,18 @@ class _PartPageState extends State<PartPage> {
                           },
                           icon: const Icon(
                             Icons.check,
+                            color: Colors.blue,
+                            size: 48,
+                          ))),
+                          Tooltip(
+                      message: "Fulfill All Requested",
+                      child: IconButton(
+                          onPressed: () async {
+                            await widget.part.fulfillRequest(context, quantity: widget.part.quantityRequested);
+                            setState(() {});
+                          },
+                          icon: const Icon(
+                            Icons.done_all,
                             color: Colors.blue,
                             size: 48,
                           ))),
