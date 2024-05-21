@@ -68,6 +68,9 @@ class _PartPageState extends State<PartPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.part.number),
@@ -79,192 +82,16 @@ class _PartPageState extends State<PartPage> {
             children: [
               //This row centers the whole shabang
               const Row(),
-              Row(
+              !isMobile ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  GFImageOverlay(
-                    height: isMobile ? 200 : 400,
-                    width: isMobile ? 200 : 400,
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                    image: APISession.getOnshapeImage(widget.part.thumbnail),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      children: [
-                        Text(widget.part.material,
-                            style: StyleConstants.subtitleStyle),
-                        Text(
-                          "Part #: ${widget.part.id}",
-                          style: StyleConstants.subtitleStyle,
-                        ),
-                        Text(
-                          "On Bot: ${min<int>(widget.part.quantityInStock, widget.part.quantityNeeded)} / ${widget.part.quantityNeeded}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: StyleConstants.subtitleStyle.fontSize,
-                              color: widget.part.quantityInStock >=
-                                      widget.part.quantityNeeded
-                                  ? Colors.green
-                                  : (widget.part.quantityInStock > 0)
-                                      ? Colors.yellow
-                                      : Colors.red),
-                        ),
-                        Text(
-                          "Extra: ${max<int>(widget.part.quantityInStock - widget.part.quantityNeeded, 0)}",
-                          style: StyleConstants.subtitleStyle,
-                        ),
-                        Text(
-                          "Requested: ${widget.part.quantityRequested}",
-                          style: StyleConstants.subtitleStyle,
-                        ),
-                        Row(
-                          children: [
-                            editingDimensions
-                                ? Row(
-                                    children: [
-                                      Text("Dimensions: ",
-                                          style: StyleConstants.subtitleStyle),
-                                      SizedBox(
-                                        width: 75,
-                                        height: 45,
-                                        child: TextField(
-                                          controller: d1Controller,
-                                          decoration: const InputDecoration(
-                                              hintText: 'D1'),
-                                        ),
-                                      ),
-                                      Text("\" x ",
-                                          style: StyleConstants.subtitleStyle),
-                                      SizedBox(
-                                        width: 75,
-                                        height: 45,
-                                        child: TextField(
-                                          controller: d2Controller,
-                                          decoration: const InputDecoration(
-                                              hintText: 'D2'),
-                                        ),
-                                      ),
-                                      Text("\" x ",
-                                          style: StyleConstants.subtitleStyle),
-                                      SizedBox(
-                                        width: 75,
-                                        height: 45,
-                                        child: TextField(
-                                          controller: d3Controller,
-                                          decoration: const InputDecoration(
-                                              hintText: 'D3'),
-                                        ),
-                                      ),
-                                      Text("\"",
-                                          style: StyleConstants.subtitleStyle),
-                                    ],
-                                  )
-                                : Text(
-                                    "Dimensions: ${widget.part.dimension1}\" x ${widget.part.dimension2}\" x ${widget.part.dimension3}\"",
-                                    style: StyleConstants.subtitleStyle,
-                                  ),
-                            IconButton(
-                                onPressed: () async {
-                                  if (editingDimensions) {
-                                    await widget.part.setDimensions(
-                                        context,
-                                        d1Controller.text,
-                                        d2Controller.text,
-                                        d3Controller.text);
-                                  }
-
-                                  setState(() {
-                                    editingDimensions = !editingDimensions;
-                                  });
-                                },
-                                icon: editingDimensions
-                                    ? const Icon(Icons.save)
-                                    : const Icon(Icons.edit)),
-                          ],
-                        ),
-                        widget.part.numCombines > 0 ? Text("Combined with ${widget.part.numCombines} other parts", style: StyleConstants.subtitleStyle) : const SizedBox(),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text("Part Type", style: StyleConstants.subtitleStyle),
-                            ),
-                            DropdownButton<String>(
-                              value: widget.part.partType,
-                              onChanged: (newValue) async {
-                                await widget.part.setPartType(context, newValue!);
-                                setState(() {});
-                              },
-                              items: partTypes
-                                  .map<DropdownMenuItem<String>>((String type) {
-                                return DropdownMenuItem<String>(
-                                  value: type,
-                                  child: Text(type),
-                                );
-                              }).toList(),
-                              hint: const Text("Select Part Type"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        users.isEmpty
-                            ? const CircularProgressIndicator()
-                            : Row(
-                                children: [
-                                  Text(
-                                    "Assign${widget.part.asigneeName != "" ? "ed" : ""} to: ",
-                                    style: StyleConstants.subtitleStyle,
-                                  ),
-                                  DropdownButton<User>(
-                                    value: userIndex != -1
-                                        ? users[userIndex]
-                                        : null,
-                                    onChanged: (newValue) async {
-                                      if (newValue != null) {
-                                        await widget.part
-                                            .assignUser(context, newValue);
-
-                                        setState(() {
-                                          userIndex = users.indexWhere(
-                                              (element) =>
-                                                  element.email ==
-                                                  newValue.email);
-                                        });
-                                      } else {
-                                        //This means the user selected "None"
-                                        await widget.part.unassignUser(context);
-                                        setState(() {
-                                          userIndex = -1;
-                                        });
-                                      }
-                                    },
-                                    items: [
-                                      const DropdownMenuItem<User>(
-                                        value: null,
-                                        child: Text("None"),
-                                      ),
-                                      ...users.map<DropdownMenuItem<User>>(
-                                          (User user) {
-                                        return DropdownMenuItem<User>(
-                                          value: user,
-                                          child: Text(user.name),
-                                        );
-                                      }),
-                                    ],
-                                    hint: userIndex != -1
-                                        ? Text(users[userIndex].name)
-                                        : const Text("None"),
-                                  ),
-                                ],
-                              )
-                      ],
-                    ),
-                  ),
+                  PartImage(),
+                  PartDetails(context, isMobile),
                 ],
-              ),
+              ) : Column(children: [
+                PartImage(),
+                PartDetails(context, isMobile),
+              ],),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -335,5 +162,199 @@ class _PartPageState extends State<PartPage> {
             ],
           ),
         ));
+  }
+
+  Padding PartDetails(BuildContext context, bool mobile) {
+    return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      Text(widget.part.material,
+                          style: StyleConstants.subtitleStyle),
+                      Text(
+                        "Part #: ${widget.part.id}",
+                        style: StyleConstants.subtitleStyle,
+                      ),
+                      Text(
+                        "On Bot: ${min<int>(widget.part.quantityInStock, widget.part.quantityNeeded)} / ${widget.part.quantityNeeded}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: StyleConstants.subtitleStyle.fontSize,
+                            color: widget.part.quantityInStock >=
+                                    widget.part.quantityNeeded
+                                ? Colors.green
+                                : (widget.part.quantityInStock > 0)
+                                    ? Colors.yellow
+                                    : Colors.red),
+                      ),
+                      Text(
+                        "Extra: ${max<int>(widget.part.quantityInStock - widget.part.quantityNeeded, 0)}",
+                        style: StyleConstants.subtitleStyle,
+                      ),
+                      Text(
+                        "Requested: ${widget.part.quantityRequested}",
+                        style: StyleConstants.subtitleStyle,
+                      ),
+                      !isMobile ? Row(
+                        children: [
+                          editingDimensions
+                              ? Row(
+                                  children: [
+                                    Text("Dimensions: ",
+                                        style: StyleConstants.subtitleStyle,),
+                                    SizedBox(
+                                      width: 75,
+                                      height: 45,
+                                      child: TextField(
+                                        controller: d1Controller,
+                                        decoration: const InputDecoration(
+                                            hintText: 'D1'),
+                                      ),
+                                    ),
+                                    Text("\" x ",
+                                        style: StyleConstants.subtitleStyle),
+                                    SizedBox(
+                                      width: 75,
+                                      height: 45,
+                                      child: TextField(
+                                        controller: d2Controller,
+                                        decoration: const InputDecoration(
+                                            hintText: 'D2'),
+                                      ),
+                                    ),
+                                    Text("\" x ",
+                                        style: StyleConstants.subtitleStyle),
+                                    SizedBox(
+                                      width: 75,
+                                      height: 45,
+                                      child: TextField(
+                                        controller: d3Controller,
+                                        decoration: const InputDecoration(
+                                            hintText: 'D3'),
+                                      ),
+                                    ),
+                                    Text("\"",
+                                        style: StyleConstants.subtitleStyle),
+                                  ],
+                                )
+                              : Text(
+                                  "Dimensions: ${widget.part.dimension1}\" x ${widget.part.dimension2}\" x ${widget.part.dimension3}\"",
+                                  style: StyleConstants.subtitleStyle,
+                                ),
+                          IconButton(
+                              onPressed: () async {
+                                if (editingDimensions) {
+                                  await widget.part.setDimensions(
+                                      context,
+                                      d1Controller.text,
+                                      d2Controller.text,
+                                      d3Controller.text);
+                                }
+
+                                setState(() {
+                                  editingDimensions = !editingDimensions;
+                                });
+                              },
+                              icon: editingDimensions
+                                  ? const Icon(Icons.save)
+                                  : const Icon(Icons.edit)),
+                        ],
+                      ) : Text(
+                                  "${widget.part.dimension1}\" x ${widget.part.dimension2}\" x ${widget.part.dimension3}\"",
+                                  style: StyleConstants.subtitleStyle,
+                                ),
+                       const SizedBox(
+                        height: 24,
+                      ),
+                      widget.part.numCombines > 0 ? Text("Combined with ${widget.part.numCombines} other parts", style: StyleConstants.subtitleStyle) : const SizedBox(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Part Type:", style: StyleConstants.subtitleStyle),
+                          ),
+                          DropdownButton<String>(
+                            value: widget.part.partType,
+                            onChanged: (newValue) async {
+                              await widget.part.setPartType(context, newValue!);
+                              setState(() {});
+                            },
+                            items: partTypes
+                                .map<DropdownMenuItem<String>>((String type) {
+                              return DropdownMenuItem<String>(
+                                value: type,
+                                child: Text(type),
+                              );
+                            }).toList(),
+                            hint: const Text("Select Part Type"),
+                          ),
+                        ],
+                      ),
+                      users.isEmpty
+                          ? const CircularProgressIndicator()
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  "Assign${widget.part.asigneeName != "" ? "ed" : ""} To: ",
+                                  style: StyleConstants.subtitleStyle,
+                                ),
+                                DropdownButton<User>(
+                                  value: userIndex != -1
+                                      ? users[userIndex]
+                                      : null,
+                                  onChanged: (newValue) async {
+                                    if (newValue != null) {
+                                      await widget.part
+                                          .assignUser(context, newValue);
+
+                                      setState(() {
+                                        userIndex = users.indexWhere(
+                                            (element) =>
+                                                element.email ==
+                                                newValue.email);
+                                      });
+                                    } else {
+                                      //This means the user selected "None"
+                                      await widget.part.unassignUser(context);
+                                      setState(() {
+                                        userIndex = -1;
+                                      });
+                                    }
+                                  },
+                                  items: [
+                                    const DropdownMenuItem<User>(
+                                      value: null,
+                                      child: Text("None"),
+                                    ),
+                                    ...users.map<DropdownMenuItem<User>>(
+                                        (User user) {
+                                      return DropdownMenuItem<User>(
+                                        value: user,
+                                        child: Text(user.name),
+                                      );
+                                    }),
+                                  ],
+                                  hint: userIndex != -1
+                                      ? Text(users[userIndex].name)
+                                      : const Text("None"),
+                                ),
+                              ],
+                            )
+                    ],
+                  ),
+                );
+  }
+
+  GFImageOverlay PartImage() {
+    return GFImageOverlay(
+                  height: isMobile ? 200 : 400,
+                  width: isMobile ? 200 : 400,
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  image: APISession.getOnshapeImage(widget.part.thumbnail),
+                );
   }
 }

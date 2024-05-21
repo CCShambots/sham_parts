@@ -207,6 +207,7 @@ class ActionButton extends StatelessWidget {
         color: theme.colorScheme.secondary,
         elevation: 4,
         child: IconButton(
+          iconSize: 36,
           onPressed: onPressed,
           icon: icon,
           color: theme.colorScheme.onSecondary,

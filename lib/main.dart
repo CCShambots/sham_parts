@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:sham_parts/account-pages/accountPage.dart';
+import 'package:sham_parts/account-pages/settingsPage.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/onshapeDocument.dart';
+import 'package:sham_parts/api-util/projectSelect.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
@@ -87,16 +89,20 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
   @override
   void initState() {
+    super.initState();
+
     initVersion();
-    reloadProjectList(true);
 
     regenWidgetOptions();
 
     loadUser();
 
+    loadProjectWithoutSavingNewKey();
+
     setState(() {
       selectedIndex = pageViewController.initialPage;
     });
+
   }
 
   void loadUser() async {
@@ -106,6 +112,12 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       setState(() {
         user = newUser;
       });
+    } else {
+      //Route user to settings page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SettingsPage(user: user, project: project, appbar: true, loadProject: loadProject,)),
+      );
     }
   }
 
@@ -113,7 +125,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     widgetOptions = [
       Home(user: user, project: project,),
       PartsPage(project: project),
-      AccountPage(user: user, project: project,)
+      SettingsPage(user: user, project: project, loadProject: loadProject,)
     ];
   }
 
@@ -127,35 +139,31 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     });
   }
 
-  void reloadProjectList(bool shouldLoadProject) async {
+  void loadProjectWithoutSavingNewKey() async  {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
 
-    List<String> projectList = await Project.loadProjects();
+    Project activeProject = await Project.loadProject(projectKey, context);
 
-    if (projectList.isEmpty) {
-      projectList = ["NO PROJECT"];
-    }
+    print("Loaded Project");
 
     setState(() {
-      projectKeys = projectList;
+      project = activeProject;
     });
 
-    if (projectKey == "" && projectKeys.isNotEmpty) {
-      //Make the user select project
-      //TODO: Select project dialog
-    } else if (shouldLoadProject) {
-      loadProject(projectKey);
-    }
+    regenWidgetOptions();
   }
 
+
+ 
   void loadProject(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString(APIConstants().currentProject, key);
 
-    Project activeProject = await Project.loadProject(key);
+    Project activeProject = await Project.loadProject(key, context);
 
     print("Loaded Project");
 
@@ -187,7 +195,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     List<OnshapeDocument> newDocs =
         await OnshapeDocument.queryDocuments(currentQuery, () {
-      reloadProjectList(false);
     });
 
     setState(() {
@@ -355,6 +362,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       appBar: AppBar(
         title: const Text("ShamParts"),
         actions: [
+          user.roles.contains("admin") && !isMobile ?
           Padding(
               padding: const EdgeInsets.only(right: 16),
               child: IconButton(
@@ -365,7 +373,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                 onPressed: () {
                   showWoltModal(pageIndexNotifier, page1);
                 },
-              ))
+              )) : Container()
         ],
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
@@ -389,7 +397,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                 CurvedNavigationBarItem(
                     child: Icon(Icons.list), label: 'Parts'),
                 CurvedNavigationBarItem(
-                    child: Icon(Icons.account_circle), label: 'Account')
+                    child: Icon(Icons.settings), label: 'Settings')
               ],
               index: selectedIndex,
               backgroundColor: Theme.of(context).colorScheme.background,
@@ -398,9 +406,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
               onTap: onItemTapped,
             )
           : null,
-      onDrawerChanged: (isOpened) {
-        reloadProjectList(true);
-      },
+      onDrawerChanged: (isOpened) {},
       drawer: !isMobile
           ? Drawer(
               child: ListView(
@@ -420,23 +426,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20),
                             ),
-                            DropdownMenu<String>(
-                                label: const Text('Active Project'),
-                                controller: activeProjectController,
-                                initialSelection: project.name,
-                                onSelected: (val) {
-                                  loadProject(val ?? "");
-                                },
-                                menuStyle: const MenuStyle(
-                                    minimumSize: MaterialStatePropertyAll(
-                                        Size.fromWidth(200))),
-                                dropdownMenuEntries: List.generate(
-                                  projectKeys.length,
-                                  (index) => DropdownMenuEntry(
-                                    value: projectKeys[index],
-                                    label: projectKeys[index],
-                                  ),
-                                ))
+                            ProjectSelect(project: project, loadProject: loadProject)
                           ])),
                   ListTile(
                     leading: const Icon(Icons.home),
@@ -452,21 +442,20 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                       onItemTapped(1);
                     },
                   ),
-                  Container(
-                      child: Align(
-                          alignment: FractionalOffset.bottomCenter,
-                          child: Column(
-                            children: <Widget>[
-                              const Divider(),
-                              ListTile(
-                                leading: const Icon(Icons.account_circle),
-                                title: const Text('Account'),
-                                onTap: () {
-                                  onItemTapped(2);
-                                },
-                              ),
-                            ],
-                          ))),
+                  Align(
+                      alignment: FractionalOffset.bottomCenter,
+                      child: Column(
+                        children: <Widget>[
+                          const Divider(),
+                          ListTile(
+                            leading: const Icon(Icons.settings),
+                            title: const Text('Settings'),
+                            onTap: () {
+                              onItemTapped(2);
+                            },
+                          ),
+                        ],
+                      )),
                 ],
               ),
             )

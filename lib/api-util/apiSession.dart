@@ -11,7 +11,18 @@ class APISession {
 
   static String osKey = "";
 
+  static String currentUrl = APIConstants().baseUrl;
+
+  static Future<bool> ping(String address) async {
+    return http.get(Uri.parse("$address/")).then((value) => value.statusCode == 200);
+  }
+
   static Future<http.Response> get(String url) async {
+    http.Response response = await http.get(Uri.parse(currentUrl+url), headers: headers);
+    return response;
+  }
+
+  static Future<http.Response> getFromLeader(String url) async {
     http.Response response = await http.get(Uri.parse(APIConstants().baseUrl+url), headers: headers);
     return response;
   }
@@ -26,12 +37,12 @@ class APISession {
       if(i != queryParams.length-1) concatQueryParams+="&";
     }
 
-    http.Response response = await http.get(Uri.parse(APIConstants().baseUrl+url+concatQueryParams), headers: headers);
+    http.Response response = await http.get(Uri.parse(currentUrl+url+concatQueryParams), headers: headers);
     return response;
   }
 
   static Future<http.Response> post(String url, dynamic data) async {
-    http.Response response = await http.post(Uri.parse(APIConstants().baseUrl+url), body: data, headers: headers);
+    http.Response response = await http.post(Uri.parse(currentUrl+url), body: data, headers: headers);
     return response;
   }
 
@@ -45,13 +56,13 @@ class APISession {
       if(i != queryParams.length-1) concatQueryParams+="&";
     }
 
-    http.Response response = await http.post(Uri.parse(APIConstants().baseUrl+url+concatQueryParams), headers: headers);
+    http.Response response = await http.post(Uri.parse(currentUrl+url+concatQueryParams), headers: headers);
     return response;
   }
 
 
   static Future<http.Response> patch(String url, dynamic data) async {
-    http.Response response = await http.patch(Uri.parse(APIConstants().baseUrl+url), body: data, headers: headers);
+    http.Response response = await http.patch(Uri.parse(currentUrl+url), body: data, headers: headers);
     return response;
   }
 
@@ -65,27 +76,34 @@ class APISession {
       if(i != queryParams.length-1) concatQueryParams+="&";
     }
 
-    http.Response response = await http.patch(Uri.parse(APIConstants().baseUrl+url+concatQueryParams), headers: headers);
+    http.Response response = await http.patch(Uri.parse(currentUrl+url+concatQueryParams), headers: headers);
     return response;
   }
 
   static Future<http.Response> delete(String url) async {
-    http.Response response = await http.delete(Uri.parse(APIConstants().baseUrl+url), headers: headers);
+    http.Response response = await http.delete(Uri.parse(currentUrl+url), headers: headers);
     return response;
   }
 
-  static void updateKeys() async{
+  static Future<void> updateKeys() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String key = prefs.getString(APIConstants().onshapeKey) ?? "";
+
+    String apiUrl = prefs.getString(APIConstants().serverKey) ?? APIConstants().baseUrl;
+
+    currentUrl = apiUrl;
 
     if(key.isNotEmpty) {
       osKey = key;
     } else {
-      key = (await get("/onshape/key")).body;
 
-      osKey = key;
+      var response =await get("/onshape/key");
 
-      prefs.setString(APIConstants().onshapeKey, key);
+      if(response.statusCode == 200) {
+        key = response.body;
+        osKey = key;
+        prefs.setString(APIConstants().onshapeKey, key);
+      } 
     }
 
 

@@ -164,11 +164,40 @@ class LogEntryWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(logEntry.type, style: StyleConstants.h3Style),
-          Text("QTY:${logEntry.quantity.toString()}",
-              style: StyleConstants.h3Style),
-          Text(logEntry.message, style: StyleConstants.h3Style),
+          // Text("QTY:${logEntry.quantity.toString()}",
+          //     style: StyleConstants.h3Style),
+          // Text(logEntry.message, style: StyleConstants.h3Style),
           Text(logEntry.readableDate, style: StyleConstants.h3Style),
-          Text(logEntry.author, style: StyleConstants.h3Style),
+          IconButton(onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Log Entry Details'),
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('ID: ${logEntry.id}'),
+                      Text('Type: ${logEntry.type}'),
+                      Text('Date: ${logEntry.readableDate}'),
+                      Text('Quantity: ${logEntry.quantity}'),
+                      Text('Message: ${logEntry.message}'),
+                      Text('Author: ${logEntry.author}'),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }, icon: const Icon(Icons.info))
         ],
       ),
     );

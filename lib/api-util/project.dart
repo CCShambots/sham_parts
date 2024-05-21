@@ -175,12 +175,15 @@ class Project {
     return materials;
   }
 
-  static Future<Project> loadProject(String key) async {
+  static Future<Project> loadProject(String key, BuildContext context) async {
+    //Make sure keys are updated 
+    await APISession.updateKeys();
+
     var response = await APISession.get("/project/$key");
+
 
     if (response.statusCode == 404) {
       //Old project doesn't exist - clear it
-      BuildContext? context = MyApp.navigatorKey.currentState?.context;
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 

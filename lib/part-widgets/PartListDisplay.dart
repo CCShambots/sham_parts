@@ -41,6 +41,8 @@ class PartListDisplayState extends State<PartListDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+
     final parseOut = widget.part.number.replaceAll(regex, "");
 
     return GestureDetector(
@@ -56,77 +58,108 @@ class PartListDisplayState extends State<PartListDisplay> {
         padding: StyleConstants.padding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-                onPressed: () {
-                  showDialog(context: context, builder: buildImagePopup);
-                },
-                tooltip: "Show Part Image",
-                icon: const Icon(
-                  Icons.image,
-                  color: Colors.blue,
-                  size: 48,
-                )),
-            Tooltip(
-              message: widget.part.number,
-              child: SizedBox(
-                width: 250,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      parseOut,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 24),
-                    ),
-                    Text(widget.part.material),
-                  ],
-                ),
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "${min<int>(widget.part.quantityInStock, widget.part.quantityNeeded)}/${widget.part.quantityNeeded}",
-                  style: TextStyle(
-                      fontWeight: statStyle.fontWeight,
-                      fontSize: statStyle.fontSize,
-                      color: widget.part.quantityInStock >=
-                              widget.part.quantityNeeded
-                          ? Colors.green
-                          : (widget.part.quantityInStock > 0)
-                              ? Colors.yellow
-                              : Colors.red),
-                ),
-                const Text("Robot")
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "${max<int>(widget.part.quantityInStock - widget.part.quantityNeeded, 0)}",
-                  style: statStyle,
-                ),
-                const Text("Extra")
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "${widget.part.quantityRequested}",
-                  style: statStyle,
-                ),
-                const Text("Requested")
-              ],
-            ),
+          children: !isMobile ? [
+            ImageButton(context),
+            PartName(parseOut, isMobile),
+            PartType(),
+            QuantityHave(),
+            QuantityExtra(),
+            QuantityRequested(),
+          ] : [
+            PartName(parseOut, isMobile),
+            QuantityHave(),
+            QuantityExtra(),
           ],
         ),
       ),
     );
+  }
+
+  Column QuantityRequested() {
+    return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${widget.part.quantityRequested}",
+                style: statStyle,
+              ),
+              const Text("Requested")
+            ],
+          );
+  }
+
+  Column QuantityExtra() {
+    return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${max<int>(widget.part.quantityInStock - widget.part.quantityNeeded, 0)}",
+                style: statStyle,
+              ),
+              const Text("Extra")
+            ],
+          );
+  }
+
+  Column QuantityHave() {
+    return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${min<int>(widget.part.quantityInStock, widget.part.quantityNeeded)}/${widget.part.quantityNeeded}",
+                style: TextStyle(
+                    fontWeight: statStyle.fontWeight,
+                    fontSize: statStyle.fontSize,
+                    color: widget.part.quantityInStock >=
+                            widget.part.quantityNeeded
+                        ? Colors.green
+                        : (widget.part.quantityInStock > 0)
+                            ? Colors.yellow
+                            : Colors.red),
+              ),
+              const Text("Robot")
+            ],
+          );
+  }
+
+  Text PartType() {
+    return Text(
+            widget.part.partType,
+            style: StyleConstants.subtitleStyle,
+          );
+  }
+
+  Tooltip PartName(String parseOut, bool mobile) {
+    return Tooltip(
+            message: widget.part.number,
+            child: SizedBox(
+              width: !mobile ? 250 : 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    parseOut,
+                    overflow: TextOverflow.ellipsis,
+                    style: StyleConstants.subtitleStyle,
+                  ),
+                  Text(widget.part.material, overflow: TextOverflow.ellipsis,),
+                ],
+              ),
+            ),
+          );
+  }
+
+  IconButton ImageButton(BuildContext context) {
+    return IconButton(
+              onPressed: () {
+                showDialog(context: context, builder: buildImagePopup);
+              },
+              tooltip: "Show Part Image",
+              icon: const Icon(
+                Icons.image,
+                color: Colors.blue,
+                size: 48,
+              ));
   }
 }
 

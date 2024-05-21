@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/part-widgets/PartListDisplay.dart';
 import 'package:sham_parts/util/indicator.dart';
 
 class Home extends StatefulWidget {
@@ -28,6 +32,8 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+
     bool oneRowGraph = MediaQuery.of(context).size.width > 650;
 
     return Scaffold(
@@ -39,8 +45,10 @@ class HomeState extends State<Home> {
           children: [
             Text(
               widget.project.name,
-              style: StyleConstants.titleStyle,
-              overflow: TextOverflow.ellipsis,
+              style: !isMobile
+                  ? StyleConstants.titleStyle
+                  : StyleConstants.subtitleStyle,
+              textAlign: TextAlign.center,
             ),
             oneRowGraph
                 ? Row(
@@ -58,6 +66,25 @@ class HomeState extends State<Home> {
                       lineGraph(),
                     ],
                   ),
+            Text(
+              "Your Assigned Parts",
+              style: !isMobile
+                  ? StyleConstants.titleStyle
+                  : StyleConstants.subtitleStyle,
+              textAlign: TextAlign.center,
+            ),
+            Container(
+              height: 300,
+              child: ListView(
+                children: widget.project.parts
+                    .where((e) {
+                      return e.quantityRequested > 0 &&
+                          e.asigneeId == widget.user.id;
+                    })
+                    .map((e) => PartListDisplay(part: e))
+                    .toList(),
+              ),
+            )
           ],
         ),
       ),
@@ -108,8 +135,8 @@ class HomeState extends State<Home> {
                             leftTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                     showTitles: true,
-                                    interval: 2,
-                                    reservedSize: 32)),
+                                    // interval: ,
+                                    reservedSize: 40)),
                             rightTitles: AxisTitles(
                                 sideTitles: SideTitles(
                               showTitles: false,
@@ -183,20 +210,6 @@ class HomeState extends State<Home> {
               aspectRatio: 1,
               child: PieChart(
                 PieChartData(
-                  // pieTouchData: PieTouchData(
-                  //   touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                  //     setState(() {
-                  //       if (!event.isInterestedForInteractions ||
-                  //           pieTouchResponse == null ||
-                  //           pieTouchResponse.touchedSection == null) {
-                  //         touchedIndexGraph1 = -1;
-                  //         return;
-                  //       }
-                  //       touchedIndexGraph1 = pieTouchResponse
-                  //           .touchedSection!.touchedSectionIndex;
-                  //     });
-                  //   },
-                  // ),
                   sections: [
                     PieChartSectionData(
                       color: Colors.red,
