@@ -1,0 +1,9 @@
+app-key=EVN3
+build-type=configuration
+flutter=3.22.0
+minimal-ios-version=14.0
+app-version=0.0.1
+build-number=1
+mode=release
+target=lib/main.dart
+tunnel-host=localhost
