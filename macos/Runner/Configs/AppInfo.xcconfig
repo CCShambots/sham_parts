@@ -8,7 +8,7 @@
 PRODUCT_NAME = sham_parts
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.ccshambots.shamParts
+PRODUCT_BUNDLE_IDENTIFIER = com.ccshambots.shamparts
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.ccshambots. All rights reserved.
