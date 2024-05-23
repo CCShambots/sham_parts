@@ -126,7 +126,7 @@ class PartsPageState extends State<PartsPage> {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             
-            insetPadding: EdgeInsets.all(24),
+            insetPadding: const EdgeInsets.all(24),
             actions: [
               TextButton(
                 onPressed: () {

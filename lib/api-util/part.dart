@@ -8,7 +8,6 @@ import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/main.dart';
 import 'package:sham_parts/part-widgets/PartListDisplay.dart';
 
 class Part {

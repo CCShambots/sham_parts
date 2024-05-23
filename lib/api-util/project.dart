@@ -5,7 +5,6 @@ import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum RoleType {
@@ -150,7 +149,7 @@ class Project {
     List<String> materials = [];
 
     for (var part in parts) {
-      String material = part.material!;
+      String material = part.material;
       bool doneSomething = false;
 
       for (var existingMaterial in materials) {
@@ -189,7 +188,7 @@ class Project {
 
       prefs.setString(APIConstants().currentProject, "");
 
-      if (context != null && context.mounted) {
+      if (context.mounted) {
         APIConstants.showErrorToast(
             'Old Project No Longer Exists... Resetting to Default.', context);
       }

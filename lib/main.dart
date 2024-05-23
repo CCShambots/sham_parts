@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
-        scaffoldBackgroundColor: Theme.of(context).colorScheme.background,
+        scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
       ),
       darkTheme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -400,7 +399,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                     child: Icon(Icons.settings), label: 'Settings')
               ],
               index: selectedIndex,
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               color: Theme.of(context).colorScheme.inversePrimary,
               animationDuration: const Duration(milliseconds: 250),
               onTap: onItemTapped,

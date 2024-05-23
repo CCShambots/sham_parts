@@ -214,7 +214,7 @@ class SignInState extends State<SignInWidget> {
                           Text(!creatingAccount ? "Create Account" : "Sign in")),
                   TextButton(
                       onPressed: () {}, child: const Text("Forgot Password?")),
-                  ServerSelect(),
+                  const ServerSelect(),
                 ],
               ),
             ),

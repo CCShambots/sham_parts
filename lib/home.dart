@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
@@ -73,7 +72,7 @@ class HomeState extends State<Home> {
                   : StyleConstants.subtitleStyle,
               textAlign: TextAlign.center,
             ),
-            Container(
+            SizedBox(
               height: 300,
               child: ListView(
                 children: widget.project.parts

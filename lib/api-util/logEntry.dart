@@ -131,7 +131,7 @@ class LogEntry {
     String message = "";
     int quantity = 0;
     for (var entry in entries) {
-      message += entry.message + " ";
+      message += "${entry.message} ";
       quantity += entry.quantity;
     }
 
@@ -173,7 +173,7 @@ class LogEntryWidget extends StatelessWidget {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Log Entry Details'),
+                  title: const Text('Log Entry Details'),
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,

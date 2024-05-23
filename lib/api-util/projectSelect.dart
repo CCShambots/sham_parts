@@ -11,7 +11,7 @@ class ProjectSelect extends StatefulWidget {
   final Project project;
   final LoadProjectFunction loadProject;
 
-  ProjectSelect({super.key, required this.project, required this.loadProject});
+  const ProjectSelect({super.key, required this.project, required this.loadProject});
 
   @override
   State<ProjectSelect> createState() => _ProjectSelectState();
