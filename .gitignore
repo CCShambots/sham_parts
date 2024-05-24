@@ -45,3 +45,5 @@ app.*.map.json
 android/key.properties
 android/shamparts-keystore.jks
 android/service-account.json
+
+.odevio
