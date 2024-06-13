@@ -223,6 +223,12 @@ class Project {
       compounds: json["compounds"]?.map<Compound>((e) => Compound.fromJson(e)).toList() ?? [],
     );
 
+    proj.compounds.forEach((e) {
+      e.parts.forEach((part) {
+        part.acquireAndAssignPart(proj);
+      });
+    });
+
     RegExp regex = RegExp("[0-9]{2,}-20[0-9]{2}-P-[0-9]{4}");
 
     proj.parts.sort((a, b) {

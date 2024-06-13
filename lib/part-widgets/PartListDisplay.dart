@@ -45,6 +45,7 @@ class PartListDisplayState extends State<PartListDisplay> {
             widget.part.ImageButton(context),
             widget.part.PartName(parseOut, isMobile),
             widget.part.PartType(),
+            widget.part.Asignee(),
             widget.part.QuantityHave(),
             widget.part.QuantityExtra(),
             widget.part.QuantityRequested(),

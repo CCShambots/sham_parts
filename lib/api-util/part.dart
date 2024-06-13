@@ -309,7 +309,7 @@ class Part {
 
 
   //Methods for widget display stuff
-  Column QuantityRequested() {
+  Widget QuantityRequested() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -322,7 +322,7 @@ class Part {
     );
   }
 
-  Column QuantityExtra() {
+  Widget QuantityExtra() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -335,7 +335,7 @@ class Part {
     );
   }
 
-  Column QuantityHave() {
+  Widget QuantityHave() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -355,14 +355,27 @@ class Part {
     );
   }
 
-  Text PartType() {
-    return Text(
-      partType,
-      style: StyleConstants.subtitleStyle,
+  Widget PartType() {
+    return Tooltip(
+      message: "Part Type",
+      child: Text(
+        partType,
+        style: StyleConstants.subtitleStyle,
+      ),
     );
   }
 
-  Tooltip PartThickness() {
+  Widget Asignee() {
+    return Tooltip(
+      message: "Assigned to:",
+      child: Text(
+        asigneeName,
+        style: StyleConstants.subtitleStyle,
+      ),
+    );
+  }
+
+  Widget PartThickness() {
     return Tooltip(
       message: "$dimension1\" x $dimension2\" x $dimension3\"",
       child: Text(
@@ -372,7 +385,7 @@ class Part {
     );
   }
 
-  Tooltip PartName(String parseOut, bool mobile) {
+  Widget PartName(String parseOut, bool mobile) {
     return Tooltip(
       message: number,
       child: SizedBox(

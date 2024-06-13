@@ -62,6 +62,10 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
             thickness: thicknessController.text, 
             camDone: false,
             camInstructions: [],
+            asigneeId: -1,
+            asigneeName: "",
+            logEntries: [],
+            thumbnail: ""
           );
           Compound? generatedCompound = await compound.saveToDatabase(widget.project, context);
           if(generatedCompound != null) {

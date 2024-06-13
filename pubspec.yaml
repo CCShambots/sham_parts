@@ -30,6 +30,9 @@ dependencies:
   data_table_2: ^2.5.12
   flutter_floating_bottom_bar: ^1.2.0
   fl_chart: ^0.68.0
+  file_picker: ^8.0.5
+  pasteboard: ^0.2.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
