@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:getwidget/components/image/gf_image_overlay.dart';
 
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
@@ -63,6 +64,31 @@ class Part {
       required this.partType,
       required this.asigneeId}) {
     partListDisplay = PartListDisplay(part: this);
+  }
+
+  factory Part.blank() {
+    return Part(
+      id: 0,
+      number: '',
+      thumbnail: '',
+      material: '',
+      onshapeElementID: '',
+      onshapeDocumentID: '',
+      onshapeWVMID: '',
+      onshapeWVMType: '',
+      onshapePartID: '',
+      quantityNeeded: 0,
+      quantityInStock: 0,
+      quantityRequested: 0,
+      logEntries: [],
+      asigneeName: '',
+      dimension1: '',
+      dimension2: '',
+      dimension3: '',
+      numCombines: 0,
+      partType: '',
+      asigneeId: 0,
+    );
   }
 
   static Part fromJson(json) {
@@ -279,5 +305,120 @@ class Part {
     } else {
       return false;
     }
+  }
+
+
+  //Methods for widget display stuff
+  Column QuantityRequested() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "$quantityRequested",
+          style: StyleConstants.statStyle,
+        ),
+        const Text("Requested")
+      ],
+    );
+  }
+
+  Column QuantityExtra() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${max<int>(quantityInStock - quantityNeeded, 0)}",
+          style: StyleConstants.statStyle,
+        ),
+        const Text("Extra")
+      ],
+    );
+  }
+
+  Column QuantityHave() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${min<int>(quantityInStock, quantityNeeded)}/${quantityNeeded}",
+          style: TextStyle(
+              fontWeight: StyleConstants.statStyle.fontWeight,
+              fontSize: StyleConstants.statStyle.fontSize,
+              color: quantityInStock >= quantityNeeded
+                  ? Colors.green
+                  : (quantityInStock > 0)
+                      ? Colors.yellow
+                      : Colors.red),
+        ),
+        const Text("Robot")
+      ],
+    );
+  }
+
+  Text PartType() {
+    return Text(
+      partType,
+      style: StyleConstants.subtitleStyle,
+    );
+  }
+
+  Tooltip PartThickness() {
+    return Tooltip(
+      message: "$dimension1\" x $dimension2\" x $dimension3\"",
+      child: Text(
+        "$dimension1\"",
+        style: StyleConstants.subtitleStyle,
+      ),
+    );
+  }
+
+  Tooltip PartName(String parseOut, bool mobile) {
+    return Tooltip(
+      message: number,
+      child: SizedBox(
+        width: !mobile ? 250 : 100,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              parseOut,
+              overflow: TextOverflow.ellipsis,
+              style: StyleConstants.subtitleStyle,
+            ),
+            Text(
+              material,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildImagePopup(BuildContext context) {
+    return AlertDialog(
+      title: Text(number),
+      content: thumbnail != "unloaded"
+          ? GFImageOverlay(
+              height: 200,
+              width: 200,
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              image: APISession.getOnshapeImage(thumbnail),
+            )
+          : const Text("No Image Loaded..."),
+    );
+  }
+
+  IconButton ImageButton(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          showDialog(context: context, builder: buildImagePopup);
+        },
+        tooltip: "Show Part Image",
+        icon: const Icon(
+          Icons.image,
+          color: Colors.blue,
+          size: 48,
+        ));
   }
 }

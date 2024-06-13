@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
@@ -27,6 +28,8 @@ class Project {
   List<String> writeRoles;
   List<String> adminRoles;
 
+  List<Compound> compounds;
+
   Project(
       {required this.name,
       required this.default_workspace,
@@ -36,7 +39,9 @@ class Project {
       required this.individualParts,
       required this.adminRoles,
       required this.readRoles,
-      required this.writeRoles});
+      required this.writeRoles,
+      required this.compounds
+      });
 
   static blank() {
     return Project(
@@ -48,7 +53,12 @@ class Project {
         writeRoles: [],
         adminRoles: [],
         parts: [],
-        individualParts: []);
+        individualParts: [],
+        compounds: []);
+  }
+
+  Part getPartById(int id) {
+    return parts.firstWhere((part) => part.id == id, orElse: () => Part.blank());
   }
 
   List<List<Part>> duplicatePartNames() {
@@ -199,17 +209,19 @@ class Project {
     var json = jsonDecode(response.body);
 
     Project proj = Project(
-        name: json["name"],
-        default_workspace: json["default_workspace"],
-        assembly_name: json["assembly_name"],
-        assembly_onshape_id: json["assembly_onshape_id"],
-        readRoles: json["read_roles"]?.cast<String>() ?? [],
-        writeRoles: json["write_roles"]?.cast<String>() ?? [],
-        adminRoles: json["admin_roles"]?.cast<String>() ?? [],
-        parts: json["parts"]?.map<Part>((e) => Part.fromJson(e)).toList() ?? [],
-        individualParts: json["individual_parts"]
-            .map<Part>((e) => Part.fromJson(e))
-            .toList());
+      name: json["name"],
+      default_workspace: json["default_workspace"],
+      assembly_name: json["assembly_name"],
+      assembly_onshape_id: json["assembly_onshape_id"],
+      readRoles: json["read_roles"]?.cast<String>() ?? [],
+      writeRoles: json["write_roles"]?.cast<String>() ?? [],
+      adminRoles: json["admin_roles"]?.cast<String>() ?? [],
+      parts: json["parts"]?.map<Part>((e) => Part.fromJson(e)).toList() ?? [],
+      individualParts: json["individual_parts"]
+        .map<Part>((e) => Part.fromJson(e))
+        .toList(),
+      compounds: json["compounds"]?.map<Compound>((e) => Compound.fromJson(e)).toList() ?? [],
+    );
 
     RegExp regex = RegExp("[0-9]{2,}-20[0-9]{2}-P-[0-9]{4}");
 

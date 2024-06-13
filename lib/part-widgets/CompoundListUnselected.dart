@@ -5,16 +5,17 @@ import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/PartPage.dart';
 
-class PartListDisplay extends StatefulWidget {
+class CompoundListUnselected extends StatefulWidget {
   final Part part;
+  final addToSelected;
 
-  const PartListDisplay({super.key, required this.part});
+  const CompoundListUnselected({super.key, required this.part, required this.addToSelected});
 
   @override
-  State<StatefulWidget> createState() => PartListDisplayState();
+  State<StatefulWidget> createState() => CompoundListUnselectedState();
 }
 
-class PartListDisplayState extends State<PartListDisplay> {
+class CompoundListUnselectedState extends State<CompoundListUnselected> {
   TextStyle statStyle =
       const TextStyle(fontWeight: FontWeight.bold, fontSize: 32);
 
@@ -41,17 +42,12 @@ class PartListDisplayState extends State<PartListDisplay> {
         padding: StyleConstants.padding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: !isMobile ? [
+          children:  [
             widget.part.ImageButton(context),
             widget.part.PartName(parseOut, isMobile),
-            widget.part.PartType(),
+            widget.part.PartThickness(),
             widget.part.QuantityHave(),
-            widget.part.QuantityExtra(),
-            widget.part.QuantityRequested(),
-          ] : [
-            widget.part.PartName(parseOut, isMobile),
-            widget.part.QuantityHave(),
-            widget.part.QuantityExtra(),
+            IconButton(onPressed: widget.addToSelected, icon: const Icon(Icons.arrow_forward, color: Colors.blue, size: 48,))
           ],
         ),
       ),
