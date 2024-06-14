@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
@@ -396,6 +398,8 @@ class PartsPageState extends State<PartsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+
     if (!mounted) return const SizedBox.shrink();
 
     List<Part> filteredParts = widget.project.parts.where((part) {
@@ -432,31 +436,43 @@ class PartsPageState extends State<PartsPage> {
       body: ListView(
         children: filteredParts.map((e) => e.partListDisplay).toList(),
       ),
-      floatingActionButton: ExpandableFab(
+      floatingActionButton: !isMobile ? ExpandableFab(
         distance: 112,
-        children: [
-          ActionButton(
-            onPressed: () => {
-              loadPhotos(context),
-            },
-            icon: const Icon(Icons.photo),
-            message: "Load Photos",
-          ),
-          ActionButton(
-            onPressed: () => {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MergePage(project: widget.project))),
-            },
-            icon: const Icon(Icons.merge),
-            message: "Merge Duplicates",
-          ),
-          ActionButton(
-            onPressed: () => {openFilterPageDialog(context)},
-            icon: const Icon(Icons.filter_alt),
-            message: "Filter",
-          ),
+        children:  [
+          LoadPhotos(context),
+          MergeParts(context),
+          FilterParts(context),
         ],
-      ),
+      ) : FilterParts(context),
     );
+  }
+
+  ActionButton FilterParts(BuildContext context) {
+    return ActionButton(
+          onPressed: () => {openFilterPageDialog(context)},
+          icon: const Icon(Icons.filter_alt),
+          message: "Filter",
+        );
+  }
+
+  ActionButton MergeParts(BuildContext context) {
+    return ActionButton(
+          onPressed: () => {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => MergePage(project: widget.project))),
+          },
+          icon: const Icon(Icons.merge),
+          message: "Merge Duplicates",
+        );
+  }
+
+  ActionButton LoadPhotos(BuildContext context) {
+    return ActionButton(
+          onPressed: () => {
+            loadPhotos(context),
+          },
+          icon: const Icon(Icons.photo),
+          message: "Load Photos",
+        );
   }
 }
