@@ -61,27 +61,23 @@ class _ProjectSelectState extends State<ProjectSelect> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(
-          width: 500,
-          child: Center(
-            child: DropdownMenu<String>(
-                label: const Text('Active Project'),
-                controller: activeProjectController,
-                initialSelection: widget.project.name,
-                onSelected: (val) {
-                  widget.loadProject(val ?? "");
-                },
-                menuStyle: const MenuStyle(
-                    minimumSize: WidgetStatePropertyAll(Size.fromWidth(200))),
-                dropdownMenuEntries: List.generate(
-                  projectKeys.length,
-                  (index) => DropdownMenuEntry(
-                    value: projectKeys[index],
-                    label: projectKeys[index],
-                  ),
-                )),
-          ),
-        ),
+        DropdownMenu<String>(
+            label: const Text('Active Project'),
+            controller: activeProjectController,
+            initialSelection: widget.project.name,
+            width: 300,
+            onSelected: (val) {
+              widget.loadProject(val ?? "");
+            },
+            menuStyle: const MenuStyle(
+                minimumSize: WidgetStatePropertyAll(Size.fromWidth(200))),
+            dropdownMenuEntries: List.generate(
+              projectKeys.length,
+              (index) => DropdownMenuEntry(
+                value: projectKeys[index],
+                label: projectKeys[index],
+              ),
+            )),
       ],
     );
   }

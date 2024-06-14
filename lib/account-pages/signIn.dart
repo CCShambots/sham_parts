@@ -80,7 +80,7 @@ class SignInState extends State<SignInWidget> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Sign In to ShamParts",
+                    "Sign In",
                     style: StyleConstants.titleStyle,
                     textAlign: TextAlign.center,
                   ),

@@ -202,6 +202,7 @@ class _CompoundPageState extends State<CompoundPage> {
               ,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
                   tooltip: "Fulfill Compound",
@@ -316,18 +317,6 @@ class _CompoundPageState extends State<CompoundPage> {
                     },
                     icon: const Icon(Icons.upload),
                     label: const Text("Add New Image"),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final imageBytes = await Pasteboard.image;
-
-                      if (imageBytes != null) {
-                        widget.compound.uploadImage(imageBytes, context);
-                        setState(() {});
-                      }
-                    },
-                    icon: const Icon(Icons.paste),
-                    label: const Text("Upload from Clipboard"),
                   ),
                 ],
               )

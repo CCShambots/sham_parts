@@ -26,6 +26,7 @@ class _CamMenuState extends State<CamMenu> {
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Checkbox(
               value: widget.camDone,

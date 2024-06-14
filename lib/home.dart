@@ -67,60 +67,15 @@ class HomeState extends State<Home> {
                       lineGraph(),
                     ],
                   ),
-            Row(
+            !isMobile ? Row(
               children: [
-                Flexible(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      Text(
-                        "Assigned Parts",
-                        style: !isMobile
-                            ? StyleConstants.titleStyle
-                            : StyleConstants.subtitleStyle,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: 300,
-                        child: ListView(
-                          children: widget.project.parts
-                              .where((e) {
-                                return e.quantityRequested > 0 &&
-                                    e.asigneeId == widget.user.id;
-                              })
-                              .map((e) => AssignedPartDisplay(part: e))
-                              .toList(),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      Text(
-                        "Assigned Compounds",
-                        style: !isMobile
-                            ? StyleConstants.titleStyle
-                            : StyleConstants.subtitleStyle,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: 300,
-                        child: ListView(
-                          children: widget.project.compounds
-                              .where((e) {
-                                return
-                                    e.asigneeId == widget.user.id;
-                              })
-                              .map((e) => AssignedCompoundDisplay(compound: e, project: widget.project,))
-                              .toList(),
-                        ),
-                      )
-                    ],
-                  ),
-                )
+                Flexible(flex: 1, child: AssignedParts(isMobile)),
+                Flexible(flex: 1, child: AssignedCompounds(isMobile))
+              ],
+            ) : Column(
+              children: [
+                AssignedParts(isMobile),
+                AssignedCompounds(isMobile)
               ],
             )
           ],
@@ -129,89 +84,138 @@ class HomeState extends State<Home> {
     );
   }
 
-  Flexible lineGraph() {
+  Widget AssignedCompounds(bool isMobile) {
+    return Column(
+      children: [
+        Text(
+          "Assigned Compounds",
+          style: !isMobile
+              ? StyleConstants.titleStyle
+              : StyleConstants.subtitleStyle,
+          textAlign: TextAlign.center,
+        ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: widget.project.compounds
+                .where((e) {
+                  return
+                      e.asigneeId == widget.user.id;
+                })
+                .map((e) => AssignedCompoundDisplay(compound: e, project: widget.project,))
+                .toList(),
+          ),
+      ],
+    );
+  }
+
+  Widget AssignedParts(bool isMobile) {
+    return Column(
+      children: [
+        Text(
+          "Assigned Parts",
+          style: !isMobile
+              ? StyleConstants.titleStyle
+              : StyleConstants.subtitleStyle,
+          textAlign: TextAlign.center,
+        ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: widget.project.parts
+                .where((e) {
+                  return e.quantityRequested > 0 &&
+                      e.asigneeId == widget.user.id;
+                })
+                .map((e) => AssignedPartDisplay(part: e))
+                .toList(),
+          ),
+      ],
+    );
+  }
+
+  Widget lineGraph() {
     return Flexible(
-        child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Indicator(
-                          color: Colors.red,
-                          text: 'Broke',
+      child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Indicator(
+                        color: Colors.red,
+                        text: 'Broke',
+                        isSquare: true,
+                        size: touchedIndexGraph2 == 0 ? 18 : 16,
+                      ),
+                      Indicator(
+                        color: Colors.green,
+                        text: "Fulfilled",
+                        isSquare: true,
+                        size: touchedIndexGraph2 == 1 ? 18 : 16,
+                      ),
+                      Indicator(
+                          color: Colors.blue,
+                          text: 'Your Parts',
                           isSquare: true,
-                          size: touchedIndexGraph2 == 0 ? 18 : 16,
-                        ),
-                        Indicator(
-                          color: Colors.green,
-                          text: "Fulfilled",
-                          isSquare: true,
-                          size: touchedIndexGraph2 == 1 ? 18 : 16,
-                        ),
-                        Indicator(
+                          size: touchedIndexGraph2 == 2 ? 18 : 16)
+                    ]),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: LineChart(LineChartData(
+                      titlesData: const FlTitlesData(
+                          bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                  showTitles: true,
+                                  interval: 1,
+                                  reservedSize: 32)),
+                          leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                  showTitles: true,
+                                  // interval: ,
+                                  reservedSize: 40)),
+                          rightTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                            showTitles: false,
+                          )),
+                          topTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                            showTitles: false,
+                          ))),
+                      lineBarsData: [
+                        LineChartBarData(
+                            spots: LogEntry.generateSpots(
+                                widget.project.getLogEntries(), "Break"),
+                            color: Colors.red,
+                            isCurved: true,
+                            preventCurveOverShooting: true),
+                        LineChartBarData(
+                            spots: LogEntry.generateSpots(
+                                widget.project.getLogEntries(), "Fulfill"),
+                            color: Colors.green,
+                            isCurved: true,
+                            preventCurveOverShooting: true),
+                        LineChartBarData(
+                            spots: LogEntry.generateSpots(
+                                widget.project
+                                    .getLogEntries()
+                                    .where(
+                                        (e) => e.author == widget.user.name)
+                                    .toList(),
+                                "Fulfill"),
                             color: Colors.blue,
-                            text: 'Your Parts',
-                            isSquare: true,
-                            size: touchedIndexGraph2 == 2 ? 18 : 16)
-                      ]),
+                            isCurved: true,
+                            preventCurveOverShooting: true)
+                      ])),
                 ),
-                const SizedBox(height: 10),
-                Flexible(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: LineChart(LineChartData(
-                        titlesData: const FlTitlesData(
-                            bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    showTitles: true,
-                                    interval: 1,
-                                    reservedSize: 32)),
-                            leftTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    showTitles: true,
-                                    // interval: ,
-                                    reservedSize: 40)),
-                            rightTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                              showTitles: false,
-                            )),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                              showTitles: false,
-                            ))),
-                        lineBarsData: [
-                          LineChartBarData(
-                              spots: LogEntry.generateSpots(
-                                  widget.project.getLogEntries(), "Break"),
-                              color: Colors.red,
-                              isCurved: true,
-                              preventCurveOverShooting: true),
-                          LineChartBarData(
-                              spots: LogEntry.generateSpots(
-                                  widget.project.getLogEntries(), "Fulfill"),
-                              color: Colors.green,
-                              isCurved: true,
-                              preventCurveOverShooting: true),
-                          LineChartBarData(
-                              spots: LogEntry.generateSpots(
-                                  widget.project
-                                      .getLogEntries()
-                                      .where(
-                                          (e) => e.author == widget.user.name)
-                                      .toList(),
-                                  "Fulfill"),
-                              color: Colors.blue,
-                              isCurved: true,
-                              preventCurveOverShooting: true)
-                        ])),
-                  ),
-                )
-              ],
-            )));
+              )
+            ],
+          )),
+    );
   }
 
   Flexible pieChart() {

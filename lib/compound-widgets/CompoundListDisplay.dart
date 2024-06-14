@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/project.dart';
@@ -15,8 +17,11 @@ class CompoundListDisplay extends StatefulWidget {
 }
 
 class _CompoundListDisplayState extends State<CompoundListDisplay> {
+
   @override
   Widget build(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -30,14 +35,17 @@ class _CompoundListDisplayState extends State<CompoundListDisplay> {
         padding: StyleConstants.padding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            widget.compound.CompoundName(),
+          children: !isMobile ? [
+            widget.compound.CompoundName(isMobile),
             widget.compound.CompoundMaterial(),
             widget.compound.CompoundThickness(),
             widget.compound.Asignee(),
             widget.compound.CompoundPartQuantity(),
-            widget.compound.CompoundCamStatus()
-          ],
+            widget.compound.CompoundCamStatus(isMobile)
+          ] : [
+            widget.compound.CompoundName(isMobile),
+            widget.compound.CompoundCamStatus(isMobile)
+          ]
         ),
       ),
     );

@@ -364,9 +364,9 @@ class Compound {
     );
   }
 
-  Row CompoundCamStatus() {
+  Row CompoundCamStatus(bool mobile) {
     return Row(children: [
-            Text("CAM ", style: StyleConstants.subtitleStyle),
+            Text("CAM ", style: !mobile ? StyleConstants.subtitleStyle : StyleConstants.h3Style),
             Icon(camDone ? Icons.check_circle : Icons.cancel, color: camDone ? Colors.green : Colors.red, size: 48,)
           ],);
   }
@@ -385,7 +385,7 @@ class Compound {
 
   Text CompoundMaterial() => Text(material, style: StyleConstants.subtitleStyle);
 
-  Text CompoundName() => Text(name, style: StyleConstants.subtitleStyle,);
+  Text CompoundName(bool mobile) => Text(name, style: !mobile ? StyleConstants.subtitleStyle : StyleConstants.h3Style,);
 }
 
 class CompoundPart {

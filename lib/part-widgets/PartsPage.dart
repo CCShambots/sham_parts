@@ -232,24 +232,27 @@ class PartsPageState extends State<PartsPage> {
                       padding: EdgeInsets.all(8.0),
                       child: Text('Material'),
                     ),
-                    DropdownButton<String>(
-                      value:
-                          materialToFilter.isNotEmpty ? materialToFilter : null,
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            materialFilterEnabled = true;
-                            materialToFilter = newValue;
-                          });
-                        }
-                      },
-                      items: availableMaterials
-                          .map<DropdownMenuItem<String>>((String material) {
-                        return DropdownMenuItem<String>(
-                          value: material,
-                          child: Text(material),
-                        );
-                      }).toList(),
+                    Expanded(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value:
+                            materialToFilter.isNotEmpty ? materialToFilter : null,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              materialFilterEnabled = true;
+                              materialToFilter = newValue;
+                            });
+                          }
+                        },
+                        items: availableMaterials
+                            .map<DropdownMenuItem<String>>((String material) {
+                          return DropdownMenuItem<String>(
+                            value: material,
+                            child: FittedBox(fit: BoxFit.contain, child: Text(material)),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ],
                 ),

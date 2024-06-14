@@ -31,17 +31,38 @@ void main() {
   APISession.updateKeys();
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String version = "";
+
+  @override
+  void initState() {
+    super.initState();
+    initVersion();
+  }
+
+  void initVersion() async {
+    PackageInfo info = await PackageInfo.fromPlatform();
+
+    setState(() {
+      version = info.version;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ShamParts',
-      navigatorKey: navigatorKey,
+      title: 'ShamParts v$version',
+      navigatorKey: MyApp.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
@@ -144,8 +165,6 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
   void initVersion() async {
     PackageInfo info = await PackageInfo.fromPlatform();
-
-    print(info.version);
 
     setState(() {
       version = info.version;
