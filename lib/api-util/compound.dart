@@ -176,7 +176,7 @@ class Compound {
   Future<void> setCamDone(bool done, BuildContext context) async {
     // Make the API request to update the camDone status
     Response response = await APISession.patch(
-        "/compound/$id/setCamDone",
+        "/compound/$id/camDone",
         jsonEncode({
           "done": done,
         }));
@@ -186,12 +186,36 @@ class Compound {
         APIConstants.showSuccessToast(
             "CAM done status updated successfully", context);
       }
-
+      
       camDone = done;
     } else {
       if (context.mounted) {
         APIConstants.showErrorToast(
-            "Failed to update CAM done status. Status code: ${response.statusCode}",
+            "Failed to update CAM done status. Status code: ${response.statusCode} - ${response.body}",
+            context);
+      }
+    }
+  }
+
+  Future<void> updateCamInstructions(List<String> instructions, BuildContext context) async {
+    // Make the API request to update the CAM instructions
+    Response response = await APISession.patch(
+        "/compound/$id/updateCAMInstructions",
+        jsonEncode({
+          "instructions": instructions,
+        }));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast(
+            "CAM instructions updated successfully", context);
+      }
+
+      camInstructions = instructions;
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to update CAM instructions. Status code: ${response.statusCode}",
             context);
       }
     }

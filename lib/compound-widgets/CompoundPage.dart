@@ -11,6 +11,7 @@ import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/PartPage.dart';
+import 'package:sham_parts/util/camMenu.dart';
 
 class CompoundPage extends StatefulWidget {
   final Project project;
@@ -187,20 +188,18 @@ class _CompoundPageState extends State<CompoundPage> {
                     ),
                   ],
                 ),
-          Row(
-            children: [
-              Checkbox(
-                value: widget.compound.camDone,
-                onChanged: (newValue) async {
-                  await widget.compound.setCamDone(newValue!, context);
-                  setState(() {});
-                },
-              ),
-              Text(
-                "CAM Done",
-                style: StyleConstants.subtitleStyle,
-              ),
-            ],
+          CamMenu(
+              camDone: widget.compound.camDone,
+              camDoneFunc: (bool done, BuildContext context) async {
+                await widget.compound.setCamDone(done, context);
+                setState(() {});
+              },
+              camInstructions: widget.compound.camInstructions,
+              updateCamInstructions: (List<String> instructions, BuildContext context) async {
+                await widget.compound.updateCamInstructions(instructions, context);
+                setState(() {});
+              } 
+              ,
           ),
           Row(
             children: [

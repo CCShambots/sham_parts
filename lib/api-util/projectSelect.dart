@@ -43,9 +43,11 @@ class _ProjectSelectState extends State<ProjectSelect> {
       projectList = ["NO PROJECT"];
     }
 
-    setState(() {
-      projectKeys = projectList;
-    });
+    if(mounted) {
+      setState(() {
+        projectKeys = projectList;
+      });
+    }
 
     if (projectKey == "" && projectKeys.isNotEmpty) {
     } else if (shouldLoadProject) {
