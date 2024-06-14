@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
+import 'package:http/http.dart';
 
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
@@ -40,6 +41,9 @@ class Part {
 
   int numCombines;
 
+  bool camDone;
+  List<String> camInstructions;
+
   late Widget partListDisplay;
 
   Part(
@@ -62,7 +66,10 @@ class Part {
       required this.dimension3,
       required this.numCombines,
       required this.partType,
-      required this.asigneeId}) {
+      required this.asigneeId,
+      required this.camDone,
+      required this.camInstructions
+      }) {
     partListDisplay = PartListDisplay(part: this);
   }
 
@@ -88,6 +95,8 @@ class Part {
       numCombines: 0,
       partType: '',
       asigneeId: 0,
+      camDone: false,
+      camInstructions: []
     );
   }
 
@@ -112,6 +121,8 @@ class Part {
       asigneeId: json["asigneeId"] ?? -1,
       partType: json["partType"],
       numCombines: json["part_combines"].length,
+      camDone: json["camDone"],
+      camInstructions: json["camInstructions"].cast<String>(),
       logEntries: json["logEntries"]
           .map<LogEntry>((e) => LogEntry.fromJson(e))
           .toList(),
@@ -170,6 +181,54 @@ class Part {
       } else {
         APIConstants.showErrorToast(
             "Failed to Merge Parts: Code ${response.statusCode} - ${response.body}",
+            context);
+      }
+    }
+  }
+
+  Future<void> setCamDone(bool done, BuildContext context) async {
+    // Make the API request to update the camDone status
+    Response response = await APISession.patch(
+        "/part/$id/camDone",
+        jsonEncode({
+          "done": done,
+        }));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast(
+            "CAM done status updated successfully", context);
+      }
+
+      camDone = done;
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to update CAM done status. Status code: ${response.statusCode} - ${response.body}",
+            context);
+      }
+    }
+  }
+
+  Future<void> updateCamInstructions(List<String> instructions, BuildContext context) async {
+    // Make the API request to update the CAM instructions
+    Response response = await APISession.patch(
+        "/part/$id/updateCamInstructions",
+        jsonEncode({
+          "instructions": instructions,
+        }));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast(
+            "CAM instructions updated successfully", context);
+      }
+
+      camInstructions = instructions;
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to update CAM instructions. Status code: ${response.statusCode}",
             context);
       }
     }

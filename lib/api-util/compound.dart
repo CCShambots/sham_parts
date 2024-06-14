@@ -186,7 +186,7 @@ class Compound {
         APIConstants.showSuccessToast(
             "CAM done status updated successfully", context);
       }
-      
+
       camDone = done;
     } else {
       if (context.mounted) {
@@ -200,7 +200,7 @@ class Compound {
   Future<void> updateCamInstructions(List<String> instructions, BuildContext context) async {
     // Make the API request to update the CAM instructions
     Response response = await APISession.patch(
-        "/compound/$id/updateCAMInstructions",
+        "/compound/$id/updateCamInstructions",
         jsonEncode({
           "instructions": instructions,
         }));

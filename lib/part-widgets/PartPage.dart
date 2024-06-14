@@ -8,6 +8,7 @@ import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/camMenu.dart';
 
 class PartPage extends StatefulWidget {
   final Part part;
@@ -344,7 +345,19 @@ class _PartPageState extends State<PartPage> {
                           : const Text("None"),
                     ),
                   ],
-                )
+                ),
+          CamMenu(
+              camDone: widget.part.camDone,
+              camDoneFunc: (bool val, BuildContext context) async {
+                await widget.part.setCamDone(val, context);
+                setState(() {});
+              },
+              camInstructions: widget.part.camInstructions,
+              updateCamInstructions:
+                  (List<String> instructions, BuildContext content) async {
+                await widget.part.updateCamInstructions(instructions, context);
+                setState(() {});
+              })
         ],
       ),
     );

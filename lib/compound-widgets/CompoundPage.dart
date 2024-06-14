@@ -215,6 +215,7 @@ class _CompoundPageState extends State<CompoundPage> {
                     size: 48,
                   )),
               IconButton(
+                  tooltip: "Edit Parts in Compound",
                   onPressed: () {
                     // Navigate to part page
                     Navigator.push(
