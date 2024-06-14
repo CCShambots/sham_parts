@@ -21,7 +21,7 @@ class _CompoundsPageState extends State<CompoundsPage> {
       body: 
       ListView(
         children: widget.project.compounds.map((compound) => 
-          CompoundListDisplay(compound: compound)
+          CompoundListDisplay(compound: compound, project: widget.project,)
         ).toList()
       ),
       floatingActionButton: FloatingActionButton(

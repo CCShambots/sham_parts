@@ -6,14 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
+import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/PartPage.dart';
 
 class CompoundPage extends StatefulWidget {
+  final Project project;
   final Compound compound;
 
-  const CompoundPage({super.key, required this.compound});
+  const CompoundPage(
+      {super.key, required this.compound, required this.project});
 
   @override
   State<CompoundPage> createState() => _CompoundPageState();
@@ -183,68 +187,151 @@ class _CompoundPageState extends State<CompoundPage> {
                     ),
                   ],
                 ),
-                Row(children: [
-                  Checkbox(
-                    value: widget.compound.camDone,
-                    onChanged: (newValue) async{
-                      await widget.compound.setCamDone(newValue!, context);
-                      setState(() {});
-                    },
-                  ),
-                  Text("CAM Done", style: StyleConstants.subtitleStyle,),
-                ],),
-                IconButton(
-                  tooltip: "Fulfill",
+          Row(
+            children: [
+              Checkbox(
+                value: widget.compound.camDone,
+                onChanged: (newValue) async {
+                  await widget.compound.setCamDone(newValue!, context);
+                  setState(() {});
+                },
+              ),
+              Text(
+                "CAM Done",
+                style: StyleConstants.subtitleStyle,
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(
+                  tooltip: "Fulfill Compound",
                   onPressed: () {
-
-                }, icon: const Icon(Icons.check, color: Colors.blue, size: 48,))
+                    widget.compound.fulfill(context);
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.check,
+                    color: Colors.blue,
+                    size: 48,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    // Navigate to part page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CompoundCreationMenu(
+                          project: widget.project,
+                          compound: widget.compound,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.edit,
+                    color: Colors.yellow,
+                    size: 48,
+                  )),
+              IconButton(
+                  tooltip: "Delete forever",
+                  onPressed: () {
+                    showDeleteDialog(context);
+                  },
+                  icon: const Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                    size: 48,
+                  )),
+            ],
+          )
         ],
       ),
     );
   }
 
-  Widget CompoundImage() {
+  Future<dynamic> showDeleteDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion"),
+          content: const Text("Are you sure you want to delete this compound?"),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Delete"),
+              onPressed: () {
+                widget.compound.deleteFromDatabase(context);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-    var image = Image.memory(base64Decode(widget.compound.thumbnail));
+  Widget CompoundImage() {
+    bool imageValid = true;
+    Image? image;
+
+    try {
+      image = Image.memory(base64Decode(widget.compound.thumbnail));
+    } catch (e) {
+      imageValid = false;
+    }
 
     return Column(
       children: [
-        ClipRRect(borderRadius: BorderRadius.circular(8), child: Image(image: image.image)),
-        !isMobile ? Row(
-          children: [
-            ElevatedButton.icon(
-              onPressed: () async {
-                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                    allowedExtensions: ['jpg', 'jpeg', 'png', 'bmp']);
+        imageValid
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image(image: image!.image))
+            : Container(),
+        !isMobile
+            ? Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(
+                              allowedExtensions: ['jpg', 'jpeg', 'png', 'bmp']);
 
-                if (result != null) {
-                  File file = File(result.files.single.path!);
+                      if (result != null) {
+                        File file = File(result.files.single.path!);
 
-                  widget.compound.uploadImage(file.readAsBytesSync(), context);
+                        widget.compound
+                            .uploadImage(file.readAsBytesSync(), context);
 
-                  setState(() {});
-                } else {
-                  // User canceled the picker
-                }
-              },
-              icon: const Icon(Icons.upload),
-              label: const Text("Add New Image"),
-            ),
-            ElevatedButton.icon(
-              onPressed: () async {
-                final imageBytes = await Pasteboard.image;
+                        setState(() {});
+                      } else {
+                        // User canceled the picker
+                      }
+                    },
+                    icon: const Icon(Icons.upload),
+                    label: const Text("Add New Image"),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final imageBytes = await Pasteboard.image;
 
-                if(imageBytes != null) {
-                  widget.compound.uploadImage(imageBytes, context);
-                  setState(() {});
-                }
-
-              },
-              icon: const Icon(Icons.paste),
-              label: const Text("Upload from Clipboard"),
-            ),
-          ],
-        ) : Container()
+                      if (imageBytes != null) {
+                        widget.compound.uploadImage(imageBytes, context);
+                        setState(() {});
+                      }
+                    },
+                    icon: const Icon(Icons.paste),
+                    label: const Text("Upload from Clipboard"),
+                  ),
+                ],
+              )
+            : Container()
       ],
     );
   }

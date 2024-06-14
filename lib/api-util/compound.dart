@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -27,7 +26,6 @@ class Compound {
 
   String thumbnail;
 
-
   Compound({
     required this.id,
     required this.name,
@@ -43,7 +41,6 @@ class Compound {
   });
 
   factory Compound.fromJson(Map<String, dynamic> json) {
-  
     return Compound(
       id: json['id'],
       name: json['name'],
@@ -65,14 +62,101 @@ class Compound {
     );
   }
 
+  factory Compound.blank() {
+    return Compound(
+      id: 0,
+      name: "",
+      material: "",
+      thickness: "",
+      parts: [],
+      camDone: false,
+      camInstructions: [],
+      asigneeId: -1,
+      asigneeName: "",
+      logEntries: [],
+      thumbnail: "",
+    );
+  }
+
+  Future<void> deleteFromDatabase(BuildContext context) async {
+    // Make the API request to delete the compound from the database
+    Response response = await APISession.delete("/compound/$id/delete");
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast("Compound deleted successfully", context);
+
+        Navigator.pop(context);
+      }
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to delete compound. Status code: ${response.statusCode}",
+            context);
+      }
+    }
+  }
+
+  Future<void> decrementPart(CompoundPart part, BuildContext context) async {
+    // Make the API request to update the part quantity
+    Response response = await APISession.patch(
+        "/compound/$id/decrementPart",
+        jsonEncode({
+          "id": part.id,
+        }));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast(
+            "Part quantity decremented successfully", context);
+        part.quantity--;
+
+        if (part.quantity == 0) {
+          parts.remove(part);
+        }
+      }
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to decrement part quantity. Status code: ${response.statusCode}",
+            context);
+      }
+    }
+  }
+
+  Future<void> incrementPart(CompoundPart part, BuildContext context) async {
+    // Make the API request to update the part quantity
+    Response response = await APISession.patch(
+        "/compound/$id/incrementPart",
+        jsonEncode({
+          "id": part.id,
+        }));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast(
+            "Part quantity incremented successfully", context);
+        part.quantity++;
+      }
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to increment part quantity. Status code: ${response.statusCode}",
+            context);
+      }
+    }
+  }
+
   Future<void> uploadImage(Uint8List imageBytes, BuildContext context) async {
     // Convert the image bytes to base64 string
     String base64Image = base64Encode(imageBytes);
 
     // Make the API request to upload the image
-    Response response = await APISession.post("/compound/$id/uploadImage", jsonEncode({
-      "image": base64Image,
-    }));
+    Response response = await APISession.post(
+        "/compound/$id/uploadImage",
+        jsonEncode({
+          "image": base64Image,
+        }));
 
     if (response.statusCode == 200) {
       if (context.mounted) {
@@ -82,66 +166,115 @@ class Compound {
       thumbnail = base64Image;
     } else {
       if (context.mounted) {
-        APIConstants.showErrorToast("Failed to upload image. Status code: ${response.statusCode}", context);
+        APIConstants.showErrorToast(
+            "Failed to upload image. Status code: ${response.statusCode}",
+            context);
       }
     }
   }
 
   Future<void> setCamDone(bool done, BuildContext context) async {
     // Make the API request to update the camDone status
-    Response response = await APISession.patch("/compound/$id/setCamDone", jsonEncode({
-      "done": done,
-    }));
+    Response response = await APISession.patch(
+        "/compound/$id/setCamDone",
+        jsonEncode({
+          "done": done,
+        }));
 
     if (response.statusCode == 200) {
       if (context.mounted) {
-        APIConstants.showSuccessToast("CAM done status updated successfully", context);
+        APIConstants.showSuccessToast(
+            "CAM done status updated successfully", context);
       }
 
       camDone = done;
     } else {
       if (context.mounted) {
-        APIConstants.showErrorToast("Failed to update CAM done status. Status code: ${response.statusCode}", context);
+        APIConstants.showErrorToast(
+            "Failed to update CAM done status. Status code: ${response.statusCode}",
+            context);
       }
     }
   }
 
   Future<void> fulfill(BuildContext context) async {
     // Make the API request to fulfill the compound
-    Response response = await APISession.post("/compound/$id/fulfill", jsonEncode({}));
+    Response response =
+        await APISession.post("/compound/$id/fulfill", jsonEncode({}));
 
     if (response.statusCode == 200) {
       if (context.mounted) {
-        APIConstants.showSuccessToast("Compound fulfilled successfully", context);
+        APIConstants.showSuccessToast(
+            "Compound fulfilled successfully", context);
       }
     } else {
       if (context.mounted) {
-        APIConstants.showErrorToast("Failed to fulfill compound. Status code: ${response.statusCode}", context);
+        APIConstants.showErrorToast(
+            "Failed to fulfill compound. Status code: ${response.statusCode}",
+            context);
       }
     }
   }
 
-  Future<Compound?> saveToDatabase(Project project, BuildContext context) async {
-    Response response = await APISession.post("/compound/create", jsonEncode({
-      "projectName":project.name,
-      "name": name,
-      "material": material,
-      "thickness": thickness,
-      "parts": parts.map((part) => {
-        "partId": part.partId,
-        "quantity": part.quantity,
-      }).toList(),
-
-    }));
+  Future<Compound?> saveToDatabase(
+      Project project, BuildContext context) async {
+    Response response = await APISession.post(
+        "/compound/create",
+        jsonEncode({
+          "projectName": project.name,
+          "name": name,
+          "material": material,
+          "thickness": thickness,
+          "parts": parts
+              .map((part) => {
+                    "partId": part.partId,
+                    "quantity": part.quantity,
+                  })
+              .toList(),
+        }));
 
     if (response.statusCode == 200) {
-      if(context.mounted) {
+      if (context.mounted) {
         APIConstants.showSuccessToast("Compound successfully created", context);
       }
       return Compound.fromJson(jsonDecode(response.body));
     } else {
-      if(context.mounted) {
-        APIConstants.showErrorToast("Failed to create compound. Status code: ${response.statusCode}", context);
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to create compound. Status code: ${response.statusCode}",
+            context);
+      }
+      return null;
+    }
+  }
+
+  Future<Compound?> updateToDatabase(
+      Project project, BuildContext context) async {
+    Response response = await APISession.patch(
+        "/compound/$id/update",
+        jsonEncode({
+          "projectName": project.name,
+          "name": name,
+          "material": material,
+          "thickness": thickness,
+          "parts": parts
+              .map((part) => {
+                    "partId": part.partId,
+                    "quantity": part.quantity,
+                  })
+              .toList(),
+        }));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast("Compound successfully updated", context);
+      }
+      return Compound.fromJson(jsonDecode(response.body));
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            "Failed to update compound. Status code: ${response.statusCode} - ${response.body}",
+            context);
       }
       return null;
     }
@@ -186,13 +319,17 @@ class Compound {
     for (var part in parts) {
       tooltip += part.toString();
 
-      if(parts.last != part) tooltip += '\n';
+      if (parts.last != part) tooltip += '\n';
     }
     return tooltip;
   }
 
+  Future<void> acquireAndAssignAllParts(Project project) async {
+    for (var part in parts) {
+      part.acquireAndAssignPart(project);
+    }
+  }
 }
-
 
 class CompoundPart {
   int id;

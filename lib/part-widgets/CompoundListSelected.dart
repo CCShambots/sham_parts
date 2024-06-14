@@ -65,6 +65,10 @@ class CompoundListSelectedState extends State<CompoundListSelected> {
                     onPressed: () {
                       setState(() {
                         widget.compoundPart.quantity--;
+
+                        if(widget.compoundPart.quantity == 0) {
+                          widget.removeFromSelected();
+                        }
                       });
                     },
                     icon: const Icon(

@@ -9,8 +9,11 @@ import 'package:sham_parts/part-widgets/CompoundListUnselected.dart';
 
 class CompoundCreationMenu extends StatefulWidget {
   final Project project;
+  Compound? compound;
 
-  const CompoundCreationMenu({super.key, required this.project});
+  CompoundCreationMenu({super.key, required this.project, this.compound}) {
+    compound ??= Compound.blank();
+  }
 
   @override
   State<CompoundCreationMenu> createState() => _CompoundCreationMenuState();
@@ -22,6 +25,16 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
 
   TextEditingController nameController = TextEditingController();
   TextEditingController thicknessController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.compound != null) {
+      selectedParts = widget.compound!.parts;
+      nameController.text = widget.compound!.name;
+      thicknessController.text = widget.compound!.thickness;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +54,7 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
             Navigator.pop(context);
           },
         ),
-        title: const Text("Create Compound"),
+        title: Text(widget.compound == null ? "Create Compound" : "Edit ${widget.compound!.name}"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       floatingActionButton: FloatingActionButton(onPressed:
@@ -49,32 +62,55 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
 
         if(nameController.text.isEmpty) {
           APIConstants.showErrorToast("Compound Name cannot be empty", context);
-        } else if(widget.project.compounds.where((e) => e.name == nameController.text).isNotEmpty) {
+        } else if(widget.project.compounds.where((e) => e.name == nameController.text).isNotEmpty && widget.compound == null) {
           APIConstants.showErrorToast("Compound Name already exists", context);
         } else if(selectedParts.isEmpty) {
           APIConstants.showErrorToast("Compounds must have at least one part", context);
         } else {
-          Compound compound = Compound(
-            id: 0,
-            name: nameController.text,
-            parts: selectedParts,
-            material: selectedParts.first.part.material,
-            thickness: thicknessController.text, 
-            camDone: false,
-            camInstructions: [],
-            asigneeId: -1,
-            asigneeName: "",
-            logEntries: [],
-            thumbnail: ""
-          );
-          Compound? generatedCompound = await compound.saveToDatabase(widget.project, context);
-          if(generatedCompound != null) {
+
+          Compound? generatedCompound;
+          
+          if(widget.compound != null) {
+            //We're modifying a compound instead of creating a new one
+
+            widget.compound!.parts = selectedParts;
+            widget.compound!.name = nameController.text;
+            widget.compound!.thickness = thicknessController.text;
+
+            generatedCompound = await widget.compound!.updateToDatabase(widget.project, context);
+
+            if(generatedCompound != null && context.mounted) {
+              Navigator.pop(context);
+            }
+
+          } else {
+            Compound compound = Compound(
+              id: 0,
+              name: nameController.text,
+              parts: selectedParts,
+              material: selectedParts.first.part.material,
+              thickness: thicknessController.text, 
+              camDone: false,
+              camInstructions: [],
+              asigneeId: -1,
+              asigneeName: "",
+              logEntries: [],
+              thumbnail: ""
+            );
+
+            generatedCompound = await compound.saveToDatabase(widget.project, context);
+          }
+
+          if(generatedCompound != null && context.mounted) {
+
+            generatedCompound.acquireAndAssignAllParts(widget.project);
+            
             Navigator.pop(context);
 
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CompoundPage(compound: compound),
+                builder: (context) => CompoundPage(compound: generatedCompound!, project: widget.project,),
               ),
             );
           }
@@ -158,7 +194,7 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
                             errorText: widget.project.compounds
                                     .where((e) => e.name == nameController.text)
                                     .isNotEmpty
-                                ? "Name Already Exists"
+                                ? (widget.compound == null ? "Name Already Exists" : null)
                                 : (nameController.text.isEmpty
                                     ? "Name Cannot Be Empty"
                                     : null),
