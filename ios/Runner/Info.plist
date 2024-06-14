@@ -30,6 +30,8 @@
 	<string>Main</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Access your photos to upload screenshots of compound part jobs</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
