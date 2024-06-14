@@ -7,6 +7,16 @@ version: 1.0.0+9
 environment:
   sdk: '>=3.2.3 <4.0.0'
 
+#dart run msix:create
+msix_config:
+  display_name: ShamParts
+  publisher_display_name: CC Shambots
+  identity_name: CCShambots.ShamParts
+  store: true
+  msix_version: 1.0.0.0
+  publisher: CN=A3792B11-8FEE-477E-B2FF-B9039EB1B82B
+  capabilities: internetClient, location, microphone, webcam
+
 dependencies:
   flutter:
     sdk: flutter

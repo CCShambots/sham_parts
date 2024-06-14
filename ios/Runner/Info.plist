@@ -28,6 +28,8 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Access your photos to upload screenshots of compound part jobs</string>
 	
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
