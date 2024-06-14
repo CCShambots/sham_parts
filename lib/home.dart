@@ -6,7 +6,9 @@ import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
+import 'package:sham_parts/compound-widgets/AssignedCompoundDisplay.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/part-widgets/AssignedPartDisplay.dart';
 import 'package:sham_parts/part-widgets/PartListDisplay.dart';
 import 'package:sham_parts/util/indicator.dart';
 
@@ -65,24 +67,61 @@ class HomeState extends State<Home> {
                       lineGraph(),
                     ],
                   ),
-            Text(
-              "Your Assigned Parts",
-              style: !isMobile
-                  ? StyleConstants.titleStyle
-                  : StyleConstants.subtitleStyle,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 300,
-              child: ListView(
-                children: widget.project.parts
-                    .where((e) {
-                      return e.quantityRequested > 0 &&
-                          e.asigneeId == widget.user.id;
-                    })
-                    .map((e) => PartListDisplay(part: e))
-                    .toList(),
-              ),
+            Row(
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Text(
+                        "Assigned Parts",
+                        style: !isMobile
+                            ? StyleConstants.titleStyle
+                            : StyleConstants.subtitleStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(
+                        height: 300,
+                        child: ListView(
+                          children: widget.project.parts
+                              .where((e) {
+                                return e.quantityRequested > 0 &&
+                                    e.asigneeId == widget.user.id;
+                              })
+                              .map((e) => AssignedPartDisplay(part: e))
+                              .toList(),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Text(
+                        "Assigned Compounds",
+                        style: !isMobile
+                            ? StyleConstants.titleStyle
+                            : StyleConstants.subtitleStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(
+                        height: 300,
+                        child: ListView(
+                          children: widget.project.compounds
+                              .where((e) {
+                                return
+                                    e.asigneeId == widget.user.id;
+                              })
+                              .map((e) => AssignedCompoundDisplay(compound: e, project: widget.project,))
+                              .toList(),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
             )
           ],
         ),

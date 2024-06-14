@@ -70,7 +70,7 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
 
           Compound? generatedCompound;
           
-          if(widget.compound != null) {
+          if(widget.compound != null && widget.compound!.id != -1) {
             //We're modifying a compound instead of creating a new one
 
             widget.compound!.parts = selectedParts;
@@ -103,16 +103,19 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
 
           if(generatedCompound != null && context.mounted) {
 
-            generatedCompound.acquireAndAssignAllParts(widget.project);
+            await generatedCompound.acquireAndAssignAllParts(widget.project);
             
-            Navigator.pop(context);
+            if(context.mounted) {
+              Navigator.pop(context);
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CompoundPage(compound: generatedCompound!, project: widget.project,),
-              ),
-            );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CompoundPage(compound: generatedCompound!, project: widget.project,),
+                ),
+              );
+
+            }
           }
         }  
       },
@@ -191,6 +194,7 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
                             hintText:
                                 'Name (Typically something like A-xx00 Compound 1)',
                             border: const OutlineInputBorder(),
+                            labelText: "Compound Name",
                             errorText: widget.project.compounds
                                     .where((e) => e.name == nameController.text)
                                     .isNotEmpty
@@ -212,7 +216,7 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: TextField(
                           decoration: InputDecoration(
-                            hintText: 'Thickness',
+                            labelText: 'Thickness',
                             errorText: thicknessController.text.isEmpty
                                 ? "Thickness Cannot Be Empty"
                                 : null,

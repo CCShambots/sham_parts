@@ -159,7 +159,7 @@ class SettingsPageState extends State<SettingsPage> {
                   "Roles: ${user?.rolesListToString()}",
                   style: StyleConstants.subtitleStyle,
                 ),
-                user?.roles.contains("admin") ?? false
+                (user?.roles.contains("admin") ?? false) && !isMobile
                     ? TextButton(
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
@@ -174,13 +174,7 @@ class SettingsPageState extends State<SettingsPage> {
                     : Container(),
                 ElevatedButton(
                   onPressed: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.remove(APIConstants().userToken);
-              
-                    setState(() {
-                      user = null;
-                    });
+                    await logOut();
                   },
                   child: Text(
                     "Logout",
@@ -206,7 +200,9 @@ class SettingsPageState extends State<SettingsPage> {
                         roleEditor(RoleType.admin, context)
                       ])
                     : Container(),
-                    const ServerSelect()
+                    ServerSelect(
+                      logOut: logOut
+                    )
               ],
                         ),
             ))
@@ -225,6 +221,16 @@ class SettingsPageState extends State<SettingsPage> {
               APIConstants.showErrorToast("Missing Account Token!", context);
             }
           });
+  }
+
+  Future<void> logOut() async {
+    SharedPreferences prefs =
+        await SharedPreferences.getInstance();
+    prefs.remove(APIConstants().userToken);
+                  
+    setState(() {
+      user = null;
+    });
   }
 
   Row roleEditor(RoleType type, BuildContext context) {

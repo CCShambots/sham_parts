@@ -7,7 +7,8 @@ import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ServerSelect extends StatefulWidget {
-  const ServerSelect({super.key});
+  final Function logOut;
+  const ServerSelect({super.key, required this.logOut});
 
   @override
   State<ServerSelect> createState() => _ServerSelectState();
@@ -23,7 +24,7 @@ class _ServerSelectState extends State<ServerSelect> {
     loadServers();
   }
 
-  void loadServers() async {
+  Future<void> loadServers() async {
     List<Server> loaded = await Server.getAllServers();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -56,7 +57,9 @@ class _ServerSelectState extends State<ServerSelect> {
       ...servers.map((e) => ServerWidget(
             server: e,
             isActive: e.ip == activeServer,
-            setParentState: () {
+            setParentState: () async {
+              await loadServers();
+              widget.logOut();
               setState(() {});
             },
           )),

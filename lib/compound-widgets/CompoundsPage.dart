@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
@@ -15,7 +17,7 @@ class CompoundsPage extends StatefulWidget {
 class _CompoundsPageState extends State<CompoundsPage> {
   @override
   Widget build(BuildContext context) {
-    
+    final isMobile = Platform.isAndroid || Platform.isIOS;
 
     return Scaffold(
       body: 
@@ -24,7 +26,7 @@ class _CompoundsPageState extends State<CompoundsPage> {
           CompoundListDisplay(compound: compound, project: widget.project,)
         ).toList()
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: !isMobile ? FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -34,7 +36,7 @@ class _CompoundsPageState extends State<CompoundsPage> {
           );
         },
         child: const Icon(Icons.add),
-      ),
+      ) : null,
 
     );
   }

@@ -64,7 +64,7 @@ class Compound {
 
   factory Compound.blank() {
     return Compound(
-      id: 0,
+      id: -1,
       name: "",
       material: "",
       thickness: "",
@@ -353,6 +353,39 @@ class Compound {
       part.acquireAndAssignPart(project);
     }
   }
+
+  Widget Asignee() {
+    return Tooltip(
+      message: "Assigned to:",
+      child: Text(
+        asigneeName,
+        style: StyleConstants.subtitleStyle,
+      ),
+    );
+  }
+
+  Row CompoundCamStatus() {
+    return Row(children: [
+            Text("CAM ", style: StyleConstants.subtitleStyle),
+            Icon(camDone ? Icons.check_circle : Icons.cancel, color: camDone ? Colors.green : Colors.red, size: 48,)
+          ],);
+  }
+
+  Tooltip CompoundPartQuantity() {
+    return Tooltip(
+            message: generatePartsTooltip(),
+            child: Text("${parts.length} Part${parts.length != 1 ? 's' : ''}", style: StyleConstants.subtitleStyle));
+  }
+
+  Tooltip CompoundThickness() {
+    return Tooltip(
+            message: "Thickness",
+            child: Text("$thickness\"", style: StyleConstants.subtitleStyle));
+  }
+
+  Text CompoundMaterial() => Text(material, style: StyleConstants.subtitleStyle);
+
+  Text CompoundName() => Text(name, style: StyleConstants.subtitleStyle,);
 }
 
 class CompoundPart {

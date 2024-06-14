@@ -433,15 +433,13 @@ class BottomNavigationBarState extends State<BottomNavigation> {
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: Column(
                           mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               'ShamParts v$version',
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20),
-                            ),
-                            ProjectSelect(
-                                project: project, loadProject: loadProject)
+                            )
                           ])),
                   ListTile(
                     leading: const Icon(Icons.home),
