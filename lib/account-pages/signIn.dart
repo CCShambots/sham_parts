@@ -80,7 +80,7 @@ class SignInState extends State<SignInWidget> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Sign In",
+                    !creatingAccount ? "Sign In" : "Create Account",
                     style: StyleConstants.titleStyle,
                     textAlign: TextAlign.center,
                   ),
