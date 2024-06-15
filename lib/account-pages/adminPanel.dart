@@ -122,6 +122,45 @@ class UserAdminViewState extends State<UserAdminView> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                    tooltip: "Delete User",
+                    onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Delete User"),
+                              content: Text("Are you sure you want to delete this user?"),
+                              actions: [
+                                TextButton(
+                                  child: Text("Cancel"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text("Delete"),
+                                  onPressed: () async {
+                                    // Perform the delete operation here
+                                    await widget.user.deleteUser(context);
+                                    // Call the delete user function and pass the user object
+                                    // Then call loadUsers() to refresh the user list
+                                    await widget.repullUsers();
+                                    if(context.mounted) {
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                    },
+                    icon: const Icon(
+                      Icons.delete_forever,
+                      color: Colors.red,
+                      size: 35,
+                    )),
                 Tooltip(
                   message: widget.user.verified ? "Verified" : "Not Verified",
                   child: Icon(
