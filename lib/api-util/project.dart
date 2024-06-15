@@ -34,6 +34,7 @@ class Project {
   DateTime lastSync;
 
   late String readableLastSync;
+  late String moreDetailedSyncDate;
 
   Project({
     required this.name,
@@ -50,6 +51,9 @@ class Project {
   }) {
     DateFormat formatter = DateFormat('MM-dd-yy');
     readableLastSync = formatter.format(lastSync.toLocal());
+
+    DateFormat moreDetailedFormatter = DateFormat('MM-dd-yy hh:mm');
+    moreDetailedSyncDate = moreDetailedFormatter.format(lastSync.toLocal());
   }
 
   static blank() {

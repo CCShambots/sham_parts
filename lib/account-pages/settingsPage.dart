@@ -244,11 +244,14 @@ class SettingsPageState extends State<SettingsPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                "Last Sync: ${widget.project.readableLastSync}",
-                                style: !isMobile
-                                    ? StyleConstants.subtitleStyle
-                                    : StyleConstants.h3Style,
+                              Tooltip(
+                                message: "(${widget.project.moreDetailedSyncDate})",
+                                child: Text(
+                                  "Last Sync: ${widget.project.readableLastSync}",
+                                  style: !isMobile
+                                      ? StyleConstants.subtitleStyle
+                                      : StyleConstants.h3Style,
+                                ),
                               ),
                               IconButton(
                                 onPressed: () {
