@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sham_parts/account-pages/forgotPasswordPage.dart';
 import 'package:sham_parts/account-pages/serverSelect.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
@@ -216,7 +217,12 @@ class SignInState extends State<SignInWidget> {
                       child: Text(
                           !creatingAccount ? "Create Account" : "Sign in")),
                   TextButton(
-                      onPressed: () {}, child: const Text("Forgot Password?")),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ForgotPasswordpage()),
+                        );
+                      }, child: const Text("Forgot Password?")),
                   TextButton(
                       onPressed: () {
                         DeleteAccountInfoDialog(context);
