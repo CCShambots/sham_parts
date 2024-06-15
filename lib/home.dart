@@ -67,11 +67,16 @@ class HomeState extends State<Home> {
                       lineGraph(),
                     ],
                   ),
-            !isMobile ? Row(
-              children: [
-                Flexible(flex: 1, child: AssignedParts(isMobile)),
-                Flexible(flex: 1, child: AssignedCompounds(isMobile))
-              ],
+            !isMobile ? SizedBox(
+              width: double.infinity,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Flexible(flex: 1, child: AssignedParts(isMobile)),
+                  Flexible(flex: 1, child: AssignedCompounds(isMobile))
+                ],
+              ),
             ) : Column(
               children: [
                 AssignedParts(isMobile),
