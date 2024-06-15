@@ -86,6 +86,7 @@ class HomeState extends State<Home> {
 
   Widget AssignedCompounds(bool isMobile) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Text(
           "Assigned Compounds",
@@ -110,6 +111,7 @@ class HomeState extends State<Home> {
 
   Widget AssignedParts(bool isMobile) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Text(
           "Assigned Parts",
