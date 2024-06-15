@@ -203,52 +203,67 @@ class _CompoundPageState extends State<CompoundPage> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                  tooltip: "Fulfill Compound",
-                  onPressed: () {
-                    widget.compound.fulfill(context);
-                    setState(() {});
-                  },
-                  icon: const Icon(
-                    Icons.check,
-                    color: Colors.blue,
-                    size: 48,
-                  )),
-              IconButton(
-                  tooltip: "Edit Parts in Compound",
-                  onPressed: () {
-                    // Navigate to part page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CompoundCreationMenu(
-                          project: widget.project,
-                          compound: widget.compound,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.edit,
-                    color: Colors.yellow,
-                    size: 48,
-                  )),
-              IconButton(
-                  tooltip: "Delete forever",
-                  onPressed: () {
-                    showDeleteDialog(context);
-                  },
-                  icon: const Icon(
-                    Icons.delete_forever,
-                    color: Colors.red,
-                    size: 48,
-                  )),
+            children: !isMobile ? [
+              FulFillCompound(context),
+              EditCompound(context),
+              DeleteCompound(context),
+            ] : [
+              FulFillCompound(context),
+              DeleteCompound(context)
             ],
           )
         ],
       ),
     );
+  }
+
+  IconButton DeleteCompound(BuildContext context) {
+    return IconButton(
+                tooltip: "Delete forever",
+                onPressed: () {
+                  showDeleteDialog(context);
+                },
+                icon: const Icon(
+                  Icons.delete_forever,
+                  color: Colors.red,
+                  size: 48,
+                ));
+  }
+
+  IconButton EditCompound(BuildContext context) {
+    return IconButton(
+                tooltip: "Edit Parts in Compound",
+                onPressed: () {
+                  // Navigate to part page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CompoundCreationMenu(
+                        project: widget.project,
+                        compound: widget.compound,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.edit,
+                  color: Colors.yellow,
+                  size: 48,
+                ));
+  }
+
+  IconButton FulFillCompound(BuildContext context) {
+    return IconButton(
+                tooltip: "Fulfill Compound",
+                onPressed: () {
+                  widget.compound.fulfill(context);
+                  setState(() {});
+                },
+                icon: const Icon(
+                  Icons.check,
+                  color: Colors.blue,
+                  size: 48,
+                ));
   }
 
   Future<dynamic> showDeleteDialog(BuildContext context) {
