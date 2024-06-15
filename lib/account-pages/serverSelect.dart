@@ -132,24 +132,42 @@ class _ServerWidgetState extends State<ServerWidget> {
       margin: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-              onPressed: () {
-                checkServer();
-              },
-              tooltip: "Check server status",
-              icon: alive ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red)
-          ),
-          Tooltip(
-            message: widget.isActive ? "Active" : "Not active",
-            child: 
-            Text("${widget.server.name} ${widget.isActive && !isMobile ? '(Active)' : ''}"),
-          ),
-          !isMobile ? Text(widget.server.ip) : const SizedBox(),
-          ElevatedButton(
-              onPressed: () {setActiveServer(context);}, child: const Text("Select"))
+        children: !isMobile ? [
+          StatusIcon(),
+          Name(isMobile),
+          IP(),
+          SelectButton(context)
+        ] : [
+          StatusIcon(),
+          Name(isMobile),
+          SelectButton(context)
         ],
       ),
     );
+  }
+
+  ElevatedButton SelectButton(BuildContext context) {
+    return ElevatedButton(
+            onPressed: () {setActiveServer(context);}, child: const Text("Select"));
+  }
+
+  Text IP() => Text(widget.server.ip);
+
+  Tooltip Name(bool isMobile) {
+    return Tooltip(
+          message: widget.isActive ? "Active" : "Not active",
+          child: 
+          Text("${widget.server.name} ${widget.isActive && !isMobile ? '(Active)' : ''}"),
+        );
+  }
+
+  IconButton StatusIcon() {
+    return IconButton(
+            onPressed: () {
+              checkServer();
+            },
+            tooltip: "Check server status",
+            icon: alive ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red)
+        );
   }
 }
