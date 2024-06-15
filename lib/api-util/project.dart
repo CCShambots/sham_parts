@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/part.dart';
@@ -30,18 +31,26 @@ class Project {
 
   List<Compound> compounds;
 
-  Project(
-      {required this.name,
-      required this.default_workspace,
-      required this.assembly_name,
-      required this.assembly_onshape_id,
-      required this.parts,
-      required this.individualParts,
-      required this.adminRoles,
-      required this.readRoles,
-      required this.writeRoles,
-      required this.compounds
-      });
+  DateTime lastSync;
+
+  late String readableLastSync;
+
+  Project({
+    required this.name,
+    required this.default_workspace,
+    required this.assembly_name,
+    required this.assembly_onshape_id,
+    required this.parts,
+    required this.individualParts,
+    required this.adminRoles,
+    required this.readRoles,
+    required this.writeRoles,
+    required this.compounds,
+    required this.lastSync,
+  }) {
+    DateFormat formatter = DateFormat('MM-dd-yy');
+    readableLastSync = formatter.format(lastSync.toLocal());
+  }
 
   static blank() {
     return Project(
@@ -54,11 +63,13 @@ class Project {
         adminRoles: [],
         parts: [],
         individualParts: [],
-        compounds: []);
+        compounds: [],
+        lastSync: DateTime.now());
   }
 
   Part getPartById(int id) {
-    return parts.firstWhere((part) => part.id == id, orElse: () => Part.blank());
+    return parts.firstWhere((part) => part.id == id,
+        orElse: () => Part.blank());
   }
 
   List<List<Part>> duplicatePartNames() {
@@ -66,19 +77,19 @@ class Project {
 
     for (var part in parts) {
       List<Part> matchingParts = parts
-        .where((element) =>
-          element.number == part.number && element != part)
-        .toList();
+          .where((element) => element.number == part.number && element != part)
+          .toList();
 
-      if (matchingParts.isNotEmpty && !duplicates.any((list) => list.contains(part))) {
-      matchingParts.add(part);
-      duplicates.add(matchingParts);
+      if (matchingParts.isNotEmpty &&
+          !duplicates.any((list) => list.contains(part))) {
+        matchingParts.add(part);
+        duplicates.add(matchingParts);
       }
     }
 
     return duplicates;
   }
-  
+
   List<LogEntry> getLogEntries() {
     List<LogEntry> entries = [];
 
@@ -105,22 +116,39 @@ class Project {
   }
 
   static String roleTypeToString(RoleType type) {
-      switch (type) {
-        case RoleType.read:
-          return "Read Roles";
-        case RoleType.write:
-          return "Write Roles";
-        case RoleType.admin:
-          return "Admin Roles";
-        default:
-          return "";
+    switch (type) {
+      case RoleType.read:
+        return "Read Roles";
+      case RoleType.write:
+        return "Write Roles";
+      case RoleType.admin:
+        return "Admin Roles";
+      default:
+        return "";
+    }
+  }
+
+  Future<void> sync(BuildContext context) async {
+    var response = await APISession.patch("/project/$name/sync", jsonEncode({}));
+
+    if (response.statusCode == 200) {
+      if (context.mounted) {
+        APIConstants.showSuccessToast('Sync successful.', context);
+      }
+    } else {
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            'Failed to sync project. Status code: ${response.statusCode}, Error message: ${response.body}',
+            context);
       }
     }
-  
-  Future<void> addRole(String role, RoleType type, BuildContext context) async {
-    var response = await APISession.patch("/project/$name/addRole", jsonEncode({"role": role, "type" :type.name}));
+  }
 
-    if(response.statusCode == 200) {
+  Future<void> addRole(String role, RoleType type, BuildContext context) async {
+    var response = await APISession.patch("/project/$name/addRole",
+        jsonEncode({"role": role, "type": type.name}));
+
+    if (response.statusCode == 200) {
       if (type == RoleType.admin) {
         adminRoles.add(role);
       } else if (type == RoleType.write) {
@@ -128,18 +156,22 @@ class Project {
       } else if (type == RoleType.read) {
         readRoles.add(role);
       }
-      if(context.mounted) {
+      if (context.mounted) {
         APIConstants.showSuccessToast('Role added successfully.', context);
       }
     } else {
-      if(context.mounted) {
-        APIConstants.showErrorToast('Failed to add role. Status code: ${response.statusCode}, Error message: ${response.body}', context);
+      if (context.mounted) {
+        APIConstants.showErrorToast(
+            'Failed to add role. Status code: ${response.statusCode}, Error message: ${response.body}',
+            context);
       }
     }
   }
 
-  Future<void> removeRole(String role, RoleType type, BuildContext context) async {
-    var response = await APISession.patch("/project/$name/removeRole", jsonEncode({"role": role, "type": type.name}));
+  Future<void> removeRole(
+      String role, RoleType type, BuildContext context) async {
+    var response = await APISession.patch("/project/$name/removeRole",
+        jsonEncode({"role": role, "type": type.name}));
 
     if (response.statusCode == 200) {
       if (type == RoleType.admin) {
@@ -151,7 +183,9 @@ class Project {
       }
       APIConstants.showSuccessToast('Role removed successfully.', context);
     } else {
-      APIConstants.showErrorToast('Failed to remove role. Status code: ${response.statusCode}, Error message: ${response.body}', context);
+      APIConstants.showErrorToast(
+          'Failed to remove role. Status code: ${response.statusCode}, Error message: ${response.body}',
+          context);
     }
   }
 
@@ -185,11 +219,10 @@ class Project {
   }
 
   static Future<Project> loadProject(String key, BuildContext context) async {
-    //Make sure keys are updated 
+    //Make sure keys are updated
     await APISession.updateKeys();
 
     var response = await APISession.get("/project/$key");
-
 
     if (response.statusCode == 404) {
       //Old project doesn't exist - clear it
@@ -217,10 +250,13 @@ class Project {
       writeRoles: json["write_roles"]?.cast<String>() ?? [],
       adminRoles: json["admin_roles"]?.cast<String>() ?? [],
       parts: json["parts"]?.map<Part>((e) => Part.fromJson(e)).toList() ?? [],
-      individualParts: json["individual_parts"]
-        .map<Part>((e) => Part.fromJson(e))
-        .toList(),
-      compounds: json["compounds"]?.map<Compound>((e) => Compound.fromJson(e)).toList() ?? [],
+      individualParts:
+          json["individual_parts"].map<Part>((e) => Part.fromJson(e)).toList(),
+      compounds: json["compounds"]
+              ?.map<Compound>((e) => Compound.fromJson(e))
+              .toList() ??
+          [],
+      lastSync: DateTime.parse(json["lastSyncDate"]),
     );
 
     proj.compounds.forEach((e) {

@@ -164,9 +164,6 @@ class LogEntryWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(logEntry.type, style: StyleConstants.h3Style),
-          // Text("QTY:${logEntry.quantity.toString()}",
-          //     style: StyleConstants.h3Style),
-          // Text(logEntry.message, style: StyleConstants.h3Style),
           Text(logEntry.readableDate, style: StyleConstants.h3Style),
           IconButton(onPressed: () {
             showDialog(
