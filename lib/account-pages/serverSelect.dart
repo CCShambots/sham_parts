@@ -127,7 +127,7 @@ class _ServerWidgetState extends State<ServerWidget> {
 
 
     return Container(
-      decoration: StyleConstants.shadedDecoration(context),
+      decoration: widget.isActive ? StyleConstants.alternateShadedDecoration(context) : StyleConstants.shadedDecoration(context),
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.all(8),
       child: Row(
