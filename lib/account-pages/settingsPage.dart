@@ -66,8 +66,6 @@ class SettingsPageState extends State<SettingsPage> {
   void loadUser() async {
     User? newUser = await User.getUserFromPrefs();
 
-    
-
     if (newUser != null) {
       setState(() {
         user = newUser;
@@ -178,6 +176,40 @@ class SettingsPageState extends State<SettingsPage> {
                   },
                   child: Text(
                     "Logout",
+                    style: StyleConstants.subtitleStyle,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Delete Account"),
+                          content: const Text("Are you sure you want to delete your account?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () async {
+                                // Perform account deletion logic here
+                                await user?.deleteUser(context, token: user?.token ?? "");
+                                await logOut();
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Yes, Delete"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("No, Don't Delete"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "Delete Account",
                     style: StyleConstants.subtitleStyle,
                   ),
                 ),

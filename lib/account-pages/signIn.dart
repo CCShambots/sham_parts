@@ -124,8 +124,9 @@ class SignInState extends State<SignInWidget> {
                                 passwordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
-                                color:
-                                    Theme.of(context).colorScheme.inverseSurface,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
                               ))),
                     ),
                   ),
@@ -161,8 +162,9 @@ class SignInState extends State<SignInWidget> {
                           height: 50,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.inversePrimary),
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
                             child: Text(
                               !creatingAccount ? "Sign In" : "Create Account",
                               style: TextStyle(
@@ -186,8 +188,9 @@ class SignInState extends State<SignInWidget> {
                           height: 50,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.inversePrimary),
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
                             child: Text(
                               "I verified my email!",
                               style: TextStyle(
@@ -210,10 +213,15 @@ class SignInState extends State<SignInWidget> {
                           creatingAccount = !creatingAccount;
                         });
                       },
-                      child:
-                          Text(!creatingAccount ? "Create Account" : "Sign in")),
+                      child: Text(
+                          !creatingAccount ? "Create Account" : "Sign in")),
                   TextButton(
                       onPressed: () {}, child: const Text("Forgot Password?")),
+                  TextButton(
+                      onPressed: () {
+                        DeleteAccountInfoDialog(context);
+                      },
+                      child: const Text("Need To Delete an Account?")),
                   ServerSelect(
                     logOut: () {},
                   ),
@@ -222,5 +230,26 @@ class SignInState extends State<SignInWidget> {
             ),
           ),
         ));
+  }
+
+  Future<dynamic> DeleteAccountInfoDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Delete Account"),
+          content: const Text(
+              "To delete your account, please log in first. If you need assistance, please contact shamparts5907@gmail.com."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

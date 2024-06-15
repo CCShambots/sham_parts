@@ -47,8 +47,8 @@ class User {
     return rolesString;
   }
 
-  Future<User> deleteUser(BuildContext context) async {
-    var result = await APISession.deleteWithParams("/user/delete", {"email": email});
+  Future<User> deleteUser(BuildContext context, {String token = ""}) async {
+    var result = await APISession.deleteWithParams("/user/delete", {"email": email, "token": token});
 
     if (result.statusCode == 200) {
       APIConstants.showSuccessToast("User deleted successfully", context);
