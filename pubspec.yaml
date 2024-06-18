@@ -13,9 +13,9 @@ msix_config:
   publisher_display_name: CC Shambots
   identity_name: CCShambots.ShamParts
   store: true
-  msix_version: 1.0.0.0
   publisher: CN=A3792B11-8FEE-477E-B2FF-B9039EB1B82B
   capabilities: internetClient, location, microphone, webcam
+  logo_path: C:\Users\barta\Documents\GitHub\sham_parts\assets\icon\icon.png
 
 dependencies:
   flutter:
