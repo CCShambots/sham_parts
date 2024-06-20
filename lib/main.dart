@@ -387,7 +387,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("ShamParts"),
+        title: Text("ShamParts v$version"),
         actions: [
           user.roles.contains("admin") && !isMobile
               ? Padding(
