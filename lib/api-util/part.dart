@@ -433,14 +433,31 @@ class Part {
     );
   }
 
-  Widget PartThickness() {
-    return Tooltip(
-      message: "$dimension1\" x $dimension2\" x $dimension3\"",
-      child: Text(
-        "$dimension1\"",
-        style: StyleConstants.subtitleStyle,
+  Widget PartThickness({bool warning = false}) {
+    return !warning ? JustThickness() : Row(children: [
+      JustThickness(),
+      const SizedBox(
+        width: 10,
       ),
-    );
+      const Tooltip(
+        message: "Warning: Thickness is not the same as the rest of the compound!",
+        child: Icon(
+          Icons.warning,
+          color: Colors.yellow,
+          size: 48,
+        ),
+      )
+    ]);
+  }
+
+  Tooltip JustThickness() {
+    return Tooltip(
+    message: "$dimension1\" x $dimension2\" x $dimension3\"",
+    child: Text(
+      "$dimension1\"",
+      style: StyleConstants.subtitleStyle,
+    ),
+  );
   }
 
   Widget PartName(String parseOut, bool mobile) {

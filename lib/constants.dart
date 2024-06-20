@@ -66,6 +66,12 @@ class StyleConstants {
         color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.8));
   }
 
+  static BoxDecoration warningShadedDecoration(BuildContext context) {
+    return BoxDecoration(
+        borderRadius: BorderRadius.circular(12.0),
+        color: Colors.yellow.withOpacity(0.3));
+  }
+
   static EdgeInsets margin = const EdgeInsets.all(8);
   static EdgeInsets padding = const EdgeInsets.fromLTRB(16, 8, 16, 8);
 }

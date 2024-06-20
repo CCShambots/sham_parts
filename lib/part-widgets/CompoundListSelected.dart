@@ -10,11 +10,14 @@ class CompoundListSelected extends StatefulWidget {
   final CompoundPart compoundPart;
   late Part part;
   final removeFromSelected;
+  final String thickness;
 
   CompoundListSelected(
       {super.key,
       required this.compoundPart,
-      required this.removeFromSelected}) {
+      required this.removeFromSelected,
+      required this.thickness
+      }) {
     part = compoundPart.part;
   }
 
@@ -36,6 +39,8 @@ class CompoundListSelectedState extends State<CompoundListSelected> {
     final isMobile = Platform.isAndroid || Platform.isIOS;
 
     final parseOut = widget.part.number.replaceAll(regex, "");
+
+    final bool thicknessWarning = widget.thickness != widget.part.dimension1;
 
     return GestureDetector(
       onTap: () {
@@ -95,7 +100,7 @@ class CompoundListSelectedState extends State<CompoundListSelected> {
               ],
             ),
             widget.part.ImageButton(context),
-            widget.part.PartThickness(),
+            widget.part.PartThickness(warning: thicknessWarning),
             widget.part.PartName(parseOut, isMobile),
             widget.part.QuantityHave(),
           ],

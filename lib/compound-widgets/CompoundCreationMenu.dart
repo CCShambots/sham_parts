@@ -26,9 +26,11 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
   TextEditingController nameController = TextEditingController();
   TextEditingController thicknessController = TextEditingController();
 
+
   @override
   void initState() {
     super.initState();
+
     if (widget.compound != null) {
       selectedParts = widget.compound!.parts;
       nameController.text = widget.compound!.name;
@@ -237,6 +239,7 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
                 children: selectedParts
                     .map((e) => CompoundListSelected(
                           compoundPart: e,
+                          thickness: thicknessController.text,
                           removeFromSelected: () {
                             setState(() {
                               selectedParts.remove(e);

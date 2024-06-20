@@ -129,10 +129,6 @@ class HomeState extends State<Home> {
             // mainAxisSize: MainAxisSize.min,
             children: widget.project.parts
                 .where((e) {
-                  print("name ${widget.user.name}");
-                  print("name 2 ${e.asigneeName}");
-                  print("user id ${widget.user.id}");
-                  print("asignee id ${e.asigneeId}");
 
                   return e.quantityRequested > 0 &&
                       e.asigneeId == widget.user.id
