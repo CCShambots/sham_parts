@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:http/http.dart';
 
@@ -399,7 +398,7 @@ class Part {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "${min<int>(quantityInStock, quantityNeeded)}/${quantityNeeded}",
+          "${min<int>(quantityInStock, quantityNeeded)}/$quantityNeeded",
           style: TextStyle(
               fontWeight: StyleConstants.statStyle.fontWeight,
               fontSize: StyleConstants.statStyle.fontSize,

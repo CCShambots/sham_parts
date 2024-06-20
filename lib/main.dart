@@ -7,7 +7,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sham_parts/account-pages/settingsPage.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/onshapeDocument.dart';
-import 'package:sham_parts/api-util/projectSelect.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/compound-widgets/CompoundsPage.dart';
 import 'package:sham_parts/constants.dart';

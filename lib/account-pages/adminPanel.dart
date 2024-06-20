@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sham_parts/constants.dart';
 
@@ -107,10 +109,12 @@ class UserAdminView extends StatefulWidget {
 class UserAdminViewState extends State<UserAdminView> {
   @override
   Widget build(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+    
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        decoration: StyleConstants.shadedDecoration(context),
+        decoration: widget.you ? StyleConstants.shadedDecoration(context),
         margin: StyleConstants.margin,
         padding: const EdgeInsets.all(8),
         height: 75,
@@ -129,17 +133,17 @@ class UserAdminViewState extends State<UserAdminView> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text("Delete User"),
-                              content: Text("Are you sure you want to delete this user?"),
+                              title: const Text("Delete User"),
+                              content: const Text("Are you sure you want to delete this user?"),
                               actions: [
                                 TextButton(
-                                  child: Text("Cancel"),
+                                  child: const Text("Cancel"),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
                                 ),
                                 TextButton(
-                                  child: Text("Delete"),
+                                  child: const Text("Delete"),
                                   onPressed: () async {
                                     // Perform the delete operation here
                                     await widget.user.deleteUser(context);

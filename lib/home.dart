@@ -9,7 +9,6 @@ import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/compound-widgets/AssignedCompoundDisplay.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/AssignedPartDisplay.dart';
-import 'package:sham_parts/part-widgets/PartListDisplay.dart';
 import 'package:sham_parts/util/indicator.dart';
 
 class Home extends StatefulWidget {

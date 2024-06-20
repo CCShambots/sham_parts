@@ -263,11 +263,11 @@ class Project {
       lastSync: DateTime.parse(json["lastSyncDate"]),
     );
 
-    proj.compounds.forEach((e) {
-      e.parts.forEach((part) {
+    for (var e in proj.compounds) {
+      for (var part in e.parts) {
         part.acquireAndAssignPart(proj);
-      });
-    });
+      }
+    }
 
     RegExp regex = RegExp("[0-9]{2,}-20[0-9]{2}-P-[0-9]{4}");
 
