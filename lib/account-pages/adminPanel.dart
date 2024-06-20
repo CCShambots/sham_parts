@@ -267,10 +267,10 @@ class UserAdminViewState extends State<UserAdminView> {
 }
 
 class Role extends StatefulWidget {
-  var removeSelf;
-  String name;
+  final dynamic removeSelf;
+  final String name;
 
-  Role({super.key, required this.removeSelf, required this.name});
+  const Role({super.key, required this.removeSelf, required this.name});
 
   @override
   State<Role> createState() => _RoleState();
