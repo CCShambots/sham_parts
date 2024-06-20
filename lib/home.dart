@@ -124,12 +124,20 @@ class HomeState extends State<Home> {
               : StyleConstants.subtitleStyle,
           textAlign: TextAlign.center,
         ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
+          ListView(
+            shrinkWrap: true,
+            // mainAxisSize: MainAxisSize.min,
             children: widget.project.parts
                 .where((e) {
+                  print("name ${widget.user.name}");
+                  print("name 2 ${e.asigneeName}");
+                  print("user id ${widget.user.id}");
+                  print("asignee id ${e.asigneeId}");
+
                   return e.quantityRequested > 0 &&
-                      e.asigneeId == widget.user.id;
+                      e.asigneeId == widget.user.id
+                      && e.asigneeName == widget.user.name
+                      ;
                 })
                 .map((e) => AssignedPartDisplay(part: e))
                 .toList(),

@@ -115,7 +115,9 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     regenWidgetOptions();
 
-    loadUser();
+    loadUser().then((value) {
+      regenWidgetOptions();
+    });
 
     loadProjectWithoutSavingNewKey();
 
@@ -124,7 +126,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     });
   }
 
-  void loadUser() async {
+  Future<void> loadUser() async {
     User? newUser = await User.getUserFromPrefs();
 
     if (newUser != null) {

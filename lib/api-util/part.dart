@@ -93,7 +93,7 @@ class Part {
       dimension3: '',
       numCombines: 0,
       partType: '',
-      asigneeId: 0,
+      asigneeId: -1,
       camDone: false,
       camInstructions: []
     );
