@@ -164,7 +164,7 @@ class SettingsPageState extends State<SettingsPage> {
                     "Roles: ${user?.rolesListToString()}",
                     style: StyleConstants.subtitleStyle,
                   ),
-                  (user?.roles.contains("admin") ?? false) && !isMobile
+                  (user?.roles.contains("admin") ?? false)
                       ? TextButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
