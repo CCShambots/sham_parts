@@ -13,12 +13,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api-util/user.dart';
 
 class SettingsPage extends StatefulWidget {
-  User? user;
-  Project project;
-  bool appbar;
-  var loadProject;
+  final User? user;
+  final Project project;
+  final bool appbar;
+  final loadProject;
 
-  SettingsPage(
+  const SettingsPage(
       {super.key,
       required this.user,
       required this.project,

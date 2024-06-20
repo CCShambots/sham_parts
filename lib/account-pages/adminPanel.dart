@@ -114,7 +114,7 @@ class UserAdminViewState extends State<UserAdminView> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        decoration: widget.you ? StyleConstants.shadedDecoration(context),
+        decoration: !widget.you ? StyleConstants.shadedDecoration(context) : StyleConstants.alternateShadedDecoration(context),
         margin: StyleConstants.margin,
         padding: const EdgeInsets.all(8),
         height: 75,
@@ -123,71 +123,26 @@ class UserAdminViewState extends State<UserAdminView> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            !isMobile ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                    tooltip: "Delete User",
-                    onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Delete User"),
-                              content: const Text("Are you sure you want to delete this user?"),
-                              actions: [
-                                TextButton(
-                                  child: const Text("Cancel"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text("Delete"),
-                                  onPressed: () async {
-                                    // Perform the delete operation here
-                                    await widget.user.deleteUser(context);
-                                    // Call the delete user function and pass the user object
-                                    // Then call loadUsers() to refresh the user list
-                                    await widget.repullUsers();
-                                    if(context.mounted) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                    },
-                    icon: const Icon(
-                      Icons.delete_forever,
-                      color: Colors.red,
-                      size: 35,
-                    )),
-                Tooltip(
-                  message: widget.user.verified ? "Verified" : "Not Verified",
-                  child: Icon(
-                    widget.user.verified
-                        ? Icons.check_circle_outline
-                        : Icons.error_outline,
-                    color: widget.user.verified ? Colors.green : Colors.red,
-                    size: 35,
-                  ),
-                ),
+                DeleteUser(context),
+                VerifiedMethod(),
                 const Padding(padding: EdgeInsets.only(left: 8)),
-                Tooltip(
-                    message: "Email: ${widget.user.email}",
-                    child: Text(widget.user.name,
-                        style: StyleConstants.subtitleStyle)),
+                UserName(),
                 const SizedBox(width: 8),
                 widget.you
                     ? Text("(you)", style: StyleConstants.h3Style)
                     : Container(),
               ],
-            ),
+            ) : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 8),
+                UserName(),
+            ],),
 
-            Row(
+            !isMobile ? Row(
               mainAxisSize: MainAxisSize.min,
               children: widget.user.roles
                   .map((e) => Role(
@@ -198,26 +153,47 @@ class UserAdminViewState extends State<UserAdminView> {
                         },
                       ))
                   .toList(),
+            ) : Tooltip(
+              message: "Roles: ${widget.user.roles.join(", ")}",
+              child: Text("Roles", style: StyleConstants.subtitleStyle),
             ),
 
             //Add role button
             PopupMenuButton<String>(
               onSelected: (String value) async {
-                await widget.user.addRole(value, context);
+
+                if(!isMobile) {
+                  await widget.user.addRole(value, context);
+                } else {
+                  if(widget.user.roles.contains(value)) {
+                    await widget.user.removeRole(value, context);
+                  } else {
+                    await widget.user.addRole(value, context);
+                  }
+                }
+
                 widget.repullUsers();
               },
               itemBuilder: (BuildContext context) {
                 return widget.roles
                     .map((e) => PopupMenuItem<String>(
                           value: e,
-                          child: Text(e),
+                          child: Text((!isMobile ? "" : (widget.user.roles.contains(e) ? "- " : "+ ")) + e,
+                            style: TextStyle(
+                              color: !isMobile ? null : (widget.user.roles.contains(e) ? Colors.red : Colors.green)
+                            ),
+                          ),
                         ))
                     .toList();
               },
-              tooltip: "Add New Role",
-              child: const Icon(
+              tooltip: !isMobile ? "Add New Role" : "Add/Remove Roles",
+              child: !isMobile ? const Icon(
                 Icons.add_circle_outline,
                 color: Colors.green,
+                size: 35,
+              ) : const Icon(
+                Icons.edit,
+                color: Colors.yellow,
                 size: 35,
               ),
             )
@@ -225,6 +201,68 @@ class UserAdminViewState extends State<UserAdminView> {
         ),
       ),
     );
+  }
+
+  Tooltip UserName() {
+    return Tooltip(
+                  message: "Email: ${widget.user.email}",
+                  child: Text(widget.user.name,
+                      style: StyleConstants.subtitleStyle));
+  }
+
+  Tooltip VerifiedMethod() {
+    return Tooltip(
+                message: widget.user.verified ? "Verified" : "Not Verified",
+                child: Icon(
+                  widget.user.verified
+                      ? Icons.check_circle_outline
+                      : Icons.error_outline,
+                  color: widget.user.verified ? Colors.green : Colors.red,
+                  size: 35,
+                ),
+              );
+  }
+
+  IconButton DeleteUser(BuildContext context) {
+    return IconButton(
+                  tooltip: "Delete User",
+                  onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Delete User"),
+                            content: const Text("Are you sure you want to delete this user?"),
+                            actions: [
+                              TextButton(
+                                child: const Text("Cancel"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: const Text("Delete"),
+                                onPressed: () async {
+                                  // Perform the delete operation here
+                                  await widget.user.deleteUser(context);
+                                  // Call the delete user function and pass the user object
+                                  // Then call loadUsers() to refresh the user list
+                                  await widget.repullUsers();
+                                  if(context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                  },
+                  icon: const Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                    size: 35,
+                  ));
   }
 }
 
