@@ -14,7 +14,11 @@ class Compound {
   int id;
   String name;
   String material;
+
   String thickness;
+  String xDimension;
+  String yDimension;
+
   List<CompoundPart> parts;
   bool camDone;
   List<String> camInstructions;
@@ -31,6 +35,8 @@ class Compound {
     required this.name,
     required this.material,
     required this.thickness,
+    required this.xDimension,
+    required this.yDimension,
     required this.parts,
     required this.camDone,
     required this.camInstructions,
@@ -46,6 +52,8 @@ class Compound {
       name: json['name'],
       material: json['material'],
       thickness: json['thickness'],
+      xDimension: json['xDimension'],
+      yDimension: json['yDimension'],
       parts: (json['parts'] as List<dynamic>)
           .map((part) => CompoundPart.fromJson(part))
           .toList(),
@@ -55,7 +63,7 @@ class Compound {
           .toList(),
       asigneeId: json['asigneeId'],
       asigneeName: json['asigneeName'],
-      thumbnail: json['thumbnail'],
+      thumbnail: "",
       logEntries: (json['logEntries'] as List<dynamic>)
           .map((entry) => LogEntry.fromJson(entry))
           .toList(),
@@ -68,6 +76,8 @@ class Compound {
       name: "",
       material: "",
       thickness: "",
+      xDimension: "",
+      yDimension: "",
       parts: [],
       camDone: false,
       camInstructions: [],
@@ -76,6 +86,38 @@ class Compound {
       logEntries: [],
       thumbnail: "",
     );
+  }
+
+  Future<bool> loadThumbnail() {
+    return APISession.get("/compound/$id/thumbnail").then((response) {
+      if (response.statusCode == 200) {
+        thumbnail = response.body;
+        return thumbnail == "" ? false : true;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  Future<void> setDimensions(BuildContext context) async {
+    // Send current dimensions back to the database
+    Response response = await APISession.patch(
+      "/compound/$id/updateDimensions",
+      jsonEncode({
+        "xDimension": xDimension,
+        "yDimension": yDimension,
+      }),
+    );
+
+    if (context.mounted) {
+      if (response.statusCode != 200) {
+        APIConstants.showErrorToast(
+            "Failed to update dimensions. Status code: ${response.statusCode} - ${response.body}",
+            context);
+      } else {
+        APIConstants.showSuccessToast("Dimensions updated successfully", context);
+      }
+    }
   }
 
   Future<void> deleteFromDatabase(BuildContext context) async {
@@ -197,7 +239,8 @@ class Compound {
     }
   }
 
-  Future<void> updateCamInstructions(List<String> instructions, BuildContext context) async {
+  Future<void> updateCamInstructions(
+      List<String> instructions, BuildContext context) async {
     // Make the API request to update the CAM instructions
     Response response = await APISession.patch(
         "/compound/$id/updateCamInstructions",
@@ -365,27 +408,41 @@ class Compound {
   }
 
   Row CompoundCamStatus(bool mobile) {
-    return Row(children: [
-            Text("CAM ", style: !mobile ? StyleConstants.subtitleStyle : StyleConstants.h3Style),
-            Icon(camDone ? Icons.check_circle : Icons.cancel, color: camDone ? Colors.green : Colors.red, size: 48,)
-          ],);
+    return Row(
+      children: [
+        Text("CAM ",
+            style: !mobile
+                ? StyleConstants.subtitleStyle
+                : StyleConstants.h3Style),
+        Icon(
+          camDone ? Icons.check_circle : Icons.cancel,
+          color: camDone ? Colors.green : Colors.red,
+          size: 48,
+        )
+      ],
+    );
   }
 
   Tooltip CompoundPartQuantity() {
     return Tooltip(
-            message: generatePartsTooltip(),
-            child: Text("${parts.length} Part${parts.length != 1 ? 's' : ''}", style: StyleConstants.subtitleStyle));
+        message: generatePartsTooltip(),
+        child: Text("${parts.length} Part${parts.length != 1 ? 's' : ''}",
+            style: StyleConstants.subtitleStyle));
   }
 
   Tooltip CompoundThickness() {
     return Tooltip(
-            message: "Thickness",
-            child: Text("$thickness\"", style: StyleConstants.subtitleStyle));
+        message: "Thickness",
+        child: Text("$thickness\"", style: StyleConstants.subtitleStyle));
   }
 
-  Text CompoundMaterial() => Text(material, style: StyleConstants.subtitleStyle);
+  Text CompoundMaterial() =>
+      Text(material, style: StyleConstants.subtitleStyle);
 
-  Text CompoundName(bool mobile) => Text(name, style: !mobile ? StyleConstants.subtitleStyle : StyleConstants.h3Style,);
+  Text CompoundName(bool mobile) => Text(
+        name,
+        style: !mobile ? StyleConstants.subtitleStyle : StyleConstants.h3Style,
+      );
 }
 
 class CompoundPart {

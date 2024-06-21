@@ -92,6 +92,8 @@ class _CompoundCreationMenuState extends State<CompoundCreationMenu> {
               parts: selectedParts,
               material: selectedParts.first.part.material,
               thickness: thicknessController.text, 
+              xDimension: "",
+              yDimension: "",
               camDone: false,
               camInstructions: [],
               asigneeId: -1,

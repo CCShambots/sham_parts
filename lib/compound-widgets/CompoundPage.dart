@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/logEntry.dart';
 import 'package:sham_parts/api-util/project.dart';
@@ -29,10 +32,45 @@ class _CompoundPageState extends State<CompoundPage> {
   int userIndex = 0;
   late List<User> users = [];
 
+  bool hasThumbnail = false;
+  bool imageValid = true;
+  Image? image;
+
+  bool editingDimensions = false;
+  bool inches = true;
+
   @override
   void initState() {
     super.initState();
     loadUsers();
+
+    setState(() {
+      inches = true;
+    });
+
+    loadThumbnail();
+  }
+
+  void loadThumbnail() async {
+    bool thumbnail = await widget.compound.loadThumbnail();
+
+    setState(() {
+      hasThumbnail = thumbnail;
+    });
+
+    if (thumbnail) {
+      if (hasThumbnail) {
+        try {
+          setState(() {
+            image = Image.memory(base64Decode(widget.compound.thumbnail));
+          });
+        } catch (e) {
+          setState(() {
+            imageValid = false;
+          });
+        }
+      }
+    }
   }
 
   void loadUsers() async {
@@ -112,6 +150,89 @@ class _CompoundPageState extends State<CompoundPage> {
           const SizedBox(
             height: 24,
           ),
+          Row(
+            children: [
+              Column(
+                children: [
+                  CompoundDimension(
+                      editing: editingDimensions,
+                      label: "X Dimension",
+                      inches: inches,
+                      value: widget.compound.xDimension,
+                      setValue: (value) {
+                        widget.compound.xDimension = value;
+                        setState(() {});
+                      }),
+                  CompoundDimension(
+                      editing: editingDimensions,
+                      label: "Y Dimension",
+                      inches: inches,
+                      value: widget.compound.yDimension,
+                      setValue: (value) {
+                        widget.compound.yDimension = value;
+                        setState(() {});
+                      }),
+                ],
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Column(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          inches = true;
+                        });
+                      },
+                      icon: Icon(inches
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked)),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          inches = false;
+                        });
+                      },
+                      icon: Icon(!inches
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked)),
+                ],
+              ),
+              Column(
+                children: [
+                  Text("In.", style: StyleConstants.h3Style),
+                  Text("mm", style: StyleConstants.h3Style)
+                ],
+              ),
+              !editingDimensions
+                  ? IconButton(
+                    tooltip: "Edit Dimensions",
+                      onPressed: () {
+                        setState(() {
+                          editingDimensions = true;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Colors.yellow,
+                        size: 36,
+                      ))
+                  : IconButton(
+                    tooltip: "Save Changes",
+                      onPressed: () {
+                        setState(() {
+                          editingDimensions = false;
+                        });
+                        widget.compound.setDimensions(context);
+                      },
+                      icon: const Icon(
+                        Icons.save,
+                        color: Colors.blue,
+                        size: 36,
+                      )),
+            ],
+          ),
           Text(
             "Parts",
             style: StyleConstants.subtitleStyle,
@@ -188,28 +309,28 @@ class _CompoundPageState extends State<CompoundPage> {
                   ],
                 ),
           CamMenu(
-              camDone: widget.compound.camDone,
-              camDoneFunc: (bool done, BuildContext context) async {
-                await widget.compound.setCamDone(done, context);
-                setState(() {});
-              },
-              camInstructions: widget.compound.camInstructions,
-              updateCamInstructions: (List<String> instructions, BuildContext context) async {
-                await widget.compound.updateCamInstructions(instructions, context);
-                setState(() {});
-              } 
-              ,
+            camDone: widget.compound.camDone,
+            camDoneFunc: (bool done, BuildContext context) async {
+              await widget.compound.setCamDone(done, context);
+              setState(() {});
+            },
+            camInstructions: widget.compound.camInstructions,
+            updateCamInstructions:
+                (List<String> instructions, BuildContext context) async {
+              await widget.compound
+                  .updateCamInstructions(instructions, context);
+              setState(() {});
+            },
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: !isMobile ? [
-              FulFillCompound(context),
-              EditCompound(context),
-              DeleteCompound(context),
-            ] : [
-              FulFillCompound(context),
-              DeleteCompound(context)
-            ],
+            children: !isMobile
+                ? [
+                    FulFillCompound(context),
+                    EditCompound(context),
+                    DeleteCompound(context),
+                  ]
+                : [FulFillCompound(context), DeleteCompound(context)],
           )
         ],
       ),
@@ -218,51 +339,51 @@ class _CompoundPageState extends State<CompoundPage> {
 
   IconButton DeleteCompound(BuildContext context) {
     return IconButton(
-                tooltip: "Delete forever",
-                onPressed: () {
-                  showDeleteDialog(context);
-                },
-                icon: const Icon(
-                  Icons.delete_forever,
-                  color: Colors.red,
-                  size: 48,
-                ));
+        tooltip: "Delete forever",
+        onPressed: () {
+          showDeleteDialog(context);
+        },
+        icon: const Icon(
+          Icons.delete_forever,
+          color: Colors.red,
+          size: 48,
+        ));
   }
 
   IconButton EditCompound(BuildContext context) {
     return IconButton(
-                tooltip: "Edit Parts in Compound",
-                onPressed: () {
-                  // Navigate to part page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CompoundCreationMenu(
-                        project: widget.project,
-                        compound: widget.compound,
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.edit,
-                  color: Colors.yellow,
-                  size: 48,
-                ));
+        tooltip: "Edit Parts in Compound",
+        onPressed: () {
+          // Navigate to part page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CompoundCreationMenu(
+                project: widget.project,
+                compound: widget.compound,
+              ),
+            ),
+          );
+        },
+        icon: const Icon(
+          Icons.edit,
+          color: Colors.yellow,
+          size: 48,
+        ));
   }
 
   IconButton FulFillCompound(BuildContext context) {
     return IconButton(
-                tooltip: "Fulfill Compound",
-                onPressed: () {
-                  widget.compound.fulfill(context);
-                  setState(() {});
-                },
-                icon: const Icon(
-                  Icons.check,
-                  color: Colors.blue,
-                  size: 48,
-                ));
+        tooltip: "Fulfill Compound",
+        onPressed: () {
+          widget.compound.fulfill(context);
+          setState(() {});
+        },
+        icon: const Icon(
+          Icons.check,
+          color: Colors.blue,
+          size: 48,
+        ));
   }
 
   Future<dynamic> showDeleteDialog(BuildContext context) {
@@ -293,18 +414,9 @@ class _CompoundPageState extends State<CompoundPage> {
   }
 
   Widget CompoundImage() {
-    bool imageValid = true;
-    Image? image;
-
-    try {
-      image = Image.memory(base64Decode(widget.compound.thumbnail));
-    } catch (e) {
-      imageValid = false;
-    }
-
     return Column(
       children: [
-        imageValid
+        hasThumbnail && imageValid
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image(image: image!.image))
@@ -337,5 +449,106 @@ class _CompoundPageState extends State<CompoundPage> {
             : Container()
       ],
     );
+  }
+}
+
+class CompoundDimension extends StatefulWidget {
+  const CompoundDimension(
+      {super.key,
+      required this.editing,
+      required this.label,
+      required this.value,
+      required this.inches,
+      required this.setValue});
+
+  final bool editing;
+  final String label;
+  final String value;
+  final bool inches;
+  final Function(String) setValue;
+
+  @override
+  State<CompoundDimension> createState() => _CompoundDimensionState();
+}
+
+class _CompoundDimensionState extends State<CompoundDimension> {
+  TextEditingController controller = TextEditingController();
+
+  bool prevInches = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    prevInches = widget.inches;
+
+    setState(() {
+      controller.text = widget.value;
+    });
+  }
+
+  String convertFromIn() {
+    String newValue = controller.text;
+
+    return (double.parse(newValue) * 25.4).toString();
+  }
+
+  String convertFromMM() {
+    String newValue = controller.text;
+
+    return (double.parse(newValue) / 25.4).toString();
+  }
+
+  void _handleValueChange(String value) {
+    try {
+      controller.text = value; // Directly setting the controller's text
+
+      if (!widget.inches) {
+        widget.setValue(convertFromMM());
+      } else {
+        widget.setValue(value);
+      }
+    } catch (e) {
+      // Handle error or do nothing
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.inches && !prevInches) {
+      setState(() {
+        controller.text = convertFromMM();
+      });
+    } else if (!widget.inches && prevInches) {
+      setState(() {
+        controller.text = convertFromIn();
+      });
+    }
+
+    prevInches = widget.inches;
+
+    return !widget.editing
+        ? Text(
+            "${widget.label}: ${widget.inches ? widget.value : (double.parse(widget.value) * 25.4)}${widget.inches ? "\"" : " mm"}",
+            style: StyleConstants.subtitleStyle)
+        : Row(
+            children: [
+              Text("${widget.label}: ", style: StyleConstants.subtitleStyle),
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                  ],
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: _handleValueChange,
+                ),
+              ),
+            ],
+          );
   }
 }
