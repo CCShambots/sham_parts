@@ -18,6 +18,8 @@ class _ServerSelectState extends State<ServerSelect> {
   List<Server> servers = [];
   String activeServer = "";
 
+  TextEditingController addServerController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +27,8 @@ class _ServerSelectState extends State<ServerSelect> {
   }
 
   Future<void> loadServers() async {
-    List<Server> loaded = await Server.getAllServers();
+
+    List<Server> loaded = await Server.getServersFromKeys();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -46,17 +49,23 @@ class _ServerSelectState extends State<ServerSelect> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text("Servers", style: StyleConstants.subtitleStyle),
+          // IconButton(
+          //     onPressed: () {
+          //       loadServers();
+          //     },
+          //     tooltip: "Reload server list",
+          //     icon: const Icon(Icons.sync, color: Colors.blue)),
           IconButton(
-              onPressed: () {
-                loadServers();
-              },
-              tooltip: "Reload server list",
-              icon: const Icon(Icons.sync, color: Colors.blue)),
+            tooltip: "Add new server",
+            onPressed: () {
+                 addServerDialog(context);
+
+          }, icon: const Icon(Icons.add, color: Colors.green))
         ],
       ),
       ...servers.map((e) => ServerWidget(
             server: e,
-            isActive: e.ip == activeServer,
+            isActive: e.key == activeServer,
             setParentState: () async {
               await loadServers();
               widget.logOut();
@@ -64,6 +73,44 @@ class _ServerSelectState extends State<ServerSelect> {
             },
           )),
     ]);
+  }
+
+  Future<dynamic> addServerDialog(BuildContext context) {
+    return showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                   title: const Text('Add New Server'),
+                   content: TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Server Key',
+                    ),
+                    onChanged: (value) {
+                        addServerController.text = value.toUpperCase();
+                    },
+                    controller: addServerController,
+                   ),
+                   actions: [
+                    TextButton(
+                      onPressed: () {
+                       Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await Server.addServer(addServerController.text);
+                        
+                        await loadServers();
+                        
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Save'),
+                    ),
+                   ],
+                  );
+                },
+               );
   }
 }
 

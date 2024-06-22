@@ -3,7 +3,9 @@ import 'package:toastification/toastification.dart';
 
 class APIConstants {
   String baseUrl = "http://40.233.83.5:3000";
+  String baseKey = "";
   String serverKey = "selected_server";
+  String serverKeys = "server_list";
   String onshapeKey = "onshape_key";
   String currentProject = "current_project";
   String userToken = "token";

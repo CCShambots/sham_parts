@@ -41,6 +41,20 @@ class APISession {
     return response;
   }
 
+  static Future<http.Response> getFromLeaderWithParams(String url, Map<String, String> queryParams) async {
+    String concatQueryParams = "?";
+    var paramsList = queryParams.entries.toList();
+
+    for(int i = 0; i<queryParams.length; i++) {
+      concatQueryParams+= "${paramsList[i].key}=${paramsList[i].value}";
+
+      if(i != queryParams.length-1) concatQueryParams+="&";
+    }
+
+    http.Response response = await http.get(Uri.parse(APIConstants().baseUrl+url+concatQueryParams), headers: headers);
+    return response;
+  }
+
   static Future<http.Response> post(String url, dynamic data) async {
     http.Response response = await http.post(Uri.parse(currentUrl+url), body: data, headers: headers);
     return response;
