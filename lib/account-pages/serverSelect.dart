@@ -49,12 +49,6 @@ class _ServerSelectState extends State<ServerSelect> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text("Servers", style: StyleConstants.subtitleStyle),
-          // IconButton(
-          //     onPressed: () {
-          //       loadServers();
-          //     },
-          //     tooltip: "Reload server list",
-          //     icon: const Icon(Icons.sync, color: Colors.blue)),
           IconButton(
             tooltip: "Add new server",
             onPressed: () {
