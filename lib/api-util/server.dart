@@ -40,7 +40,7 @@ class Server {
         prefs.getStringList(APIConstants().serverKeys) ?? [""];
 
     var result = await APISession.getFromLeaderWithParams(
-        "/server/", {"keys": serverKeys.join(",")});
+        "/server/get", {"keys": serverKeys.join(",")});
 
     if (result.statusCode == 200) {
       var jsonDecoded = jsonDecode(result.body);
@@ -59,7 +59,9 @@ class Server {
     List<String> serverKeys =
         prefs.getStringList(APIConstants().serverKeys) ?? [""];
 
-    serverKeys.add(key);
+    if(!serverKeys.contains(key)) {
+      serverKeys.add(key);
+    }
 
     prefs.setStringList(APIConstants().serverKeys, serverKeys);
   }

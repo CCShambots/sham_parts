@@ -16,7 +16,7 @@ class ServerSelect extends StatefulWidget {
 
 class _ServerSelectState extends State<ServerSelect> {
   List<Server> servers = [];
-  String activeServer = "";
+  String activeServerIP = "";
 
   TextEditingController addServerController = TextEditingController();
 
@@ -32,12 +32,12 @@ class _ServerSelectState extends State<ServerSelect> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String serverKey =
-        prefs.getString(APIConstants().serverKey) ?? APIConstants().baseUrl;
+    String serverIP =
+        prefs.getString(APIConstants().serverIP) ?? APIConstants().baseUrl;
 
     setState(() {
       servers = loaded;
-      activeServer = serverKey;
+      activeServerIP = serverIP;
     });
   }
 
@@ -59,7 +59,7 @@ class _ServerSelectState extends State<ServerSelect> {
       ),
       ...servers.map((e) => ServerWidget(
             server: e,
-            isActive: e.key == activeServer,
+            isActive: e.ip == activeServerIP,
             setParentState: () async {
               await loadServers();
               widget.logOut();
@@ -152,7 +152,7 @@ class _ServerWidgetState extends State<ServerWidget> {
       return;
     }
 
-    prefs.setString(APIConstants().serverKey, widget.server.ip);
+    prefs.setString(APIConstants().serverIP, widget.server.ip);
 
     setState(() {});
     widget.setParentState();
@@ -176,7 +176,7 @@ class _ServerWidgetState extends State<ServerWidget> {
         children: !isMobile ? [
           StatusIcon(),
           Name(isMobile),
-          IP(),
+          Key(),
           SelectButton(context)
         ] : [
           StatusIcon(),
@@ -192,7 +192,7 @@ class _ServerWidgetState extends State<ServerWidget> {
             onPressed: () {setActiveServer(context);}, child: const Text("Select"));
   }
 
-  Text IP() => Text(widget.server.ip);
+  Text Key() => Text(widget.server.key);
 
   Tooltip Name(bool isMobile) {
     return Tooltip(

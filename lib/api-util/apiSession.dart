@@ -117,7 +117,7 @@ class APISession {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String key = prefs.getString(APIConstants().onshapeKey) ?? "";
 
-    String apiUrl = prefs.getString(APIConstants().serverKey) ?? APIConstants().baseUrl;
+    String apiUrl = prefs.getString(APIConstants().serverIP) ?? APIConstants().baseUrl;
 
     currentUrl = apiUrl;
 
