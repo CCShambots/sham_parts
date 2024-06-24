@@ -1,8 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import '../constants.dart';
+
+class Contribution {
+  final String author;
+  int quantity;
+
+  Contribution({required this.author, required this.quantity});
+}
 
 class LogEntry {
   final int id;
@@ -37,6 +45,29 @@ class LogEntry {
       author: json['author'],
     );
   }
+
+  static List<Contribution> generateContributionList(List<LogEntry> entries, String type) {
+
+    DateTime startTime = DateTime.now().subtract(const Duration(days: 7)).toUtc();
+    DateTime endTime = DateTime.now().toUtc();
+
+    var filteredEntries = filterLogEntriesByType(entries, type);
+    var filteredByDate = filterLogEntriesByTime(filteredEntries, startTime, endTime);
+
+    List<Contribution> contributions = [];
+    for (var entry in filteredByDate) {
+      if(contributions.where((e) {return e.author == entry.author;}).isEmpty) {
+        contributions.add(Contribution(author: entry.author, quantity: entry.quantity));
+      } else {
+        contributions.firstWhere((e) {return e.author == entry.author;}).quantity += entry.quantity;
+      }
+    }
+
+    contributions.sort((a, b) => a.quantity.compareTo(b.quantity));
+
+    return contributions;
+  } 
+
 
   static List<FlSpot> generateSpots(List<LogEntry> entries, String type) {
     DateTime startTime = DateTime.now().subtract(const Duration(days: 7)).toUtc();

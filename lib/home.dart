@@ -36,6 +36,9 @@ class HomeState extends State<Home> {
 
     bool oneRowGraph = MediaQuery.of(context).size.width > 650;
 
+    var contributions = LogEntry.generateContributionList(
+        widget.project.getLogEntries(), "Fulfill");
+
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -56,7 +59,7 @@ class HomeState extends State<Home> {
                     children: [
                       pieChart(),
                       lineGraph(),
-                      const Flexible(child: Text("More graph coming soon ™️"))
+                      TopProducers(contributions),
                     ],
                   )
                 : Column(
@@ -64,28 +67,64 @@ class HomeState extends State<Home> {
                     children: [
                       pieChart(),
                       lineGraph(),
+                      TopProducers(contributions)
                     ],
                   ),
-            !isMobile ? SizedBox(
-              width: double.infinity,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(flex: 1, child: AssignedParts(isMobile)),
-                  Flexible(flex: 1, child: AssignedCompounds(isMobile))
-                ],
-              ),
-            ) : Column(
-              children: [
-                AssignedParts(isMobile),
-                AssignedCompounds(isMobile)
-              ],
-            )
+            !isMobile
+                ? SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(flex: 1, child: AssignedParts(isMobile)),
+                        Flexible(flex: 1, child: AssignedCompounds(isMobile))
+                      ],
+                    ),
+                  )
+                : Column(
+                    children: [
+                      AssignedParts(isMobile),
+                      AssignedCompounds(isMobile)
+                    ],
+                  )
           ],
         ),
       ),
     );
+  }
+
+  Flexible TopProducers(List<Contribution> contributions) {
+    return Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("Top Producers This Week",
+                              style: StyleConstants.subtitleStyle),
+                          ...contributions.map((e) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(children: [
+                                Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Text(
+                                          "${contributions.indexOf(e) + 1}. ${e.author}",
+                                          style: StyleConstants.h3Style),
+                                      Text(
+                                        "${e.quantity.toString()} parts",
+                                        style: StyleConstants.h3Style,
+                                      )
+                                    ]),
+                                    const Divider(height: 20,)
+                              ]),
+                            );
+                          })
+                        ],
+                      ),
+                    );
   }
 
   Widget AssignedCompounds(bool isMobile) {
@@ -99,16 +138,18 @@ class HomeState extends State<Home> {
               : StyleConstants.subtitleStyle,
           textAlign: TextAlign.center,
         ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: widget.project.compounds
-                .where((e) {
-                  return
-                      e.asigneeId == widget.user.id;
-                })
-                .map((e) => AssignedCompoundDisplay(compound: e, project: widget.project,))
-                .toList(),
-          ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: widget.project.compounds
+              .where((e) {
+                return e.asigneeId == widget.user.id;
+              })
+              .map((e) => AssignedCompoundDisplay(
+                    compound: e,
+                    project: widget.project,
+                  ))
+              .toList(),
+        ),
       ],
     );
   }
@@ -124,20 +165,18 @@ class HomeState extends State<Home> {
               : StyleConstants.subtitleStyle,
           textAlign: TextAlign.center,
         ),
-          ListView(
-            shrinkWrap: true,
-            // mainAxisSize: MainAxisSize.min,
-            children: widget.project.parts
-                .where((e) {
-
-                  return e.quantityRequested > 0 &&
-                      e.asigneeId == widget.user.id
-                      && e.asigneeName == widget.user.name
-                      ;
-                })
-                .map((e) => AssignedPartDisplay(part: e))
-                .toList(),
-          ),
+        ListView(
+          shrinkWrap: true,
+          // mainAxisSize: MainAxisSize.min,
+          children: widget.project.parts
+              .where((e) {
+                return e.quantityRequested > 0 &&
+                    e.asigneeId == widget.user.id &&
+                    e.asigneeName == widget.user.name;
+              })
+              .map((e) => AssignedPartDisplay(part: e))
+              .toList(),
+        ),
       ],
     );
   }
@@ -213,8 +252,7 @@ class HomeState extends State<Home> {
                             spots: LogEntry.generateSpots(
                                 widget.project
                                     .getLogEntries()
-                                    .where(
-                                        (e) => e.author == widget.user.name)
+                                    .where((e) => e.author == widget.user.name)
                                     .toList(),
                                 "Fulfill"),
                             color: Colors.blue,

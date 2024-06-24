@@ -78,6 +78,8 @@ class SettingsPageState extends State<SettingsPage> {
         user = newUser;
         nameController.text = user?.name ?? "";
       });
+
+      widget.loadUser();
     } else {
       setState(() {
         user = User.blank();
