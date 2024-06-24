@@ -140,6 +140,11 @@ class BottomNavigationBarState extends State<BottomNavigation> {
         MaterialPageRoute(
             builder: (context) => SettingsPage(
                   user: user,
+                  loadUser: () {
+                    loadUser().then((value) {
+                      regenWidgetOptions();
+                    });
+                  },
                   project: project,
                   appbar: true,
                   loadProject: loadProject,
@@ -158,6 +163,11 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       PartsPage(project: project),
       SettingsPage(
         user: user,
+        loadUser: () {
+          loadUser().then((value) {
+            regenWidgetOptions();
+          });
+        },
         project: project,
         loadProject: loadProject,
       )

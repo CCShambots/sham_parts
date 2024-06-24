@@ -17,12 +17,14 @@ class SettingsPage extends StatefulWidget {
   final Project project;
   final bool appbar;
   final loadProject;
+  final loadUser; 
 
   const SettingsPage(
       {super.key,
       required this.user,
       required this.project,
       this.appbar = false,
+      required this.loadUser,
       required this.loadProject});
 
   @override
@@ -282,6 +284,8 @@ class SettingsPageState extends State<SettingsPage> {
                 setState(() {
                   user = newUser;
                 });
+
+                widget.loadUser();
 
                 APISession.updateKeys();
               } else {
