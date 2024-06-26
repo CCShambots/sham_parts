@@ -60,9 +60,13 @@ class _ServerSelectState extends State<ServerSelect> {
       ...servers.map((e) => ServerWidget(
             server: e,
             isActive: e.ip == activeServerIP,
-            setParentState: () async {
+            setParentState: (bool active) async {
               await loadServers();
-              widget.logOut();
+
+              if(!active) {
+                widget.logOut();
+              }
+
               setState(() {});
             },
           )),
@@ -111,7 +115,7 @@ class _ServerSelectState extends State<ServerSelect> {
 class ServerWidget extends StatefulWidget {
   final Server server;
   final bool isActive;
-  final setParentState;
+  final Function(bool) setParentState;
   const ServerWidget(
       {super.key,
       required this.server,
@@ -155,7 +159,7 @@ class _ServerWidgetState extends State<ServerWidget> {
     prefs.setString(APIConstants().serverIP, widget.server.ip);
 
     setState(() {});
-    widget.setParentState();
+    widget.setParentState(widget.isActive);
 
     APISession.updateKeys();
 
