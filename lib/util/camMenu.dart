@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sham_parts/constants.dart';
 
@@ -20,6 +22,8 @@ class CamMenu extends StatefulWidget {
 
 class _CamMenuState extends State<CamMenu> {
   bool editing = false;
+
+  final isMobile = Platform.isAndroid || Platform.isIOS;
 
   @override
   Widget build(BuildContext context) {
@@ -128,14 +132,14 @@ class _CamMenuState extends State<CamMenu> {
                                 )),
                           ],
                         )
-                      : IconButton(
+                      : (!isMobile) ? IconButton(
                           tooltip: "Edit Cam Instructions",
                           onPressed: () {
                             setState(() {
                               editing = true;
                             });
                           },
-                          icon: const Icon(Icons.edit))
+                          icon: const Icon(Icons.edit)) : Container()
                 ],
               )
             : Container(),
