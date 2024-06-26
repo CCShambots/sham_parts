@@ -150,6 +150,7 @@ class _CompoundPageState extends State<CompoundPage> {
             height: 24,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
                 children: [
@@ -177,36 +178,38 @@ class _CompoundPageState extends State<CompoundPage> {
                 width: 10,
               ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          inches = true;
-                        });
-                      },
-                      icon: Icon(inches
-                          ? Icons.radio_button_checked
-                          : Icons.radio_button_unchecked)),
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          inches = false;
-                        });
-                      },
-                      icon: Icon(!inches
-                          ? Icons.radio_button_checked
-                          : Icons.radio_button_unchecked)),
-                ],
-              ),
-              Column(
-                children: [
-                  Text("In.", style: StyleConstants.h3Style),
-                  Text("mm", style: StyleConstants.h3Style)
+                  Row(
+                    children: [
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            inches = true;
+                          });
+                        },
+                        icon: Icon(inches
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked)),
+                    Text("In.", style: StyleConstants.h3Style),
+                  ]),
+                  Row(children: [
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            inches = false;
+                          });
+                        },
+                        icon: Icon(!inches
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked)),
+                    Text("mm", style: StyleConstants.h3Style)
+                  ])
                 ],
               ),
               !editingDimensions
                   ? IconButton(
-                    tooltip: "Edit Dimensions",
+                      tooltip: "Edit Dimensions",
                       onPressed: () {
                         setState(() {
                           editingDimensions = true;
@@ -218,7 +221,7 @@ class _CompoundPageState extends State<CompoundPage> {
                         size: 36,
                       ))
                   : IconButton(
-                    tooltip: "Save Changes",
+                      tooltip: "Save Changes",
                       onPressed: () {
                         setState(() {
                           editingDimensions = false;
