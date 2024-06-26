@@ -49,6 +49,10 @@ class _ProjectSelectState extends State<ProjectSelect> {
       });
     }
 
+    if(projectKey != "") {
+      activeProjectController.text = projectKey;
+    }
+
     if (projectKey == "" && projectKeys.isNotEmpty) {
     } else if (shouldLoadProject) {
       widget.loadProject(projectKey);
