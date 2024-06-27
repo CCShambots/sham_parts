@@ -62,7 +62,7 @@ class LogEntry {
       }
     }
 
-    contributions.sort((a, b) => a.quantity.compareTo(b.quantity));
+    contributions.sort((a, b) => b.quantity.compareTo(a.quantity));
 
     return contributions;
   } 
