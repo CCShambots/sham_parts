@@ -23,7 +23,7 @@ class User {
       required this.token});
   
   static User blank() {
-    return User(id: -1, name: "", email: "", verified: false, roles: [], token: "");
+    return User(id: -2, name: "", email: "", verified: false, roles: [], token: "");
   }
 
   static User fromJson(json) {
