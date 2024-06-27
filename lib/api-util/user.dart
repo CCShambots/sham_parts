@@ -158,9 +158,9 @@ class User {
   }
 
   static Future<User?> authenticate(
-      String email, String password, BuildContext context) async {
+      String email, String password, String firebaseToken, BuildContext context) async {
     var result = await APISession.getWithParams(
-        "/user/authenticate", {"email": email, "password": password});
+        "/user/authenticate", {"email": email, "password": password, "firebase_token": firebaseToken});
 
     if (result.statusCode == 200) {
       User user = fromJson(jsonDecode(result.body));
@@ -174,9 +174,9 @@ class User {
   }
 
   static Future<bool> create(
-      String email, String password, String name, BuildContext context) async {
+      String email, String password, String name, String firebaseToken, BuildContext context) async {
     var result = await APISession.postWithParams(
-        "/user/create", {"email": email, "password": password, "name": name});
+        "/user/create", {"email": email, "password": password, "name": name, "firebase_token": firebaseToken});
 
     if (context.mounted) {
       if (result.statusCode == 200) {

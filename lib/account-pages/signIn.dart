@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:sham_parts/account-pages/forgotPasswordPage.dart';
 import 'package:sham_parts/account-pages/serverSelect.dart';
@@ -32,8 +35,16 @@ class SignInState extends State<SignInWidget> {
   }
 
   void authenticate(BuildContext context) async {
+    bool isMobile = Platform.isIOS || Platform.isAndroid;
+    String token = "none";
+    if(isMobile) {
+      token = await FirebaseMessaging.instance.getToken() ?? "none";
+      print("Firebase token: $token");
+
+    }
     User? user = await User.authenticate(
-        emailController.text, passwordController.text, context);
+        emailController.text, passwordController.text, token, context);
+
 
     if (user != null) {
       widget.setUser(user);
@@ -48,8 +59,16 @@ class SignInState extends State<SignInWidget> {
       return;
     }
 
+    bool isMobile = Platform.isIOS || Platform.isAndroid;
+    String token = "none";
+    if(isMobile) {
+      token = await FirebaseMessaging.instance.getToken() ?? "none";
+      print("Firebase token: $token");
+
+    }
+
     bool success = await User.create(emailController.text,
-        passwordController.text, nameController.text, context);
+        passwordController.text, nameController.text, token, context);
 
     if (success) {
       setState(() {

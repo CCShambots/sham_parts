@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "756674328834",
+    "project_id": "shamparts-b52bc",
+    "storage_bucket": "shamparts-b52bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:756674328834:android:ed8a2c928be7d8b004ea1b",
+        "android_client_info": {
+          "package_name": "com.ccshambots.sham_parts"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIqI0X21knb0dioS0FpSG664QqxA1ZtdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

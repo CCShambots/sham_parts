@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sham_parts/account-pages/settingsPage.dart';
@@ -17,6 +18,9 @@ import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import 'api-util/project.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 const double _bottomPaddingForButton = 150.0;
 const double _buttonHeight = 56.0;
 const double _buttonWidth = 200.0;
@@ -24,7 +28,32 @@ const double _pagePadding = 16.0;
 const double _pageBreakpoint = 768.0;
 const double _heroImageHeight = 250.0;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
+  }
+
   runApp(const MyApp());
 
   APISession.updateKeys();
