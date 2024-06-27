@@ -2,7 +2,7 @@ name: sham_parts
 description: "ShamParts Application"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.1.1+15
+version: 1.2.0+16
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -44,7 +44,6 @@ dependencies:
   pasteboard: ^0.2.0
   firebase_core: ^3.1.1
   firebase_messaging: ^15.0.2
-  flutter_local_notifications: ^17.1.2
   
 dev_dependencies:
   flutter_test:

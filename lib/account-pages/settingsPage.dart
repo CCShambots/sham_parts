@@ -297,8 +297,7 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> logOut() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove(APIConstants().userToken);
+    User.logOut();
 
     setState(() {
       user = null;

@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/constants.dart';
@@ -155,6 +157,24 @@ class User {
     } else {
       return [];
     }
+  }
+
+  static Future<void> logOut() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String userToken = prefs.getString(APIConstants().userToken) ?? "";
+    
+    String token = "none";
+    bool isMobile = Platform.isAndroid || Platform.isIOS;
+    if(isMobile) {
+      token = await FirebaseMessaging.instance.getToken() ?? "none";
+    }
+    
+    await APISession.deleteWithParams("/user/logout", {"token": userToken, "firebase_token": token});
+
+    prefs.remove(APIConstants().userToken);
+
   }
 
   static Future<User?> authenticate(

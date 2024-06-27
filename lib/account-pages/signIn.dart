@@ -39,8 +39,6 @@ class SignInState extends State<SignInWidget> {
     String token = "none";
     if(isMobile) {
       token = await FirebaseMessaging.instance.getToken() ?? "none";
-      print("Firebase token: $token");
-
     }
     User? user = await User.authenticate(
         emailController.text, passwordController.text, token, context);
