@@ -314,7 +314,10 @@ class _PartPageState extends State<PartPage> {
                       value: userIndex != -1 ? users[userIndex] : null,
                       onChanged: (newValue) async {
                         if (newValue != null) {
-                          await widget.part.assignUser(context, newValue);
+
+                          if(userIndex == -1 || users[userIndex].email != newValue.email) {
+                            await widget.part.assignUser(context, newValue);
+                          }
 
                           setState(() {
                             userIndex = users.indexWhere(
