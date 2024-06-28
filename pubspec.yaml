@@ -2,7 +2,7 @@ name: sham_parts
 description: "ShamParts Application"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.2.2+18
+version: 1.2.3+19
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
