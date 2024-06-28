@@ -47,3 +47,4 @@ android/shamparts-keystore.jks
 android/service-account.json
 
 .odevio
+odevio.patch
