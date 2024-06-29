@@ -137,11 +137,18 @@ class _ServerWidgetState extends State<ServerWidget> {
   }
 
   Future<void> checkServer() async {
-    bool aliveValue = await APISession.ping(widget.server.ip);
+    try {
+      bool aliveValue = await APISession.ping(widget.server.ip);
 
-    setState(() {
-      alive = aliveValue;
-    });
+      setState(() {
+        alive = aliveValue;
+      });
+
+    } catch (e) {
+      setState(() {
+        alive = false;
+      });
+    }
   }
 
   void setActiveServer(BuildContext context) async {
