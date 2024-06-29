@@ -27,9 +27,6 @@ class _ProjectSelectState extends State<ProjectSelect> {
 
     reloadProjectList(true);
 
-    Timer.periodic(const Duration(seconds: 10), (timer) {
-      reloadProjectList(true);
-    });
   }
 
   void reloadProjectList(bool shouldLoadProject) async {
