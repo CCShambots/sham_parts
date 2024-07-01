@@ -22,9 +22,6 @@ class Project {
   String assembly_name;
   String assembly_onshape_id;
   List<Part> parts;
-
-  List<Part> individualParts;
-
   List<String> readRoles;
   List<String> writeRoles;
   List<String> adminRoles;
@@ -42,7 +39,6 @@ class Project {
     required this.assembly_name,
     required this.assembly_onshape_id,
     required this.parts,
-    required this.individualParts,
     required this.adminRoles,
     required this.readRoles,
     required this.writeRoles,
@@ -66,7 +62,6 @@ class Project {
         writeRoles: [],
         adminRoles: [],
         parts: [],
-        individualParts: [],
         compounds: [],
         lastSync: DateTime.now());
   }
@@ -254,8 +249,6 @@ class Project {
       writeRoles: json["write_roles"]?.cast<String>() ?? [],
       adminRoles: json["admin_roles"]?.cast<String>() ?? [],
       parts: json["parts"]?.map<Part>((e) => Part.fromJson(e)).toList() ?? [],
-      individualParts:
-          json["individual_parts"].map<Part>((e) => Part.fromJson(e)).toList(),
       compounds: json["compounds"]
               ?.map<Compound>((e) => Compound.fromJson(e))
               .toList() ??
