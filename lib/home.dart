@@ -99,8 +99,10 @@ class HomeState extends State<Home> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Top Producers This Week",
-                              style: StyleConstants.subtitleStyle),
+                          Center(
+                            child: Text("Top Producers This Week",
+                                style: StyleConstants.subtitleStyle),
+                          ),
                           ...contributions.map((e) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
