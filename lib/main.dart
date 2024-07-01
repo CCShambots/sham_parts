@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sham_parts/account-pages/settingsPage.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
@@ -28,6 +30,26 @@ const double _pagePadding = 16.0;
 const double _pageBreakpoint = 768.0;
 const double _heroImageHeight = 250.0;
 
+class ConnectionStatus {
+  static bool connected = false;
+
+  static const connectionInterval = Duration(seconds: 5);
+
+  static checkConnection() async {
+    try {
+      Response response = await APISession.get("/");
+
+      if (response.statusCode == 200) {
+        ConnectionStatus.connected = true;
+      } else {
+        ConnectionStatus.connected = false;
+      }
+    } catch (e) {
+      ConnectionStatus.connected = false;
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -49,19 +71,19 @@ void main() async {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       print('User granted provisional permission');
     } else {
       print('User declined or has not accepted permission');
     }
-
   } catch (e) {
     print("Failed to do firebase stuff");
   }
 
-  runApp(const MyApp());
-
   APISession.updateKeys();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -119,6 +141,8 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class BottomNavigationBarState extends State<BottomNavigation> {
+  bool connected = false;
+
   final pageViewController = PageController(initialPage: 0);
   final int currentPage = 0;
 
@@ -157,6 +181,30 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     setState(() {
       selectedIndex = pageViewController.initialPage;
+    });
+
+    Timer.periodic(ConnectionStatus.connectionInterval, (timer) {
+      runConnectionCheck();
+    });
+
+    runConnectionCheck();
+  }
+
+  void runConnectionCheck() async {
+
+    await ConnectionStatus.checkConnection();
+
+    //This means we should load everything again
+    if(ConnectionStatus.connected && !connected) {
+      loadUser().then((value) {
+        regenWidgetOptions();
+      });
+
+      loadProjectWithoutSavingNewKey();
+    }
+
+    setState(() {
+      connected = ConnectionStatus.connected;
     });
   }
 
@@ -435,6 +483,16 @@ class BottomNavigationBarState extends State<BottomNavigation> {
       appBar: AppBar(
         title: Text("ShamParts v$version"),
         actions: [
+          IconButton(
+            icon: Icon(
+              connected ? Icons.cloud_done : Icons.cloud_off,
+              color: connected ? Colors.green : Colors.red,
+            ),
+            tooltip: connected ? "Server Connected" : "Server  Disconnected",
+            onPressed: () async {
+              runConnectionCheck();
+            },
+          ),
           user.roles.contains("admin") && !isMobile
               ? Padding(
                   padding: const EdgeInsets.only(right: 16),
