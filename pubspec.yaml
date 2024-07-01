@@ -27,7 +27,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   curved_labeled_navigation_bar: ^2.0.2
   package_info_plus: ^8.0.0
-  wolt_modal_sheet: ^0.5.0
+  wolt_modal_sheet: ^0.6.1
   getwidget: ^4.0.0
   redacted: ^1.0.11
   cached_network_image: ^3.3.1
