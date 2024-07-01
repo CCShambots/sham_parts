@@ -29,7 +29,7 @@ class _ProjectSelectState extends State<ProjectSelect> {
 
   }
 
-  void reloadProjectList(bool shouldLoadProject) async {
+  Future<void> reloadProjectList(bool shouldLoadProject) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
@@ -63,8 +63,10 @@ class _ProjectSelectState extends State<ProjectSelect> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () {
-            reloadProjectList(true);
+          onTap: () async {
+            await reloadProjectList(true);
+            
+            setState(() {});
           },
           child: DropdownMenu<String>(
               label: const Text('Active Project'),
