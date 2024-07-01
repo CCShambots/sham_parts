@@ -37,6 +37,8 @@ class PartsPageState extends State<PartsPage> {
   bool userFilterEnabled = false;
   int userIdToFilter = 0;
 
+  bool filterForUnassigned = false;
+
   bool partTypeFilterEnabled = false;
   String partTypeToFilter = "";
 
@@ -53,7 +55,7 @@ class PartsPageState extends State<PartsPage> {
   bool filterForMissing = false;
 
   bool filterForRequested = false;
-
+  
   @override
   void initState() {
     super.initState();
@@ -80,7 +82,7 @@ class PartsPageState extends State<PartsPage> {
   }
 
   void loadUsers() async {
-    List<User> result = await User.getAllUsers();
+    List<User> result = await User.getUsersOfProject();
 
     if (mounted) {
       setState(() {
@@ -178,6 +180,28 @@ class PartsPageState extends State<PartsPage> {
                         );
                       }).toList(),
                     ),
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Checkbox(
+                      value: filterForUnassigned,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            filterForUnassigned = value;
+
+                          });
+                        }
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Unassigned"),
+                    ),
+                    Container()
                   ],
                 ),
                 const Divider(),
@@ -420,6 +444,7 @@ class PartsPageState extends State<PartsPage> {
       bool finishedFilter = !filterForFinished || part.quantityInStock >= part.quantityNeeded;
       bool missingFilter = !filterForMissing || part.quantityInStock < part.quantityNeeded;
       bool requestedFilter = !filterForRequested || part.quantityRequested > 0;
+      bool unassignedFilter = !filterForUnassigned || part.asigneeId == -1;
 
       return passUserFilter &&
           passPartTypeFilter &&
@@ -428,7 +453,8 @@ class PartsPageState extends State<PartsPage> {
           combineFilter &&
           finishedFilter &&
           missingFilter &&
-          requestedFilter
+          requestedFilter &&
+          unassignedFilter;
           ;
     }).toList();
 
