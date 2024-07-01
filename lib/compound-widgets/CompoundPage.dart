@@ -73,7 +73,7 @@ class _CompoundPageState extends State<CompoundPage> {
   }
 
   void loadUsers() async {
-    List<User> result = await User.getAllUsers();
+    List<User> result = await User.getUsersOfProject();
 
     int selected = result
         .indexWhere((element) => element.name == widget.compound.asigneeName);

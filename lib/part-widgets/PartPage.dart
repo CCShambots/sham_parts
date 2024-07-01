@@ -55,7 +55,7 @@ class _PartPageState extends State<PartPage> {
   }
 
   void loadUsers() async {
-    List<User> result = await User.getAllUsers();
+    List<User> result = await User.getUsersOfProject();
 
     int selected =
         result.indexWhere((element) => element.name == widget.part.asigneeName);

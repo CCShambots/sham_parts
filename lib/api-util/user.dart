@@ -159,6 +159,24 @@ class User {
     }
   }
 
+  static Future<List<User>> getUsersOfProject() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
+
+    var result = await APISession.getWithParams("/user/users", {"project": projectKey});
+
+    if (result.statusCode == 200) {
+      var jsonDecoded = jsonDecode(result.body);
+      List<User> users = jsonDecoded.map<User>((e) => fromJson(e)).toList();
+
+      return users;
+    } else {
+      return [];
+    }
+  }
+
   static Future<void> logOut() async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
