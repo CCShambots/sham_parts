@@ -6,6 +6,7 @@ import 'package:sham_parts/account-pages/forgotPasswordPage.dart';
 import 'package:sham_parts/account-pages/serverSelect.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class SignInWidget extends StatefulWidget {
   var setUser;
@@ -35,7 +36,7 @@ class SignInState extends State<SignInWidget> {
   }
 
   void authenticate(BuildContext context) async {
-    bool isMobile = Platform.isIOS || Platform.isAndroid;
+    bool isMobile = PlatformInfo.isMobile();
     String token = "none";
     if(isMobile) {
       token = await FirebaseMessaging.instance.getToken() ?? "none";
@@ -57,7 +58,7 @@ class SignInState extends State<SignInWidget> {
       return;
     }
 
-    bool isMobile = Platform.isIOS || Platform.isAndroid;
+    bool isMobile = PlatformInfo.isMobile();
     String token = "none";
     if(isMobile) {
       token = await FirebaseMessaging.instance.getToken() ?? "none";

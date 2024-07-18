@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 
 import '../api-util/user.dart';
 
@@ -109,7 +110,7 @@ class UserAdminView extends StatefulWidget {
 class UserAdminViewState extends State<UserAdminView> {
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
     
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

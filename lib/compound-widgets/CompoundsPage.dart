@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
 import 'package:sham_parts/compound-widgets/CompoundListDisplay.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class CompoundsPage extends StatefulWidget {
   final Project project;
@@ -17,7 +18,7 @@ class CompoundsPage extends StatefulWidget {
 class _CompoundsPageState extends State<CompoundsPage> {
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     return Scaffold(
       body: 

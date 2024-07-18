@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class CamMenu extends StatefulWidget {
   final bool camDone;
@@ -23,7 +24,7 @@ class CamMenu extends StatefulWidget {
 class _CamMenuState extends State<CamMenu> {
   bool editing = false;
 
-  final isMobile = Platform.isAndroid || Platform.isIOS;
+  final isMobile = PlatformInfo.isMobile();
 
   @override
   Widget build(BuildContext context) {

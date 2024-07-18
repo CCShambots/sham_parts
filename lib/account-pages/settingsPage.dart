@@ -8,6 +8,7 @@ import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/projectSelect.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api-util/user.dart';
@@ -89,7 +90,7 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     return user != null && user?.email != ""
         ? Scaffold(

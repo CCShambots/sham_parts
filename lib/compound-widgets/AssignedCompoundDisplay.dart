@@ -5,6 +5,7 @@ import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/compound-widgets/CompoundPage.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class AssignedCompoundDisplay extends StatefulWidget {
   final Project project;
@@ -17,7 +18,7 @@ class AssignedCompoundDisplay extends StatefulWidget {
 }
 
 class _AssignedCompoundDisplayState extends State<AssignedCompoundDisplay> {
-  final isMobile = Platform.isAndroid || Platform.isIOS;
+  final isMobile = PlatformInfo.isMobile();
 
   @override
   Widget build(BuildContext context) {

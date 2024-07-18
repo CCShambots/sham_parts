@@ -13,6 +13,7 @@ import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/PartPage.dart';
 import 'package:sham_parts/util/camMenu.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class CompoundPage extends StatefulWidget {
   final Project project;
@@ -26,7 +27,7 @@ class CompoundPage extends StatefulWidget {
 }
 
 class _CompoundPageState extends State<CompoundPage> {
-  final isMobile = Platform.isAndroid || Platform.isIOS;
+  final isMobile = PlatformInfo.isMobile();
 
   int userIndex = 0;
   late List<User> users = [];

@@ -5,6 +5,7 @@ import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/compound-widgets/CompoundPage.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class CompoundListDisplay extends StatefulWidget {
   final Project project;
@@ -20,7 +21,7 @@ class _CompoundListDisplayState extends State<CompoundListDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     return GestureDetector(
       onTap: () {

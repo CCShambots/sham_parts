@@ -7,6 +7,7 @@ import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/expandable-fab/ExpandableFab.dart';
 import 'package:sham_parts/part-widgets/MergeDisplay.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class PartsPage extends StatefulWidget {
   final Project project;
@@ -422,7 +423,7 @@ class PartsPageState extends State<PartsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     if (!mounted) return const SizedBox.shrink();
 

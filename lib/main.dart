@@ -15,6 +15,7 @@ import 'package:sham_parts/compound-widgets/CompoundsPage.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
 import 'package:sham_parts/part-widgets/PartsPage.dart';
+import 'package:sham_parts/util/platform.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -146,7 +147,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   final pageViewController = PageController(initialPage: 0);
   final int currentPage = 0;
 
-  final isMobile = Platform.isAndroid || Platform.isIOS;
+  final isMobile = PlatformInfo.isMobile();
 
   String version = "";
 

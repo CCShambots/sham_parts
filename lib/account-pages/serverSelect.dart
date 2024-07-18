@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/api-util/server.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ServerSelect extends StatefulWidget {
@@ -175,7 +176,7 @@ class _ServerWidgetState extends State<ServerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
 
     return Container(

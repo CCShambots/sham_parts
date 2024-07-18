@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sham_parts/api-util/apiSession.dart';
 import 'package:sham_parts/constants.dart';
+import 'package:sham_parts/util/platform.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
@@ -184,7 +185,7 @@ class User {
     String userToken = prefs.getString(APIConstants().userToken) ?? "";
     
     String token = "none";
-    bool isMobile = Platform.isAndroid || Platform.isIOS;
+    bool isMobile = PlatformInfo.isMobile();
     if(isMobile) {
       token = await FirebaseMessaging.instance.getToken() ?? "none";
     }

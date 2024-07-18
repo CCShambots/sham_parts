@@ -10,6 +10,7 @@ import 'package:sham_parts/compound-widgets/AssignedCompoundDisplay.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/AssignedPartDisplay.dart';
 import 'package:sham_parts/util/indicator.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class Home extends StatefulWidget {
   final User user;
@@ -32,7 +33,7 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     bool oneRowGraph = MediaQuery.of(context).size.width > 650;
 

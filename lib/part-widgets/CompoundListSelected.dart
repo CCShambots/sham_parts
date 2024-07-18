@@ -5,6 +5,7 @@ import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/part-widgets/PartPage.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class CompoundListSelected extends StatefulWidget {
   final CompoundPart compoundPart;
@@ -29,14 +30,14 @@ class CompoundListSelectedState extends State<CompoundListSelected> {
   TextStyle statStyle =
       const TextStyle(fontWeight: FontWeight.bold, fontSize: 32);
 
-  final isMobile = Platform.isAndroid || Platform.isIOS;
+  final isMobile = PlatformInfo.isMobile();
 
   RegExp regex = RegExp(r'\d{1,4}-\d{4}-');
 
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     final parseOut = widget.part.number.replaceAll(regex, "");
 

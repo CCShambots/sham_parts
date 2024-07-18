@@ -9,6 +9,7 @@ import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/util/camMenu.dart';
+import 'package:sham_parts/util/platform.dart';
 
 class PartPage extends StatefulWidget {
   final Part part;
@@ -20,7 +21,7 @@ class PartPage extends StatefulWidget {
 }
 
 class _PartPageState extends State<PartPage> {
-  final isMobile = Platform.isAndroid || Platform.isIOS;
+  final isMobile = PlatformInfo.isMobile();
 
   int userIndex = 0;
   late List<User> users = [];
@@ -69,7 +70,7 @@ class _PartPageState extends State<PartPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final isMobile = PlatformInfo.isMobile();
 
     return Scaffold(
         appBar: AppBar(
