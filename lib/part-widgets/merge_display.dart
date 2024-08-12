@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
-import 'package:sham_parts/part-widgets/MergePart.dart';
+import 'package:sham_parts/part-widgets/merge_part.dart';
 
 class MergePage extends StatefulWidget {
   final Project project;

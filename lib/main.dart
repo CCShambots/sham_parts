@@ -5,17 +5,16 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:sham_parts/account-pages/settingsPage.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
-import 'package:sham_parts/api-util/onshapeDocument.dart';
+import 'package:sham_parts/account-pages/settings_page.dart';
+import 'package:sham_parts/api-util/api_session.dart';
+import 'package:sham_parts/api-util/onshape_document.dart';
 import 'package:sham_parts/api-util/user.dart';
-import 'package:sham_parts/compound-widgets/CompoundsPage.dart';
+import 'package:sham_parts/compound-widgets/compounds_page.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:sham_parts/home.dart';
-import 'package:sham_parts/part-widgets/PartsPage.dart';
+import 'package:sham_parts/part-widgets/parts_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -26,10 +25,7 @@ import 'firebase_options.dart';
 
 const double _bottomPaddingForButton = 150.0;
 const double _buttonHeight = 56.0;
-const double _buttonWidth = 200.0;
 const double _pagePadding = 16.0;
-const double _pageBreakpoint = 768.0;
-const double _heroImageHeight = 250.0;
 
 class ConnectionStatus {
   static bool connected = false;
@@ -70,17 +66,16 @@ void main() async {
       sound: true,
     );
 
-
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
+      stderr.writeln('User granted permission');
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
+      stderr.writeln('User granted provisional permission');
     } else {
-      print('User declined or has not accepted permission');
+      stderr.writeln('User declined or has not accepted permission');
     }
   } catch (e) {
-    print("Failed to do firebase stuff");
+    stderr.writeln("Failed to do firebase stuff");
   }
 
   APISession.updateKeys();
@@ -117,22 +112,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-      MaterialApp(
-        title: 'ShamParts v$version',
-        navigatorKey: MyApp.navigatorKey,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-          scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
-        ),
-        darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blue, brightness: Brightness.dark),
-            brightness: Brightness.dark),
-        home: const BottomNavigation(),
-      );
+    return MaterialApp(
+      title: 'ShamParts v$version',
+      navigatorKey: MyApp.navigatorKey,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
+      ),
+      darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.blue, brightness: Brightness.dark),
+          brightness: Brightness.dark),
+      home: const BottomNavigation(),
+    );
   }
 }
 
@@ -194,11 +188,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
   }
 
   void runConnectionCheck() async {
-
     await ConnectionStatus.checkConnection();
 
     //This means we should load everything again
-    if(ConnectionStatus.connected && !connected) {
+    if (ConnectionStatus.connected && !connected) {
       loadUser().then((value) {
         regenWidgetOptions();
       });
@@ -221,6 +214,7 @@ class BottomNavigationBarState extends State<BottomNavigation> {
     } else {
       //Route user to settings page
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
             builder: (context) => SettingsPage(
@@ -272,9 +266,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     String projectKey = prefs.getString(APIConstants().currentProject) ?? "";
 
+    // ignore: use_build_context_synchronously
     Project activeProject = await Project.loadProject(projectKey, context);
 
-    print("Loaded Project");
+    stderr.writeln("Loaded Project");
 
     setState(() {
       project = activeProject;
@@ -288,9 +283,10 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
     prefs.setString(APIConstants().currentProject, key);
 
+    // ignore: use_build_context_synchronously
     Project activeProject = await Project.loadProject(key, context);
 
-    print("Loaded Project");
+    stderr.writeln("Loaded Project");
 
     setState(() {
       project = activeProject;
@@ -497,10 +493,11 @@ class BottomNavigationBarState extends State<BottomNavigation> {
 
               try {
                 loadProjectWithoutSavingNewKey();
-                
+
                 APIConstants.showSuccessToast("Reloaded project info", context);
               } catch (e) {
-                APIConstants.showErrorToast("Failed to relaod project", context);
+                APIConstants.showErrorToast(
+                    "Failed to relaod project", context);
 
                 stderr.writeln("Failed to load project from reload click");
               }

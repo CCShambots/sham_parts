@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/PartPage.dart';
+import 'package:sham_parts/part-widgets/part_page.dart';
 
 class AssignedPartDisplay extends StatefulWidget {
   final Part part;
@@ -42,10 +42,10 @@ class AssignedPartDisplayState extends State<AssignedPartDisplay> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children:  [
-            widget.part.ImageButton(context),
-            widget.part.PartName(parseOut, isMobile),
-            widget.part.PartType(),
-            widget.part.QuantityRequested(),
+            widget.part.imageButton(context),
+            widget.part.partName(parseOut, isMobile),
+            widget.part.partTypeWidget(),
+            widget.part.quantityRequestedWidget(),
           ],
         ),
       ),

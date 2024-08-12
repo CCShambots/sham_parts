@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
-import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/api_session.dart';
+import 'package:sham_parts/api-util/log_entry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
@@ -397,7 +397,7 @@ class Compound {
     }
   }
 
-  Widget Asignee() {
+  Widget asignee() {
     return Tooltip(
       message: "Assigned to:",
       child: Text(
@@ -407,7 +407,7 @@ class Compound {
     );
   }
 
-  Row CompoundCamStatus(bool mobile) {
+  Row compoundCamStatus(bool mobile) {
     return Row(
       children: [
         Text("CAM ",
@@ -423,23 +423,23 @@ class Compound {
     );
   }
 
-  Tooltip CompoundPartQuantity() {
+  Tooltip compoundPartQuantity() {
     return Tooltip(
         message: generatePartsTooltip(),
         child: Text("${parts.length} Part${parts.length != 1 ? 's' : ''}",
             style: StyleConstants.subtitleStyle));
   }
 
-  Tooltip CompoundThickness() {
+  Tooltip compoundThickness() {
     return Tooltip(
         message: "Thickness",
         child: Text("$thickness\"", style: StyleConstants.subtitleStyle));
   }
 
-  Text CompoundMaterial() =>
+  Text compoundMaterial() =>
       Text(material, style: StyleConstants.subtitleStyle);
 
-  Text CompoundName(bool mobile) => Text(
+  Text compoundName(bool mobile) => Text(
         name,
         style: !mobile ? StyleConstants.subtitleStyle : StyleConstants.h3Style,
       );

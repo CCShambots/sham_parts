@@ -2,16 +2,18 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:sham_parts/account-pages/forgotPasswordPage.dart';
-import 'package:sham_parts/account-pages/serverSelect.dart';
+import 'package:sham_parts/account-pages/forgot_password_age.dart';
+import 'package:sham_parts/account-pages/server_select.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
 
-class SignInWidget extends StatefulWidget {
-  var setUser;
-  bool appbar;
+typedef SetUserFunction = void Function(User user);
 
-  SignInWidget({super.key, required this.setUser, this.appbar = false});
+class SignInWidget extends StatefulWidget {
+  final SetUserFunction setUser;
+  final bool appbar;
+
+  const SignInWidget({super.key, required this.setUser, this.appbar = false});
 
   @override
   State<SignInWidget> createState() => SignInState();
@@ -29,6 +31,8 @@ class SignInState extends State<SignInWidget> {
 
   @override
   void initState() {
+    super.initState();
+
     passwordVisible = false;
     creatingAccount = false;
     verifying = false;
@@ -40,16 +44,22 @@ class SignInState extends State<SignInWidget> {
     if(isMobile) {
       token = await FirebaseMessaging.instance.getToken() ?? "none";
     }
-    User? user = await User.authenticate(
+
+    if(context.mounted) {
+      User? user = await User.authenticate(
         emailController.text, passwordController.text, token, context);
 
-
-    if (user != null) {
-      widget.setUser(user);
-    } else {
-      APIConstants.showErrorToast("Invalid email or password!", context);
+      if (user != null) {
+        widget.setUser(user);
+      } else {
+        if(context.mounted) {
+          APIConstants.showErrorToast("Invalid email or password!", context);
+        }
+      }
     }
-  }
+    }
+
+
 
   void createUser() async {
     if (passwordController.text != dupePasswordController.text) {
@@ -61,19 +71,23 @@ class SignInState extends State<SignInWidget> {
     String token = "none";
     if(isMobile) {
       token = await FirebaseMessaging.instance.getToken() ?? "none";
-      print("Firebase token: $token");
+      stderr.writeln("Firebase token: $token");
 
     }
 
-    bool success = await User.create(emailController.text,
-        passwordController.text, nameController.text, token, context);
+    if(context.mounted) {
+      bool success = await User.create(emailController.text,
+          // ignore: use_build_context_synchronously
+          passwordController.text, nameController.text, token, context);
 
-    if (success) {
-      setState(() {
-        creatingAccount = false;
-        verifying = true;
-      });
+      if (success) {
+        setState(() {
+          creatingAccount = false;
+          verifying = true;
+        });
+      }
     }
+
   }
 
   @override
@@ -242,7 +256,7 @@ class SignInState extends State<SignInWidget> {
                       }, child: const Text("Forgot Password?")),
                   TextButton(
                       onPressed: () {
-                        DeleteAccountInfoDialog(context);
+                        deleteAccountInfoDialog(context);
                       },
                       child: const Text("Need To Delete an Account?")),
                   ServerSelect(
@@ -255,7 +269,7 @@ class SignInState extends State<SignInWidget> {
         ));
   }
 
-  Future<dynamic> DeleteAccountInfoDialog(BuildContext context) {
+  Future<dynamic> deleteAccountInfoDialog(BuildContext context) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {

@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/log_entry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
-import 'package:sham_parts/compound-widgets/AssignedCompoundDisplay.dart';
+import 'package:sham_parts/compound-widgets/assigned_compound_display.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/AssignedPartDisplay.dart';
+import 'package:sham_parts/part-widgets/assigned_part_display.dart';
 import 'package:sham_parts/util/indicator.dart';
 
 class Home extends StatefulWidget {
@@ -59,7 +59,7 @@ class HomeState extends State<Home> {
                     children: [
                       pieChart(),
                       lineGraph(),
-                      TopProducers(contributions),
+                      topProducers(contributions),
                     ],
                   )
                 : Column(
@@ -67,7 +67,7 @@ class HomeState extends State<Home> {
                     children: [
                       pieChart(),
                       lineGraph(),
-                      TopProducers(contributions)
+                      topProducers(contributions)
                     ],
                   ),
             !isMobile
@@ -77,15 +77,15 @@ class HomeState extends State<Home> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Flexible(flex: 1, child: AssignedParts(isMobile)),
-                        Flexible(flex: 1, child: AssignedCompounds(isMobile))
+                        Flexible(flex: 1, child: assignedParts(isMobile)),
+                        Flexible(flex: 1, child: assignedCompounds(isMobile))
                       ],
                     ),
                   )
                 : Column(
                     children: [
-                      AssignedParts(isMobile),
-                      AssignedCompounds(isMobile)
+                      assignedParts(isMobile),
+                      assignedCompounds(isMobile)
                     ],
                   )
           ],
@@ -94,7 +94,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Flexible TopProducers(List<Contribution> contributions) {
+  Flexible topProducers(List<Contribution> contributions) {
     return Flexible(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -129,7 +129,7 @@ class HomeState extends State<Home> {
                     );
   }
 
-  Widget AssignedCompounds(bool isMobile) {
+  Widget assignedCompounds(bool isMobile) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -156,7 +156,7 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget AssignedParts(bool isMobile) {
+  Widget assignedParts(bool isMobile) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [

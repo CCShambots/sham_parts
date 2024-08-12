@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/PartPage.dart';
+import 'package:sham_parts/part-widgets/part_page.dart';
 
 class CompoundListUnselected extends StatefulWidget {
   final Part part;
-  final addToSelected;
+  final void Function() addToSelected;
 
   const CompoundListUnselected({super.key, required this.part, required this.addToSelected});
 
@@ -43,10 +43,10 @@ class CompoundListUnselectedState extends State<CompoundListUnselected> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children:  [
-            widget.part.ImageButton(context),
-            widget.part.PartName(parseOut, isMobile),
-            widget.part.PartThickness(),
-            widget.part.QuantityHave(),
+            widget.part.imageButton(context),
+            widget.part.partName(parseOut, isMobile),
+            widget.part.partThicknessWidget(),
+            widget.part.quantityHave(),
             IconButton(onPressed: widget.addToSelected, icon: const Icon(Icons.arrow_forward, color: Colors.blue, size: 48,))
           ],
         ),

@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/api_session.dart';
 import 'package:http/http.dart' as http;
-import 'package:sham_parts/api-util/onshapeAssembly.dart';
+import 'package:sham_parts/api-util/onshape_assembly.dart';
 
 
 class OnshapeDocument {
@@ -43,7 +43,7 @@ class OnshapeDocument {
 class OnshapeSearchWidget extends StatelessWidget {
 
   final OnshapeDocument doc;
-  final reloadProjectList;
+  final Function reloadProjectList;
 
   const OnshapeSearchWidget({super.key, required this.doc, required this.reloadProjectList});
 
@@ -54,28 +54,26 @@ class OnshapeSearchWidget extends StatelessWidget {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => AssemblySearchWindow(doc: doc, reloadProjectList: reloadProjectList,)));
         },
-        child:  Container(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
-              children: [
-                GFImageOverlay(
-                  height: 150,
-                  width: 150,
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  image: APISession.getOnshapeImage(doc.thumbnail),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(doc.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),),
-                      Text(doc.id, style: const TextStyle(fontWeight: FontWeight.w200))
-                    ],
-                  )
-    
+        child:  Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Row(
+            children: [
+              GFImageOverlay(
+                height: 150,
+                width: 150,
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                image: APISession.getOnshapeImage(doc.thumbnail),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(doc.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),),
+                    Text(doc.id, style: const TextStyle(fontWeight: FontWeight.w200))
+                  ],
                 )
-              ],
-            )
+            
+              )
+            ],
           )
         )
     );

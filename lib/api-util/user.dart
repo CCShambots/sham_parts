@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/api_session.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,11 +51,12 @@ class User {
 
   Future<User> deleteUser(BuildContext context, {String token = ""}) async {
     var result = await APISession.deleteWithParams("/user/delete", {"email": email, "token": token});
-
-    if (result.statusCode == 200) {
-      APIConstants.showSuccessToast("User deleted successfully", context);
-    } else {
-      APIConstants.showErrorToast("Failed to delete user: ${result.body}", context);
+    if(context.mounted) {
+      if (result.statusCode == 200) {
+        APIConstants.showSuccessToast("User deleted successfully", context);
+      } else {
+        APIConstants.showErrorToast("Failed to delete user: ${result.body}", context);
+      }
     }
 
     return this;
@@ -65,11 +66,14 @@ class User {
     var result = await APISession.patchWithParams(
         "/user/removeRole", {'email': email, 'role': role});
 
-    if (result.statusCode == 200) {
-      APIConstants.showSuccessToast("Removed role: $role", context);
-    } else {
-      APIConstants.showErrorToast(
-          "Failed to remove role: ${result.body}", context);
+    if(context.mounted) {
+      if (result.statusCode == 200) {
+        APIConstants.showSuccessToast("Removed role: $role", context);
+      } else {
+        APIConstants.showErrorToast(
+            "Failed to remove role: ${result.body}", context);
+      }
+
     }
 
     return this;
@@ -79,11 +83,13 @@ class User {
     var result = await APISession.patchWithParams(
         "/user/addRole", {'email': email, 'role': role});
 
-    if (result.statusCode == 200) {
-      APIConstants.showSuccessToast("Added role: $role", context);
-    } else {
-      APIConstants.showErrorToast(
-          "Failed to add role: ${result.body}", context);
+    if(context.mounted) {
+      if (result.statusCode == 200) {
+        APIConstants.showSuccessToast("Added role: $role", context);
+      } else {
+        APIConstants.showErrorToast(
+            "Failed to add role: ${result.body}", context);
+      }
     }
 
     return this;
@@ -93,11 +99,13 @@ class User {
     var result = await APISession.patchWithParams(
         "/user/changeName", {'token': token, 'name': newName});
 
-    if (result.statusCode == 200) {
-      APIConstants.showSuccessToast("Changed user name to: $newName", context);
-    } else {
-      APIConstants.showErrorToast(
-          "Failed to change name: ${result.body}", context);
+    if(context.mounted) {
+      if (result.statusCode == 200) {
+        APIConstants.showSuccessToast("Changed user name to: $newName", context);
+      } else {
+        APIConstants.showErrorToast(
+            "Failed to change name: ${result.body}", context);
+      }
     }
 
     return this;
@@ -124,10 +132,12 @@ class User {
     var result = await APISession.patchWithParams(
         "/user/setRoles", {'email': email, 'roles': rolesListToString()});
 
-    if (result.statusCode == 200) {
-    } else {
-      APIConstants.showErrorToast(
-          "Failed to update roles: ${result.body}", context);
+    if(context.mounted) {
+      if (result.statusCode == 200) {
+      } else {
+        APIConstants.showErrorToast(
+            "Failed to update roles: ${result.body}", context);
+      }
     }
 
     return result.statusCode == 200;
@@ -199,14 +209,18 @@ class User {
       String email, String password, String firebaseToken, BuildContext context) async {
     var result = await APISession.getWithParams(
         "/user/authenticate", {"email": email, "password": password, "firebase_token": firebaseToken});
-
+    
     if (result.statusCode == 200) {
       User user = fromJson(jsonDecode(result.body));
-      APIConstants.showSuccessToast(
-          "Successfully logged in! Welcome ${user.name}!", context);
+      if(context.mounted) {
+        APIConstants.showSuccessToast(
+            "Successfully logged in! Welcome ${user.name}!", context);
+      }
       return user;
     } else {
-      APIConstants.showErrorToast("Failed to Log in: ${result.body}", context);
+      if(context.mounted) {
+        APIConstants.showErrorToast("Failed to Log in: ${result.body}", context);
+      }
       return null;
     }
   }

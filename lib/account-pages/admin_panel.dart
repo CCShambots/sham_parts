@@ -89,12 +89,12 @@ class AdminPanelState extends State<AdminPanel> {
 }
 
 class UserAdminView extends StatefulWidget {
-  var repullUsers;
-  User user;
-  List<String> roles;
-  bool you;
+  final Function repullUsers;
+  final User user;
+  final List<String> roles;
+  final bool you;
 
-  UserAdminView(
+  const UserAdminView(
       {super.key,
       required this.repullUsers,
       required this.user,
@@ -128,7 +128,7 @@ class UserAdminViewState extends State<UserAdminView> {
                 deleteUser(context),
                 verifiedMethod(),
                 const Padding(padding: EdgeInsets.only(left: 8)),
-                UserName(),
+                userName(),
                 const SizedBox(width: 8),
                 widget.you
                     ? Text("(you)", style: StyleConstants.h3Style)
@@ -138,7 +138,7 @@ class UserAdminViewState extends State<UserAdminView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(width: 8),
-                UserName(),
+                userName(),
             ],),
 
             !isMobile ? Row(
@@ -202,7 +202,7 @@ class UserAdminViewState extends State<UserAdminView> {
     );
   }
 
-  Tooltip UserName() {
+  Tooltip userName() {
     return Tooltip(
                   message: "Email: ${widget.user.email}",
                   child: Text(widget.user.name,

@@ -3,12 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
-import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/api_session.dart';
+import 'package:sham_parts/api-util/log_entry.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/util/camMenu.dart';
+import 'package:sham_parts/util/cam_menu.dart';
 
 class PartPage extends StatefulWidget {
   final Part part;
@@ -86,14 +86,14 @@ class _PartPageState extends State<PartPage> {
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        PartImage(),
-                        PartDetails(context, isMobile),
+                        partImage(),
+                        partDetails(context, isMobile),
                       ],
                     )
                   : Column(
                       children: [
-                        PartImage(),
-                        PartDetails(context, isMobile),
+                        partImage(),
+                        partDetails(context, isMobile),
                       ],
                     ),
 
@@ -169,7 +169,7 @@ class _PartPageState extends State<PartPage> {
         ));
   }
 
-  Padding PartDetails(BuildContext context, bool mobile) {
+  Padding partDetails(BuildContext context, bool mobile) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Column(
@@ -366,7 +366,7 @@ class _PartPageState extends State<PartPage> {
     );
   }
 
-  GFImageOverlay PartImage() {
+  GFImageOverlay partImage() {
     return GFImageOverlay(
       height: isMobile ? 200 : 400,
       width: isMobile ? 200 : 400,

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/project.dart';
-import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
-import 'package:sham_parts/compound-widgets/CompoundListDisplay.dart';
+import 'package:sham_parts/compound-widgets/compound_creation_menu.dart';
+import 'package:sham_parts/compound-widgets/compound_list_display.dart';
 
 class CompoundsPage extends StatefulWidget {
   final Project project;

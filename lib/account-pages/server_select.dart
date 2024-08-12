@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/api_session.dart';
 import 'package:sham_parts/api-util/server.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -101,7 +101,9 @@ class _ServerSelectState extends State<ServerSelect> {
                         
                         await loadServers();
                         
-                        Navigator.of(context).pop();
+                        if(context.mounted) {
+                          Navigator.of(context).pop();
+                        }
                       },
                       child: const Text('Save'),
                     ),
@@ -170,7 +172,9 @@ class _ServerWidgetState extends State<ServerWidget> {
 
     APISession.updateKeys();
 
-    APIConstants.showSuccessToast("Set new API to: ${widget.server.name}", context);
+    if(context.mounted) {
+      APIConstants.showSuccessToast("Set new API to: ${widget.server.name}", context);
+    }
   }
 
   @override
@@ -185,27 +189,27 @@ class _ServerWidgetState extends State<ServerWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: !isMobile ? [
-          StatusIcon(),
-          Name(isMobile),
-          Key(),
-          SelectButton(context)
+          statusIcon(),
+          name(isMobile),
+          key(),
+          selectButton(context)
         ] : [
-          StatusIcon(),
-          Name(isMobile),
-          SelectButton(context)
+          statusIcon(),
+          name(isMobile),
+          selectButton(context)
         ],
       ),
     );
   }
 
-  ElevatedButton SelectButton(BuildContext context) {
+  ElevatedButton selectButton(BuildContext context) {
     return ElevatedButton(
             onPressed: () {setActiveServer(context);}, child: const Text("Select"));
   }
 
-  Text Key() => Text(widget.server.key);
+  Text key() => Text(widget.server.key);
 
-  Tooltip Name(bool isMobile) {
+  Tooltip name(bool isMobile) {
     return Tooltip(
           message: widget.isActive ? "Active" : "Not active",
           child: 
@@ -213,7 +217,7 @@ class _ServerWidgetState extends State<ServerWidget> {
         );
   }
 
-  IconButton StatusIcon() {
+  IconButton statusIcon() {
     return IconButton(
             onPressed: () {
               checkServer();

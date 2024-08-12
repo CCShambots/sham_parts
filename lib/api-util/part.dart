@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:http/http.dart';
 
-import 'package:sham_parts/api-util/apiSession.dart';
-import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/api_session.dart';
+import 'package:sham_parts/api-util/log_entry.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/PartListDisplay.dart';
+import 'package:sham_parts/part-widgets/part_list_display.dart';
 
 class Part {
   int id;
@@ -238,14 +238,18 @@ class Part {
     var response = await APISession.patch(
         "/part/$id/setPartType", jsonEncode({"partType": newType}));
 
+      if(context.mounted) {
+
     if (response.statusCode == 200) {
       APIConstants.showSuccessToast("Set Part Type for $number", context);
 
       partType = newType;
     } else {
-      APIConstants.showErrorToast(
-          "Failed to Set Part Type for $number: Code ${response.statusCode} - ${response.body}",
-          context);
+        APIConstants.showErrorToast(
+            "Failed to Set Part Type for $number: Code ${response.statusCode} - ${response.body}",
+            context);
+
+      }
     }
   }
 
@@ -367,7 +371,7 @@ class Part {
 
 
   //Methods for widget display stuff
-  Widget QuantityRequested() {
+  Widget quantityRequestedWidget() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -380,7 +384,7 @@ class Part {
     );
   }
 
-  Widget QuantityExtra() {
+  Widget quantityExtra() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -393,7 +397,7 @@ class Part {
     );
   }
 
-  Widget QuantityHave() {
+  Widget quantityHave() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -413,7 +417,7 @@ class Part {
     );
   }
 
-  Widget PartType() {
+  Widget partTypeWidget() {
     return Tooltip(
       message: "Part Type",
       child: Text(
@@ -423,7 +427,7 @@ class Part {
     );
   }
 
-  Widget Asignee() {
+  Widget asigneeWidget() {
     return Tooltip(
       message: "Assigned to:",
       child: Text(
@@ -433,9 +437,9 @@ class Part {
     );
   }
 
-  Widget PartThickness({bool warning = false}) {
-    return !warning ? JustThickness() : Row(children: [
-      JustThickness(),
+  Widget partThicknessWidget({bool warning = false}) {
+    return !warning ? justThickness() : Row(children: [
+      justThickness(),
       const SizedBox(
         width: 10,
       ),
@@ -450,7 +454,7 @@ class Part {
     ]);
   }
 
-  Tooltip JustThickness() {
+  Tooltip justThickness() {
     return Tooltip(
     message: "$dimension1\" x $dimension2\" x $dimension3\"",
     child: Text(
@@ -460,7 +464,7 @@ class Part {
   );
   }
 
-  Widget PartName(String parseOut, bool mobile) {
+  Widget partName(String parseOut, bool mobile) {
     return Tooltip(
       message: number,
       child: SizedBox(
@@ -497,7 +501,7 @@ class Part {
     );
   }
 
-  IconButton ImageButton(BuildContext context) {
+  IconButton imageButton(BuildContext context) {
     return IconButton(
         onPressed: () {
           showDialog(context: context, builder: buildImagePopup);

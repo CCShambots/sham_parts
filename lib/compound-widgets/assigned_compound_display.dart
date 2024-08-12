@@ -3,25 +3,24 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/project.dart';
-import 'package:sham_parts/compound-widgets/CompoundPage.dart';
+import 'package:sham_parts/compound-widgets/compound_page.dart';
 import 'package:sham_parts/constants.dart';
 
-class CompoundListDisplay extends StatefulWidget {
+class AssignedCompoundDisplay extends StatefulWidget {
   final Project project;
   final Compound compound;
 
-  const CompoundListDisplay({super.key, required this.compound, required this.project});
+  const AssignedCompoundDisplay({super.key, required this.compound, required this.project});
 
   @override
-  State<CompoundListDisplay> createState() => _CompoundListDisplayState();
+  State<AssignedCompoundDisplay> createState() => _AssignedCompoundDisplayState();
 }
 
-class _CompoundListDisplayState extends State<CompoundListDisplay> {
+class _AssignedCompoundDisplayState extends State<AssignedCompoundDisplay> {
+  final isMobile = Platform.isAndroid || Platform.isIOS;
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -30,22 +29,20 @@ class _CompoundListDisplayState extends State<CompoundListDisplay> {
                 builder: (context) => CompoundPage(compound: widget.compound, project: widget.project,)));
       },
       child: Container(
+        height: 111-16,
         decoration: StyleConstants.shadedDecoration(context),
         margin: StyleConstants.margin,
         padding: StyleConstants.padding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: !isMobile ? [
-            widget.compound.CompoundName(isMobile),
-            widget.compound.CompoundMaterial(),
-            widget.compound.CompoundThickness(),
-            widget.compound.Asignee(),
-            widget.compound.CompoundPartQuantity(),
-            widget.compound.CompoundCamStatus(isMobile)
+            widget.compound.compoundName(isMobile),
+            widget.compound.compoundPartQuantity(),
+            widget.compound.compoundCamStatus(isMobile)
           ] : [
-            widget.compound.CompoundName(isMobile),
-            widget.compound.CompoundCamStatus(isMobile)
-          ]
+            widget.compound.compoundName(isMobile),
+            widget.compound.compoundCamStatus(isMobile)
+          ],
         ),
       ),
     );

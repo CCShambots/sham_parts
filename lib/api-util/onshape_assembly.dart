@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/image/gf_image_overlay.dart';
 import 'package:http/http.dart' as http;
-import 'package:sham_parts/api-util/apiSession.dart';
-import 'package:sham_parts/api-util/onshapeDocument.dart';
+import 'package:sham_parts/api-util/api_session.dart';
+import 'package:sham_parts/api-util/onshape_document.dart';
 import 'package:sham_parts/constants.dart';
 
 
@@ -60,7 +60,7 @@ class OnshapeAssembly {
 
 class OnshapeAssemblyWidget extends StatelessWidget {
   final OnshapeAssembly assembly;
-  final reloadProjectList;
+  final Function reloadProjectList;
 
   const OnshapeAssemblyWidget({super.key, required this.assembly, required this.reloadProjectList});
 
@@ -118,7 +118,7 @@ class OnshapeAssemblyWidget extends StatelessWidget {
 
 class AssemblySearchWindow extends StatefulWidget {
   final OnshapeDocument doc;
-  final reloadProjectList;
+  final Function reloadProjectList;
 
   const AssemblySearchWindow({super.key, required this.doc, required this.reloadProjectList});
 

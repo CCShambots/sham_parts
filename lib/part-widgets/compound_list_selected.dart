@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/PartPage.dart';
+import 'package:sham_parts/part-widgets/part_page.dart';
 
+typedef RemoveSelectedFunction = void Function();
+// ignore: must_be_immutable
 class CompoundListSelected extends StatefulWidget {
   final CompoundPart compoundPart;
   late Part part;
-  final removeFromSelected;
+  final RemoveSelectedFunction removeFromSelected;
   final String thickness;
 
   CompoundListSelected(
@@ -99,10 +101,10 @@ class CompoundListSelectedState extends State<CompoundListSelected> {
                     )),
               ],
             ),
-            widget.part.ImageButton(context),
-            widget.part.PartThickness(warning: thicknessWarning),
-            widget.part.PartName(parseOut, isMobile),
-            widget.part.QuantityHave(),
+            widget.part.imageButton(context),
+            widget.part.partThicknessWidget(warning: thicknessWarning),
+            widget.part.partName(parseOut, isMobile),
+            widget.part.quantityHave(),
           ],
         ),
       ),

@@ -6,13 +6,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sham_parts/api-util/compound.dart';
-import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/log_entry.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
-import 'package:sham_parts/compound-widgets/CompoundCreationMenu.dart';
+import 'package:sham_parts/compound-widgets/compound_creation_menu.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/PartPage.dart';
-import 'package:sham_parts/util/camMenu.dart';
+import 'package:sham_parts/part-widgets/part_page.dart';
+import 'package:sham_parts/util/cam_menu.dart';
 
 class CompoundPage extends StatefulWidget {
   final Project project;
@@ -106,14 +106,14 @@ class _CompoundPageState extends State<CompoundPage> {
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    CompoundImage(),
-                    CompoundDetails(context, isMobile),
+                    compoundImage(),
+                    compoundDetails(context, isMobile),
                   ],
                 )
               : Column(
                   children: [
-                    CompoundImage(),
-                    CompoundDetails(context, isMobile),
+                    compoundImage(),
+                    compoundDetails(context, isMobile),
                   ],
                 ),
           Text("Compound Log", style: StyleConstants.titleStyle),
@@ -134,7 +134,7 @@ class _CompoundPageState extends State<CompoundPage> {
     );
   }
 
-  Widget CompoundDetails(BuildContext context, bool mobile) {
+  Widget compoundDetails(BuildContext context, bool mobile) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Column(
@@ -328,18 +328,18 @@ class _CompoundPageState extends State<CompoundPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: !isMobile
                 ? [
-                    FulFillCompound(context),
-                    EditCompound(context),
-                    DeleteCompound(context),
+                    fulfillCompound(context),
+                    editCompound(context),
+                    deleteCompound(context),
                   ]
-                : [FulFillCompound(context), DeleteCompound(context)],
+                : [fulfillCompound(context), deleteCompound(context)],
           )
         ],
       ),
     );
   }
 
-  IconButton DeleteCompound(BuildContext context) {
+  IconButton deleteCompound(BuildContext context) {
     return IconButton(
         tooltip: "Delete forever",
         onPressed: () {
@@ -352,7 +352,7 @@ class _CompoundPageState extends State<CompoundPage> {
         ));
   }
 
-  IconButton EditCompound(BuildContext context) {
+  IconButton editCompound(BuildContext context) {
     return IconButton(
         tooltip: "Edit Parts in Compound",
         onPressed: () {
@@ -374,7 +374,7 @@ class _CompoundPageState extends State<CompoundPage> {
         ));
   }
 
-  IconButton FulFillCompound(BuildContext context) {
+  IconButton fulfillCompound(BuildContext context) {
     return IconButton(
         tooltip: "Fulfill Compound",
         onPressed: () {
@@ -415,7 +415,7 @@ class _CompoundPageState extends State<CompoundPage> {
     );
   }
 
-  Widget CompoundImage() {
+  Widget compoundImage() {
     return Column(
       children: [
         hasThumbnail && imageValid
@@ -434,9 +434,9 @@ class _CompoundPageState extends State<CompoundPage> {
 
                       if (result != null) {
                         File file = File(result.files.single.path!);
-
-                        widget.compound
-                            .uploadImage(file.readAsBytesSync(), context);
+                          widget.compound
+                              // ignore: use_build_context_synchronously
+                              .uploadImage(file.readAsBytesSync(), context);
 
                         setState(() {});
                       } else {

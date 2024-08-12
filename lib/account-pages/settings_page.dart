@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sham_parts/account-pages/adminPanel.dart';
-import 'package:sham_parts/account-pages/serverSelect.dart';
-import 'package:sham_parts/account-pages/signIn.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/account-pages/admin_panel.dart';
+import 'package:sham_parts/account-pages/server_select.dart';
+import 'package:sham_parts/account-pages/sign_in.dart';
+import 'package:sham_parts/api-util/api_session.dart';
 import 'package:sham_parts/api-util/project.dart';
-import 'package:sham_parts/api-util/projectSelect.dart';
+import 'package:sham_parts/api-util/project_select.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,8 +16,8 @@ class SettingsPage extends StatefulWidget {
   final User? user;
   final Project project;
   final bool appbar;
-  final loadProject;
-  final loadUser; 
+  final LoadProjectFunction loadProject;
+  final Function loadUser; 
 
   const SettingsPage(
       {super.key,
@@ -41,6 +41,8 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
+    super.initState();
+
     user = widget.user;
 
     changingName = false;
@@ -206,7 +208,10 @@ class SettingsPageState extends State<SettingsPage> {
                                   await user?.deleteUser(context,
                                       token: user?.token ?? "");
                                   await logOut();
-                                  Navigator.of(context).pop();
+
+                                  if(context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
                                 },
                                 child: const Text("Yes, Delete"),
                               ),
@@ -291,7 +296,9 @@ class SettingsPageState extends State<SettingsPage> {
 
                 APISession.updateKeys();
               } else {
-                APIConstants.showErrorToast("Missing Account Token!", context);
+                if(context.mounted) {
+                  APIConstants.showErrorToast("Missing Account Token!", context);
+                }
               }
             });
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
@@ -21,7 +23,9 @@ class APIConstants {
             style: ToastificationStyle.flatColored,
             title: Text(message));
       }
-    } catch (e) {}
+    } catch (e) {
+      stderr.writeln("Error showing toast: $e");
+    }
   }
 
   static void showErrorToast(String message, BuildContext? context,
@@ -35,7 +39,9 @@ class APIConstants {
             style: ToastificationStyle.flatColored,
             title: Text(message));
       }
-    } catch (e) {}
+    } catch (e) {
+      stderr.writeln("Error showing toast: $e");
+    }
   }
 }
 

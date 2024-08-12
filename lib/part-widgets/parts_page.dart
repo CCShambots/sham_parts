@@ -5,8 +5,8 @@ import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
 import 'package:sham_parts/api-util/user.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/expandable-fab/ExpandableFab.dart';
-import 'package:sham_parts/part-widgets/MergeDisplay.dart';
+import 'package:sham_parts/expandable-fab/expandable_fab.dart';
+import 'package:sham_parts/part-widgets/merge_display.dart';
 
 class PartsPage extends StatefulWidget {
   final Project project;
@@ -455,7 +455,6 @@ class PartsPageState extends State<PartsPage> {
           missingFilter &&
           requestedFilter &&
           unassignedFilter;
-          ;
     }).toList();
 
     return Scaffold(
@@ -465,15 +464,15 @@ class PartsPageState extends State<PartsPage> {
       floatingActionButton: !isMobile ? ExpandableFab(
         distance: 112,
         children:  [
-          LoadPhotos(context),
-          MergeParts(context),
-          FilterParts(context),
+          loadPhotosWidget(context),
+          mergeParts(context),
+          filterParts(context),
         ],
-      ) : FilterParts(context),
+      ) : filterParts(context),
     );
   }
 
-  ActionButton FilterParts(BuildContext context) {
+  ActionButton filterParts(BuildContext context) {
     return ActionButton(
           onPressed: () => {openFilterPageDialog(context)},
           icon: const Icon(Icons.filter_alt),
@@ -481,7 +480,7 @@ class PartsPageState extends State<PartsPage> {
         );
   }
 
-  ActionButton MergeParts(BuildContext context) {
+  ActionButton mergeParts(BuildContext context) {
     return ActionButton(
           onPressed: () => {
             Navigator.of(context).push(MaterialPageRoute(
@@ -492,7 +491,7 @@ class PartsPageState extends State<PartsPage> {
         );
   }
 
-  ActionButton LoadPhotos(BuildContext context) {
+  ActionButton loadPhotosWidget(BuildContext context) {
     return ActionButton(
           onPressed: () => {
             loadPhotos(context),

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:sham_parts/api-util/compound.dart';
-import 'package:sham_parts/api-util/logEntry.dart';
+import 'package:sham_parts/api-util/log_entry.dart';
 import 'package:sham_parts/api-util/part.dart';
-import 'package:sham_parts/api-util/apiSession.dart';
+import 'package:sham_parts/api-util/api_session.dart';
 import 'package:sham_parts/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,10 +17,10 @@ enum RoleType {
 
 class Project {
   String name;
-  String default_workspace;
+  String defaultWorkspace;
 
-  String assembly_name;
-  String assembly_onshape_id;
+  String assemblyName;
+  String assemblyOnshapeId;
   List<Part> parts;
   List<String> readRoles;
   List<String> writeRoles;
@@ -35,9 +35,9 @@ class Project {
 
   Project({
     required this.name,
-    required this.default_workspace,
-    required this.assembly_name,
-    required this.assembly_onshape_id,
+    required this.defaultWorkspace,
+    required this.assemblyName,
+    required this.assemblyOnshapeId,
     required this.parts,
     required this.adminRoles,
     required this.readRoles,
@@ -55,9 +55,9 @@ class Project {
   static blank() {
     return Project(
         name: "NO PROJECT",
-        default_workspace: "",
-        assembly_name: "",
-        assembly_onshape_id: "",
+        defaultWorkspace: "",
+        assemblyName: "",
+        assemblyOnshapeId: "",
         readRoles: [],
         writeRoles: [],
         adminRoles: [],
@@ -128,7 +128,8 @@ class Project {
   }
 
   Future<void> sync(BuildContext context) async {
-    var response = await APISession.patch("/project/$name/sync", jsonEncode({}));
+    var response =
+        await APISession.patch("/project/$name/sync", jsonEncode({}));
 
     if (response.statusCode == 200) {
       if (context.mounted) {
@@ -172,19 +173,21 @@ class Project {
     var response = await APISession.patch("/project/$name/removeRole",
         jsonEncode({"role": role, "type": type.name}));
 
-    if (response.statusCode == 200) {
-      if (type == RoleType.admin) {
-        adminRoles.remove(role);
-      } else if (type == RoleType.write) {
-        writeRoles.remove(role);
-      } else if (type == RoleType.read) {
-        readRoles.remove(role);
+    if (context.mounted) {
+      if (response.statusCode == 200) {
+        if (type == RoleType.admin) {
+          adminRoles.remove(role);
+        } else if (type == RoleType.write) {
+          writeRoles.remove(role);
+        } else if (type == RoleType.read) {
+          readRoles.remove(role);
+        }
+        APIConstants.showSuccessToast('Role removed successfully.', context);
+      } else {
+        APIConstants.showErrorToast(
+            'Failed to remove role. Status code: ${response.statusCode}, Error message: ${response.body}',
+            context);
       }
-      APIConstants.showSuccessToast('Role removed successfully.', context);
-    } else {
-      APIConstants.showErrorToast(
-          'Failed to remove role. Status code: ${response.statusCode}, Error message: ${response.body}',
-          context);
     }
   }
 
@@ -242,9 +245,9 @@ class Project {
 
     Project proj = Project(
       name: json["name"],
-      default_workspace: json["default_workspace"],
-      assembly_name: json["assembly_name"],
-      assembly_onshape_id: json["assembly_onshape_id"],
+      defaultWorkspace: json["default_workspace"],
+      assemblyName: json["assembly_name"],
+      assemblyOnshapeId: json["assembly_onshape_id"],
       readRoles: json["read_roles"]?.cast<String>() ?? [],
       writeRoles: json["write_roles"]?.cast<String>() ?? [],
       adminRoles: json["admin_roles"]?.cast<String>() ?? [],

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:sham_parts/api-util/compound.dart';
 import 'package:sham_parts/api-util/part.dart';
 import 'package:sham_parts/api-util/project.dart';
-import 'package:sham_parts/compound-widgets/CompoundPage.dart';
+import 'package:sham_parts/compound-widgets/compound_page.dart';
 import 'package:sham_parts/constants.dart';
-import 'package:sham_parts/part-widgets/CompoundListSelected.dart';
-import 'package:sham_parts/part-widgets/CompoundListUnselected.dart';
+import 'package:sham_parts/part-widgets/compound_list_selected.dart';
+import 'package:sham_parts/part-widgets/compound_list_unselected.dart';
 
+// ignore: must_be_immutable
 class CompoundCreationMenu extends StatefulWidget {
   final Project project;
   Compound? compound;
