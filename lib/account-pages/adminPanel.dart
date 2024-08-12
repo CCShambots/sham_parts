@@ -49,7 +49,6 @@ class AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.user?.name);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Admin Panel"),
@@ -126,8 +125,8 @@ class UserAdminViewState extends State<UserAdminView> {
             !isMobile ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DeleteUser(context),
-                VerifiedMethod(),
+                deleteUser(context),
+                verifiedMethod(),
                 const Padding(padding: EdgeInsets.only(left: 8)),
                 UserName(),
                 const SizedBox(width: 8),
@@ -210,7 +209,7 @@ class UserAdminViewState extends State<UserAdminView> {
                       style: StyleConstants.subtitleStyle));
   }
 
-  Tooltip VerifiedMethod() {
+  Tooltip verifiedMethod() {
     return Tooltip(
                 message: widget.user.verified ? "Verified" : "Not Verified",
                 child: Icon(
@@ -223,7 +222,7 @@ class UserAdminViewState extends State<UserAdminView> {
               );
   }
 
-  IconButton DeleteUser(BuildContext context) {
+  IconButton deleteUser(BuildContext context) {
     return IconButton(
                   tooltip: "Delete User",
                   onPressed: () {

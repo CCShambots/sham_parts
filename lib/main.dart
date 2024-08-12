@@ -5,6 +5,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sham_parts/account-pages/settingsPage.dart';
@@ -69,6 +70,7 @@ void main() async {
       sound: true,
     );
 
+
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
     } else if (settings.authorizationStatus ==
@@ -115,21 +117,22 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ShamParts v$version',
-      navigatorKey: MyApp.navigatorKey,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
-      ),
-      darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue, brightness: Brightness.dark),
-          brightness: Brightness.dark),
-      home: const BottomNavigation(),
-    );
+    return 
+      MaterialApp(
+        title: 'ShamParts v$version',
+        navigatorKey: MyApp.navigatorKey,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+          scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
+        ),
+        darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.blue, brightness: Brightness.dark),
+            brightness: Brightness.dark),
+        home: const BottomNavigation(),
+      );
   }
 }
 
@@ -491,6 +494,16 @@ class BottomNavigationBarState extends State<BottomNavigation> {
             tooltip: connected ? "Server Connected" : "Server  Disconnected",
             onPressed: () async {
               runConnectionCheck();
+
+              try {
+                loadProjectWithoutSavingNewKey();
+                
+                APIConstants.showSuccessToast("Reloaded project info", context);
+              } catch (e) {
+                APIConstants.showErrorToast("Failed to relaod project", context);
+
+                stderr.writeln("Failed to load project from reload click");
+              }
             },
           ),
           user.roles.contains("admin") && !isMobile
